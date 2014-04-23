@@ -31,3 +31,5 @@ libraryDependencies += "passera.unsigned" %% "scala-unsigned" % "0.1" from "http
 resolvers += "stephenjudkins-bintray" at "http://dl.bintray.com/stephenjudkins/maven"
 
 libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.0"
+
+autoAPIMappings := true
