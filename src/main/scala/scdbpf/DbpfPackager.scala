@@ -46,11 +46,15 @@ object DbpfPackager {
     * data would be larger than the uncompressed data, `dData` is returned.
     * Otherwise, a new array containing the compressed data will be created and
     * returned.
+    *
+    * To be precise, the compressed data will be returned, if
+    * `compressed length < uncompressed length - 16` so as to account for the
+    * additional entry in the DBPF directory file.
     */
   def compress(dData: Array[Byte]): Array[Byte] = {
     if (dData.length > 9 && dData.length <= 0xFFFFFF && !isCompressed(dData)) {
       val cData = QfsCompression.compress(dData)
-      if (cData.length < dData.length) cData else dData
+      if (cData.length < dData.length - 16) cData else dData
     } else {
       dData
     }
