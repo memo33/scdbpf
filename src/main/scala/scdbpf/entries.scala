@@ -28,7 +28,7 @@ trait DbpfEntry {
     *
     * $EXCEPTIONHANDLER
     */
-  def toBufferedEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, BufferedEntry[DbpfType]] = eh except {
+  def toBufferedEntry(implicit eh: ExceptionHandler): eh.![BufferedEntry[DbpfType], DbpfIoException] = eh wrap {
     val arr: Array[Byte] = managed(this.input()) acquireAndGet (DbpfUtil.slurpBytes(_))
     BufferedEntry(this.tgi, RawType(arr), DbpfPackager.isCompressed(arr))
   }
@@ -37,7 +37,7 @@ trait DbpfEntry {
     *
     * $EXCEPTIONHANDLER
     */
-  def toRawEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, RawEntry] = eh except {
+  def toRawEntry(implicit eh: ExceptionHandler): eh.![RawEntry, DbpfIoException] = eh wrap {
     val arr: Array[Byte] = managed(this.input()) acquireAndGet (DbpfUtil.slurpBytes(_))
     new RawEntry(this.tgi, arr)
   }
@@ -82,15 +82,15 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
     * `tgi` for conversion.
     */
   def convert[B <: DbpfType](implicit eh: ExceptionHandler,
-      conv: Converter[BufferedEntry[A], BufferedEntry[B]]): eh.![DbpfDecodeFailedException, BufferedEntry[B]] = {
-    eh except conv(this)
+      conv: Converter[BufferedEntry[A], BufferedEntry[B]]): eh.![BufferedEntry[B], DbpfDecodeFailedException] = {
+    eh wrap conv(this)
   }
 
-  override def toBufferedEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, BufferedEntry[DbpfType]] =
-    eh except this
+  override def toBufferedEntry(implicit eh: ExceptionHandler): eh.![BufferedEntry[DbpfType], DbpfIoException] =
+    eh wrap this
 
-  override def toRawEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, RawEntry] =
-    eh except new RawEntry(tgi, if (compressed) DbpfPackager.compress(content.dataView) else content.dataView)
+  override def toRawEntry(implicit eh: ExceptionHandler): eh.![RawEntry, DbpfIoException] =
+    eh wrap new RawEntry(tgi, if (compressed) DbpfPackager.compress(content.dataView) else content.dataView)
 }
 
 /** A buffered entry whose raw byte data is held in an array, that is, the exact
@@ -121,10 +121,10 @@ class RawEntry(val tgi: Tgi, data: Array[Byte]) extends DbpfEntry {
   /** $COPY */
   def copy(tgi: Tgi): RawEntry = new RawEntry(tgi, data)
 
-  override def toRawEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, RawEntry] = eh except this
+  override def toRawEntry(implicit eh: ExceptionHandler): eh.![RawEntry, DbpfIoException] = eh wrap this
 
-  override def toBufferedEntry(implicit eh: ExceptionHandler): eh.![DbpfIoException, BufferedEntry[DbpfType]] =
-    eh except BufferedEntry(tgi, RawType(data), compressed)
+  override def toBufferedEntry(implicit eh: ExceptionHandler): eh.![BufferedEntry[DbpfType], DbpfIoException] =
+    eh wrap BufferedEntry(tgi, RawType(data), compressed)
 }
 
 /** A lightweight entry that reads its data as stream from a file without

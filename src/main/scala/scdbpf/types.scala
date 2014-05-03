@@ -28,7 +28,7 @@ trait DbpfType {
     * type `B` structurally
     */
   def convert[B <: DbpfType](implicit eh: ExceptionHandler, conv: Converter[DbpfType, B]):
-    eh.![DbpfDecodeFailedException, B] = eh except conv(this)
+    eh.![B, DbpfDecodeFailedException] = eh wrap conv(this)
 }
 
 /** A raw type that does not represent any specific format. Its data is backed

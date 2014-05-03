@@ -49,7 +49,7 @@ class DbpfFile private (
   def write(
       entries: Iterable[DbpfEntry] = entries,
       file: FileUrl = file)
-        (implicit eh: ExceptionHandler): eh.![IOException, DbpfFile] =
+        (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
           DbpfFile.write(entries, file, header.dateCreated)(eh)
 }
 
@@ -139,8 +139,8 @@ object DbpfFile {
     * @throws EOFException if the end of the file is reached unexpectedly
     * @throws IOException in case of other IO errors
     */
-  def read(file: FileUrl)(implicit eh: ExceptionHandler): eh.![IOException, DbpfFile] = {
-    eh except managed(new RandomAccessFile(file.javaFile, "r")).acquireAndGet { raf =>
+  def read(file: FileUrl)(implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = {
+    eh wrap managed(new RandomAccessFile(file.javaFile, "r")).acquireAndGet { raf =>
       val buf = allocLEBB(HeaderSize)
       raf.readFully(buf.array(), 0, 4)
       val magic = buf.getInt()
@@ -208,7 +208,7 @@ object DbpfFile {
       entries: Iterable[DbpfEntry],
       file: FileUrl,
       dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
-        (implicit eh: ExceptionHandler): eh.![IOException, DbpfFile] = eh except {
+        (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
 
     val (header, indexList) = if (!file.exists) {
       writeImpl(entries, file.javaFile, dateCreated)

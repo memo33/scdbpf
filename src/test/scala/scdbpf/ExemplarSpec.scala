@@ -35,7 +35,7 @@ class ExemplarSpec extends WordSpec with Matchers {
     }
   }
 
-  import rapture.io.strategy.throwExceptions
+  import rapture.core.strategy.throwExceptions
   "Exemplar" should {
     "encode/decode inversively" in {
       val ex = Exemplar(isCohort = false, props = props)

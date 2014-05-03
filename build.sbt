@@ -1,8 +1,8 @@
 name := "scdbpf"
 
-version := "0.1"
+version := "0.1.1"
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.11.0"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
@@ -16,20 +16,24 @@ import scdbpf._
 import DbpfUtil._
 """
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.2" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 
-libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.3"
+libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.6"
 
 libraryDependencies += "jsquish" % "jsquish" % "0.1" from "https://dl.dropboxusercontent.com/s/7ijtzyjb353fyas/jsquish.jar"
 
-libraryDependencies += "rapture.io" %% "io" % "0.8.1" from "https://dl.dropboxusercontent.com/s/tcug50wqpst7p5g/io-0.8.1.jar"
+libraryDependencies += "com.propensive" %% "rapture-io" % "0.9.1"
 
-libraryDependencies += "passera.unsigned" %% "scala-unsigned" % "0.1" from "https://dl.dropboxusercontent.com/s/zx0oc3lcyc4zd6o/scala-unsigned_2.10-0.1.jar"
+libraryDependencies += "com.propensive" %% "rapture-fs" % "0.9.1"
+
+libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
+
+libraryDependencies += "passera.unsigned" %% "scala-unsigned" % "0.1.1" from "https://dl.dropboxusercontent.com/s/yojvk2bb7o1c627/scala-unsigned_2.11-0.1.1.jar"
 
 resolvers += "stephenjudkins-bintray" at "http://dl.bintray.com/stephenjudkins/maven"
 
-libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.0"
+libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1"
 
 autoAPIMappings := true
