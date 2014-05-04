@@ -19,7 +19,7 @@ import scala.collection.immutable.{IndexedSeq, Map}
   * @param entries the entries of this DBPF file
   */
 class DbpfFile private (
-  val file: FileUrl,
+  val file: JFile,
   val header: DbpfFile.Header,
   val entries: IndexedSeq[StreamedEntry]) {
 
@@ -48,7 +48,7 @@ class DbpfFile private (
     */
   def write(
       entries: Iterable[DbpfEntry] = entries,
-      file: FileUrl = file)
+      file: JFile = file)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
           DbpfFile.write(entries, file, header.dateCreated)(eh)
 }
@@ -130,7 +130,7 @@ object DbpfFile {
 
   /** Creates a new `DbpfFile` by the reading the contents from a file.
     *
-    * @param file the `FileUrl` of the file to read
+    * @param file the file to read
     * @return a `DbpfFile` corresponding to the `file`
     *
     * @throws DbpfFileFormatException if magic number is not DBPF, or DBPF format
@@ -139,8 +139,8 @@ object DbpfFile {
     * @throws EOFException if the end of the file is reached unexpectedly
     * @throws IOException in case of other IO errors
     */
-  def read(file: FileUrl)(implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = {
-    eh wrap managed(new RandomAccessFile(file.javaFile, "r")).acquireAndGet { raf =>
+  def read(file: JFile)(implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = {
+    eh wrap managed(new RandomAccessFile(file, "r")).acquireAndGet { raf =>
       val buf = allocLEBB(HeaderSize)
       raf.readFully(buf.array(), 0, 4)
       val magic = buf.getInt()
@@ -169,7 +169,7 @@ object DbpfFile {
               val tgi = Tgi(indexBuf.getInt(), indexBuf.getInt(), indexBuf.getInt())
               val offset = UInt(indexBuf.getInt())
               val size = UInt(indexBuf.getInt())
-              val entry = new StreamedEntry(file.javaFile, tgi, offset, size, header.dateModified)
+              val entry = new StreamedEntry(file, tgi, offset, size, header.dateModified)
               builder += entry
               i += UInt(1)
             }
@@ -206,20 +206,20 @@ object DbpfFile {
     */
   def write(
       entries: Iterable[DbpfEntry],
-      file: FileUrl,
+      file: JFile,
       dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
 
     val (header, indexList) = if (!file.exists) {
-      writeImpl(entries, file.javaFile, dateCreated)
+      writeImpl(entries, file, dateCreated)
     } else {
       // writing to a temporary buffer ensures that entries can stream from the destination file
-      val tmpFile = java.io.File.createTempFile(file.javaFile.getName + "_", ".tmp", file.javaFile.getParentFile)
+      val tmpFile = java.io.File.createTempFile(file.getName + "_", ".tmp", file.getParentFile)
       try {
         val result = writeImpl(entries, tmpFile, dateCreated)
-        val success = tmpFile.renameTo(file.javaFile)
+        val success = tmpFile.renameTo(file)
         if (!success) {
-          throw new DbpfIoException("Failed to rename temp file to destination file: " + file.javaFile)
+          throw new DbpfIoException("Failed to rename temp file to destination file: " + file)
         }
         result
       } finally {
@@ -228,7 +228,7 @@ object DbpfFile {
     }
 
     val streamedEntries: IndexedSeq[StreamedEntry] = indexList.map { ie =>
-      new StreamedEntry(file.javaFile, ie.tgi, ie.offset, ie.size, header.dateModified)
+      new StreamedEntry(file, ie.tgi, ie.offset, ie.size, header.dateModified)
     }(scala.collection.breakOut)
     new DbpfFile(file, header, streamedEntries)
   }

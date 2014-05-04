@@ -77,24 +77,26 @@ object DbpfUtil {
     UInt((i << 24) | (i << 8) & 0x00FF0000 | (i >>> 8) & 0x0000FF00 | (i >>> 24))
   }
 
-  private def hasDbpfExtension(file: FileUrl): Boolean = {
-    import strategy.throwExceptions
-    file.extension map (_.toLowerCase) exists { ext =>
+  private def hasDbpfExtension(file: JFile): Boolean = {
+    val idx = file.getName.lastIndexOf('.')
+    if (idx == -1) {
+      false
+    } else {
+      val ext = file.getName.substring(idx + 1).toLowerCase
       ext == "dat" || ext == "sc4model" || ext == "sc4lot" || ext == "sc4desc"
     }
   }
 
-  private[scdbpf] def iterateTree(file: FileUrl): Iterable[FileUrl] = {
-    import strategy.throwExceptions
+  private val dbpfFileFilter = new java.io.FileFilter {
+    def accept(f: JFile) = f.isDirectory || hasDbpfExtension(f)
+  }
+
+  private[scdbpf] def iterateTree(file: JFile): Iterable[JFile] = {
     if (file.isDirectory) {
-      val children = new Iterable[FileUrl] {
-        def iterator = file.children.iterator
-      }
+      val children: Iterable[JFile] = file.listFiles(dbpfFileFilter)
       children.flatMap(iterateTree(_))
-    } else if (hasDbpfExtension(file)) {
-      Iterable(file)
     } else {
-      Iterable()
+      Iterable(file)
     }
   }
 

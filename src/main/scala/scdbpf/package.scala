@@ -18,7 +18,7 @@
   * could be achieved like this:
   *
   * {{{
-  * val dbpf = DbpfFile.read(File.parse("foobar.dat"))
+  * val dbpf = DbpfFile.read(new File("foobar.dat"))
   * dbpf.write(dbpf.entries.sortBy(_.tgi))
   * }}}
   *
@@ -79,7 +79,6 @@ package object scdbpf {
   // the following types exist to ease migrating to rapture-io 0.9.0
   private[scdbpf] type ExceptionHandler = rapture.core.ExceptionHandler
   private[scdbpf] val strategy = rapture.core.strategy
-  private[scdbpf] type FileUrl = rapture.fs.FileUrl
 
   // aliases for convenience
   type DbpfException = DbpfExceptions.DbpfException
