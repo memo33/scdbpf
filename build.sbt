@@ -4,9 +4,14 @@ version := "0.1.1"
 
 scalaVersion := "2.11.0"
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
-
-packSettings
+scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-feature",
+  //"-Yinline-warnings",
+  "-optimize",
+  "-encoding", "UTF-8",
+  "-target:jvm-1.6")
 
 initialCommands in console := """
 import rapture.io._, rapture.core._
