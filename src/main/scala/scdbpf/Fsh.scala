@@ -144,7 +144,7 @@ object Fsh {
       private[Fsh] def encode(buf: ByteBuffer, img: Image[RGBA]): Unit = this match {
         case A8R8G8B8 =>
           for (x <- 0 until img.width; y <- 0 until img.height)
-            buf.putInt(img(x, y).i)
+            buf.putInt(conversions.rgbaToARGB(img(x, y)))
         case A0R8G8B8 =>
           for (x <- 0 until img.width; y <- 0 until img.height) {
             val rgb = img(x, y)
@@ -260,6 +260,8 @@ object Fsh {
         (argb & 0x000000FF) << 16   // blue
       )
     }
+
+    def rgbaToARGB(c: RGBA): Int = argbToRGBA(c.i).i
 
     def rgbaFromChannels(r: Int, g: Int, b: Int, a: Int): RGBA = {
       RGBA(
