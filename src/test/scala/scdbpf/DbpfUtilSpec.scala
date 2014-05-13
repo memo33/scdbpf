@@ -5,6 +5,16 @@ import DbpfUtil._
 
 class DbpfUtilSpec extends WordSpec with Matchers {
 
+  "toHex" should {
+    "pass test cases" in {
+      toHex(0) should be ("0x00000000")
+      toHex(0xA) should be ("0x0000000A")
+      toHex(0x7fffffff) should be ("0x7FFFFFFF")
+      toHex(0x80000000) should be ("0x80000000")
+      toHex(0xFFFFFFFF) should be ("0xFFFFFFFF")
+    }
+  }
+
   import Sc4Path.Cardinal
   import Sc4Path.Cardinal._
   import Dihedral._

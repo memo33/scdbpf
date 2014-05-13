@@ -58,8 +58,10 @@ object DbpfUtil {
 //    buf.put((i >> 16).toByte)
 //  }
 
-  // TODO potentially slow if called often
-  private[scdbpf] def toHex(i: Int): String = f"0x$i%08X"
+  private[scdbpf] def toHex(i: Int): String = {
+    val s = i.toHexString
+    "0x" + "0" * (8 - s.length) + s.toUpperCase
+  }
 
   import rapture.io._
   private[scdbpf] def slurpBytes(input: Input[Byte]): Array[Byte] = {
