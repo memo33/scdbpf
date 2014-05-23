@@ -217,10 +217,25 @@ object DbpfFile {
       val tmpFile = java.io.File.createTempFile(file.getName + "_", ".tmp", file.getParentFile)
       try {
         val result = writeImpl(entries, tmpFile, dateCreated)
-        val success = tmpFile.renameTo(file)
-        if (!success) {
-          throw new DbpfIoException("Failed to rename temp file to destination file: " + file)
+        // attempts to move source to target (twice); especially on Windows,
+        // rename is problematic, if the target already exists.
+        // Mind that in rare cases this implementation may lead to loss of both
+        // files, i.e. if target gets deleted, subsequent rename fails, and temp
+        // file gets deleted, subsequently.
+        def move(source: JFile, target: JFile): Boolean = {
+          if (source.renameTo(target)) {
+            true
+          } else if (target.exists) {
+            if (target.delete) {
+              source.renameTo(target) || (throw new DbpfIoException("Failed to rename temp file to destination file: " + target))
+            } else {
+              throw new DbpfIoException("Failed to delete pre-existing destination file: " + target)
+            }
+          } else {
+            throw new DbpfIoException("Failed to rename temp file to destination file: " + target)
+          }
         }
+        move(tmpFile, file)
         result
       } finally {
         tmpFile.delete()
