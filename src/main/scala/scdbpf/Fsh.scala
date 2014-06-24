@@ -204,64 +204,39 @@ object Fsh {
   }
 
   private[scdbpf] object conversions {
-    // TODO better interpolation FIXME ???
-    def short1555toRGBA(s: Short): RGBA = {
-      RGBA(
-        (s >>> 15 & 0x0001) * 255 << 24 | // alpha
-        (s        & 0x001F) << 3  << 16 | // blue
-        (s >>>  5 & 0x001F) << 3  <<  8 | // green
-        (s >>> 10 & 0x001F) << 3          // red
-      )
-    }
-    def rgbaToShort1555(x: RGBA): Short = {
-      ( (x.blue  & 0xFF) >>> 3       |
-        (x.green & 0xFF) >>> 3 <<  5 |
-        (x.red   & 0xFF) >>> 3 << 10 |
-        (x.alpha & 0xFF) >>> 7 << 15
-      ).toShort
+
+    private def interpolate(sup: Int, newSup: Int, v: Int): Int = {
+      if (newSup <= sup)
+        v * newSup / sup
+      else if (sup == 1) // e.g. we want opacity, not transparency, if no alpha channel
+        newSup - 1
+      else
+        v * (newSup - 1) / (sup - 1)
     }
 
-    def short0565toRGBA(s: Short): RGBA = {
-      RGBA(
-         0xFF000000                    | // alpha
-        (s        & 0x001F) << 3 << 16 | // blue
-        (s >>>  5 & 0x003F) << 2 <<  8 | // green
-        (s >>> 11 & 0x001F) << 3         // red
-      )
-    }
-    def rgbaToShort0565(x: RGBA): Short = {
-      ( (x.blue  & 0xFF) >>> 3       |
-        (x.green & 0xFF) >>> 2 <<  5 |
-        (x.red   & 0xFF) >>> 3 << 11
-      ).toShort
+    private def toRGBA(a: Int, r: Int, g: Int, b: Int)(i: Int): RGBA = RGBA(
+      interpolate(1 << a, 1 << 8, i >>> (r+g+b) & (1 << a)-1) << 24 | // alpha
+      interpolate(1 << b, 1 << 8, i             & (1 << b)-1) << 16 | // blue
+      interpolate(1 << g, 1 << 8, i >>> (    b) & (1 << g)-1) <<  8 | // green
+      interpolate(1 << r, 1 << 8, i >>> (  g+b) & (1 << r)-1)         // red
+    )
+
+    private def fromRGBA(a: Int, r: Int, g: Int, b: Int)(p: RGBA): Int = {
+      interpolate(1 << 8, 1 << a, p.alpha & 0xFF) << (r+g+b) | // alpha
+      interpolate(1 << 8, 1 << r, p.red   & 0xFF) <<   (g+b) | // red
+      interpolate(1 << 8, 1 << g, p.green & 0xFF) <<      b  | // green
+      interpolate(1 << 8, 1 << b, p.blue  & 0xFF)              // blue
     }
 
-    def short4444toRGBA(s: Short): RGBA = {
-      RGBA(
-        (s >>> 12 & 0x000F) * 17 << 24 | // alpha
-        (s        & 0x000F) * 17 << 16 | // blue
-        (s >>>  4 & 0x000F) * 17 <<  8 | // green
-        (s >>>  8 & 0x000F) * 17         // red
-      )
-    }
-    def rgbaToShort4444(x: RGBA): Short = {
-      ( (x.blue  & 0xFF) >>> 4       |
-        (x.green & 0xFF) >>> 4 <<  4 |
-        (x.red   & 0xFF) >>> 4 <<  8 |
-        (x.alpha & 0xFF) >>> 4 << 12
-      ).toShort
-    }
+    val short1555toRGBA = { s: Short => s & 0xffff } andThen toRGBA(1,5,5,5) _
+    val short0565toRGBA = { s: Short => s & 0xffff } andThen toRGBA(0,5,6,5) _
+    val short4444toRGBA = { s: Short => s & 0xffff } andThen toRGBA(4,4,4,4) _
+    val argbToRGBA = toRGBA(8,8,8,8) _
 
-    def argbToRGBA(argb: Int): RGBA = {
-      RGBA(
-         argb & 0xFF000000        | // alpha
-        (argb & 0x00FF0000) >> 16 | // red
-         argb & 0x0000FF00        | // green
-        (argb & 0x000000FF) << 16   // blue
-      )
-    }
-
-    def rgbaToARGB(c: RGBA): Int = argbToRGBA(c.i).i
+    val rgbaToShort1555 = fromRGBA(1,5,5,5) _ andThen (_.toShort)
+    val rgbaToShort0565 = fromRGBA(0,5,6,5) _ andThen (_.toShort)
+    val rgbaToShort4444 = fromRGBA(4,4,4,4) _ andThen (_.toShort)
+    val rgbaToARGB = fromRGBA(8,8,8,8) _
 
     def rgbaFromChannels(r: Int, g: Int, b: Int, a: Int): RGBA = {
       RGBA(
