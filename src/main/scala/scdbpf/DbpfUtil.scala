@@ -79,29 +79,6 @@ object DbpfUtil {
     UInt((i << 24) | (i << 8) & 0x00FF0000 | (i >>> 8) & 0x0000FF00 | (i >>> 24))
   }
 
-  private def hasDbpfExtension(file: JFile): Boolean = {
-    val idx = file.getName.lastIndexOf('.')
-    if (idx == -1) {
-      false
-    } else {
-      val ext = file.getName.substring(idx + 1).toLowerCase
-      ext == "dat" || ext == "sc4model" || ext == "sc4lot" || ext == "sc4desc"
-    }
-  }
-
-  private val dbpfFileFilter = new java.io.FileFilter {
-    def accept(f: JFile) = f.isDirectory || hasDbpfExtension(f)
-  }
-
-  private[scdbpf] def iterateTree(file: JFile): Iterable[JFile] = {
-    if (file.isDirectory) {
-      val children: Iterable[JFile] = file.listFiles(dbpfFileFilter)
-      children.flatMap(iterateTree(_))
-    } else {
-      Iterable(file)
-    }
-  }
-
   type RotFlip = RotFlip.Val
   object RotFlip extends Enumeration {
 
