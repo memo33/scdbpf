@@ -143,21 +143,21 @@ object Fsh {
 
       private[Fsh] def encode(buf: ByteBuffer, img: Image[RGBA]): Unit = this match {
         case A8R8G8B8 =>
-          for (x <- 0 until img.width; y <- 0 until img.height)
+          for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putInt(conversions.rgbaToARGB(img(x, y)))
         case A0R8G8B8 =>
-          for (x <- 0 until img.width; y <- 0 until img.height) {
+          for (y <- 0 until img.height; x <- 0 until img.width) {
             val rgb = img(x, y)
             buf.put(rgb.blue); buf.put(rgb.green); buf.put(rgb.red)
           }
         case A1R5G5B5 =>
-          for (x <- 0 until img.width; y <- 0 until img.height)
+          for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort1555(img(x, y)))
         case A0R5G6B5 =>
-          for (x <- 0 until img.width; y <- 0 until img.height)
+          for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort0565(img(x, y)))
         case A4R4G4B4 =>
-          for (x <- 0 until img.width; y <- 0 until img.height)
+          for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort4444(img(x, y)))
         case Dxt1 =>
           import gr.zdimensions.jsquish.Squish
