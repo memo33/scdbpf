@@ -19,21 +19,27 @@ has been rewritten entirely.
  Installation
 --------------
 
-A binary version has not yet been released. Clone the repository and use
-`sbt package` to create a jar file.
+For automatic dependency management, add the following to your sbt build file:
+
+    resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/repo/releases/"
+
+    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.4"
+
+(Replace version number by latest release tag.)
 
 
  Documentation
 ---------------
 
 The ScalaDocs can be found
-[here](http://memo33.github.io/scdbpfdoc/api/index.html#scdbpf.package)
+[here](http://memo33.github.io/scdbpfdoc/api/index.html#scdbpf.package),
+can be downloaded from the above repository
 or can be generated via `sbt doc`. The main page also contains
 some examples to get started. For example, the simple task of sorting the
 entries of a DBPF file by TGI would be achieved via `sbt console` like
 this:
 
-    val dbpf = DbpfFile.read(File.parse("foobar.dat"))
+    val dbpf = DbpfFile.read(new File("foobar.dat"))
     dbpf.write(dbpf.entries.sortBy(_.tgi))
 
 
@@ -50,5 +56,4 @@ The source files can be found at
  License
 ---------
 
-This program is released under the MIT license (see included license file).
-
+This library is released under the MIT license (see included license file).

@@ -1,8 +1,10 @@
 name := "scdbpf"
 
-version := "0.1.3"
+organization := "com.github.memo33"
 
-scalaVersion := "2.11.0"
+version := "0.1.4"
+
+scalaVersion := "2.11.2"
 
 scalacOptions ++= Seq(
   "-unchecked",
@@ -22,22 +24,27 @@ import DbpfUtil._
 import java.io.File
 """
 
+autoAPIMappings := true
+
+
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.6"
 
-libraryDependencies += "jsquish" % "jsquish" % "0.1" from "https://dl.dropboxusercontent.com/s/7ijtzyjb353fyas/jsquish.jar"
-
 libraryDependencies += "com.propensive" %% "rapture-io" % "0.9.1"
 
 libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
 
-libraryDependencies += "passera.unsigned" %% "scala-unsigned" % "0.1.1" from "https://dl.dropboxusercontent.com/s/yojvk2bb7o1c627/scala-unsigned_2.11-0.1.1.jar"
 
 resolvers += "stephenjudkins-bintray" at "http://dl.bintray.com/stephenjudkins/maven"
 
 libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1"
 
-autoAPIMappings := true
+
+resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/repo/releases/"
+
+libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.2"
+
+libraryDependencies += "com.github.memo33" % "jsquish" % "0.1"
