@@ -51,13 +51,13 @@ private class PropertyParser extends Parser {
   def StringValue: Rule1[Seq[String]] = rule { Text ~~> (Seq(_)) }
 
   // couldn't figure out how to factor out common components
-  def UInt32Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(UInt32Rule , separator = ",") ~ "}" ~~> buildProp[UInt]    _ }
-  def UInt16Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(UInt16Rule , separator = ",") ~ "}" ~~> buildProp[UShort]  _ }
-  def UInt8Vals  : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(UInt8Rule  , separator = ",") ~ "}" ~~> buildProp[UByte]   _ }
-  def SInt32Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(SInt32Rule , separator = ",") ~ "}" ~~> buildProp[Int]     _ }
-  def SInt64Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(SInt64Rule , separator = ",") ~ "}" ~~> buildProp[Long]    _ }
-  def BoolVals   : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(BoolRule   , separator = ",") ~ "}" ~~> buildProp[Boolean] _ }
-  def Float32Vals: ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(Float32Rule, separator = ",") ~ "}" ~~> buildProp[Float]   _ }
+  def UInt32Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ UInt32Rule , separator = ","~Blanks) ~ "}" ~~> buildProp[UInt]    _ }
+  def UInt16Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ UInt16Rule , separator = ","~Blanks) ~ "}" ~~> buildProp[UShort]  _ }
+  def UInt8Vals  : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ UInt8Rule  , separator = ","~Blanks) ~ "}" ~~> buildProp[UByte]   _ }
+  def SInt32Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ SInt32Rule , separator = ","~Blanks) ~ "}" ~~> buildProp[Int]     _ }
+  def SInt64Vals : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ SInt64Rule , separator = ","~Blanks) ~ "}" ~~> buildProp[Long]    _ }
+  def BoolVals   : ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ BoolRule   , separator = ","~Blanks) ~ "}" ~~> buildProp[Boolean] _ }
+  def Float32Vals: ReductionRule2[Int, String, (UInt, PropList)] = rule { Number ~ ":" ~ "{" ~ zeroOrMore(optional(NameKey) ~ Float32Rule, separator = ","~Blanks) ~ "}" ~~> buildProp[Float]   _ }
 
   def BoolRule = rule { rule { HexNumber | Number | False | True } ~~> (l => if (l == 0) false else true) }
   def UInt8Rule = rule { SInt64Rule ~~> (l => UByte(l.toByte)) }
@@ -69,6 +69,8 @@ private class PropertyParser extends Parser {
     optional("-") ~ zeroOrMore(Digit) ~ optional("." ~ zeroOrMore(Digit))
   } ~> (_.toDouble.toFloat) }
 
+  def Blanks = rule(SuppressNode) { zeroOrMore(" ") }
+  def NameKey = rule(SuppressNode) { zeroOrMore(!anyOf(",:}\"") ~ ANY) ~ ":" ~ Blanks }
 
   def Parent = rule { ignoreCase("ParentCohort=Key:") ~ "{" ~ zeroOrMore(SInt32Rule , separator = ",") ~ "}" ~~> {
     s: Seq[Int] => s match {
