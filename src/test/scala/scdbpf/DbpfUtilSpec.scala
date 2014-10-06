@@ -65,4 +65,17 @@ class DbpfUtilSpec extends WordSpec with Matchers {
     }
   }
 
+  "Dihedral" should {
+    "allow extensions" in {
+      case class DihOrientation(val x: Int, val y: Int) { override def toString = s"($x,$y)" }
+      implicit object DihOrientationIsDihedral extends Dihedral[DihOrientation, Int] {
+        def x(a: DihOrientation): Int = a.x
+        def y(a: DihOrientation): Int = a.y
+        def build(from: DihOrientation, x: Int, y: Int) = new DihOrientation(x, y)
+      }
+      val orient = DihOrientation(1, -1)
+      orient *: R1F0 should be (DihOrientation(-1, -1))
+    }
+  }
+
 }
