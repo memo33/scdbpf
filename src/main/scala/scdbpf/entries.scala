@@ -12,7 +12,7 @@ import java.io.{RandomAccessFile, EOFException}
   * @define EXCEPTIONHANDLER
   * An `ExceptionHandler` needs to be brought into scope via imports (either
   * `strategy.throwExceptions` or `strategy.captureExceptions` from the
-  * `rapture.io` package).
+  * `rapture.core` package).
   */
 trait DbpfEntry {
 
@@ -86,6 +86,11 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
     eh wrap conv(this)
   }
 
+  /** Maps the `content` of this buffered entry and returns a new
+    * `BufferedEntry` with the `content` replaced by the image of the map.
+    */
+  def map[B <: DbpfType](f: A => B): BufferedEntry[B] = copy(content = f(content))
+
   override def toBufferedEntry(implicit eh: ExceptionHandler): eh.![BufferedEntry[DbpfType], DbpfIoException] =
     eh wrap this
 
@@ -112,7 +117,7 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
   * @see [[BufferedEntry]]
   * @see [[StreamedEntry]]
   */
-class RawEntry(val tgi: Tgi, data: Array[Byte]) extends DbpfEntry {
+final class RawEntry(val tgi: Tgi, data: Array[Byte]) extends DbpfEntry {
 
   def input(): Input[Byte] = new ByteArrayInput(data)
 
