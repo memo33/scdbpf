@@ -25,12 +25,12 @@ private object QfsCompression {
     val HashMask = HashSize - 1
     val HashShift = (Integer.numberOfTrailingZeros(HashSize) + LookAhead - 1) / LookAhead
 
-    private var hash = 0
-    private val prev = new Array[Int](WSize)
-    private val head = Array.fill[Int](HashSize)(-1)
+    private[this] var hash = 0
+    private[this] val prev = new Array[Int](WSize)
+    private[this] val head = Array.fill[Int](HashSize)(-1)
 
     @inline def previous(pos: Int) = prev(pos & WMask)
-    @inline def update(c: Int): Unit = hash = ((hash << HashShift) ^ c) & HashMask
+    @inline def update(c: Byte): Unit = hash = ((hash << HashShift) ^ (c & 0xFF)) & HashMask
     @inline def insert(pos: Int): Unit = {
       prev(pos & WMask) = head(hash)
       head(hash) = pos
@@ -39,8 +39,8 @@ private object QfsCompression {
 
   private object DestinationIsFull extends scala.util.control.ControlThrowable
 
-  private class SlidingWindow(val arr: Array[Byte]) {
-    var pos = 0
+  private class SlidingWindow(@inline val arr: Array[Byte]) {
+    @inline var pos = 0
     @inline def apply(i: Int) = arr(pos + i)
     @inline def inc() = { pos += 1 }
     @inline def move(i: Int) = { pos += i }
