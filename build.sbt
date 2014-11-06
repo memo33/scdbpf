@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.4"
+version := "0.1.5-SNAPSHOT"
 
 scalaVersion := "2.11.2"
 
