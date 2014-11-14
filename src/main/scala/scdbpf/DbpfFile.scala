@@ -47,7 +47,7 @@ class DbpfFile private (
     * @see [[DbpfFile.write]]
     */
   def write(
-      entries: Iterable[DbpfEntry] = entries,
+      entries: TraversableOnce[DbpfEntry] = entries,
       file: JFile = file)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
           DbpfFile.write(entries, file, header.dateCreated)(eh)
@@ -205,7 +205,7 @@ object DbpfFile {
     * @throws IOException in case of other IO errors
     */
   def write(
-      entries: Iterable[DbpfEntry],
+      entries: TraversableOnce[DbpfEntry],
       file: JFile,
       dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
@@ -248,7 +248,7 @@ object DbpfFile {
     new DbpfFile(file, header, streamedEntries)
   }
 
-  private def writeImpl(entries: Iterable[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
+  private def writeImpl(entries: TraversableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
 
     def buildDir(dirData: Iterable[IndexEntry]): Input[Byte] = {
       val buf = allocLEBB(dirData.size * 16)
@@ -274,14 +274,10 @@ object DbpfFile {
       new ByteArrayInput(buf.array())
     }
 
-    val writeList = {
-      // special casing for views; we need a strict collection so as not to create new wrappers at each iteration
-      val tmp = entries.withFilter(_.tgi != Tgi.Directory).map(new WrappedDbpfInput(_))
-      if (tmp.isInstanceOf[scala.collection.IterableViewLike[_,_,_]]) {
-        tmp.iterator.toSeq
-      } else {
-        tmp
-      }
+    import scala.collection.mutable.ArrayBuffer
+    val writeList = entries match {
+      case indexed: scala.collection.IndexedSeq[_] => new ArrayBuffer[WrappedDbpfInput](indexed.size + 1)
+      case _ => new ArrayBuffer[WrappedDbpfInput]()
     }
 
     managed(new RandomAccessFile(file, "rw")) acquireAndGet { raf =>
@@ -290,7 +286,15 @@ object DbpfFile {
       managed(new ByteOutput(new FileOutputStream(raf.getFD()))) acquireAndGet { output =>
         // pump all entries to file, ignore dirs
         managed {
-          new SequenceInput(writeList.iterator)
+          new SequenceInput(new scala.collection.AbstractIterator[WrappedDbpfInput] {
+            private[this] val iter: Iterator[DbpfEntry] = entries.withFilter(_.tgi != Tgi.Directory)
+            def hasNext: Boolean = iter.hasNext
+            def next: WrappedDbpfInput = {
+              val n = new WrappedDbpfInput(iter.next)
+              writeList += n // lazily collect results in ArrayBuffer
+              n
+            }
+          })
         } acquireAndGet { input =>
           input > output
         }
@@ -311,7 +315,7 @@ object DbpfFile {
         dirIndexEntry foreach { offset += _.size }
 
         // dbpf index
-        val indexList = writeList.map(_.indexEntry) ++ dirIndexEntry
+        val indexList = writeList.map(_.indexEntry) ++= dirIndexEntry
         managed(buildIndex(indexList)) acquireAndGet (_ > output)
 
         val header = new Header(
@@ -336,17 +340,18 @@ object DbpfFile {
     * like size and decompressed size, which can be retrieved from the indexEntry
     * after the input has been fully consumed.
     */
-  private class WrappedDbpfInput(entry: DbpfEntry) extends AbstractByteInput {
+  private class WrappedDbpfInput(private[this] var entry: DbpfEntry) extends AbstractByteInput {
+    private val tgi = entry.tgi
     private var input: Input[Byte] = null
     private val headerBuf = ByteBuffer.allocate(9)
     private var pos = 0
     private var endReached = false
     var offset: Option[UInt] = None
 
-    def initialize(): this.type = { input = entry.input(); this }
+    def initialize(): this.type = { input = entry.input(); entry = null; this } // get rid of reference for GC
     def close(): Unit = if (input != null) {
       input.close()
-      input = null // get rid of the reference for the GC
+      input = null // get rid of reference for GC
     }
     def ready(): Boolean = input.ready()
 
@@ -356,21 +361,21 @@ object DbpfFile {
       else endReached = true
 
       if (headerBuf.remaining() > 0 && count > 0) {
-//        println("started reading " + entry.tgi)
+//        println("started reading " + tgi)
         headerBuf.put(array, offset, headerBuf.remaining() min count)
       }
       count
     }
 
     lazy val indexEntry = {
-      assert(offset.isDefined && endReached, s"offset $offset endReached $endReached tgi ${entry.tgi}")
+      assert(offset.isDefined && endReached, s"offset $offset endReached $endReached tgi $tgi")
       val decompSize =
         if (headerBuf.remaining() == 0) {
           DbpfPackager.decompressedSize(headerBuf.array())
         } else {
           None // entry is too short for being compressed
         }
-      new IndexEntry(entry.tgi, offset.get, UInt(pos), decompSize)
+      new IndexEntry(tgi, offset.get, UInt(pos), decompSize)
     }
   }
 
