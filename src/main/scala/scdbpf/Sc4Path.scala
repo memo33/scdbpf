@@ -14,7 +14,64 @@ trait Sc4Path extends DbpfType {
     paths: Seq[Path] = paths,
     stopPaths: Seq[StopPath] = stopPaths): Sc4Path = Sc4Path(terrainVariance, paths, stopPaths)
 
+  /** Rotates and flips all paths and stop paths in this `Sc4Path`. If
+    * `rf.flipped`, the paths will also be reversed (as would be expected).
+    */
   def * (rf: RotFlip): Sc4Path = copy(paths = paths map (_ * rf), stopPaths = stopPaths map (_ * rf))
+
+  /** Shifts the path vertically by translation `t`. */
+  def shiftHeight(t: Float) = copy(paths = paths map (_.shiftHeight(t)), stopPaths = stopPaths map (_.shiftHeight(t)))
+
+  /** Combines two paths files by appending `that` to `this`. The terrain
+    * variance will be set if it was set for either of the two paths.
+    * Automatically renumbers the class numbers to ensure that no class number
+    * is assigned twice.
+    */
+  def ++ (that: Sc4Path) =
+    Sc4Path(this.terrainVariance || that.terrainVariance, this.paths ++ that.paths, this.stopPaths ++ that.stopPaths).renumberClassNumbers
+
+  /** Rebuilds the class numbers of the paths and stop paths in this `Sc4Path`
+    * from scratch. This may be necessary so that no class number is assigned
+    * twice for a given class of paths, i.e. transport type, entry, exit,
+    * UK-flag and class number must all be distinct for each path (and the class
+    * number is the only variable).
+    *
+    * The new class numbers will be 0 for paths that are singular in a class,
+    * and will be numbered sequentially from 1 otherwise.
+    */
+  def renumberClassNumbers: Sc4Path = {
+    type PathProp = (TransportType, Cardinal, Cardinal, Boolean)
+    val pathToTuple = (p: Path) => (p.transportType, p.entry, p.exit, false)
+    val stopPathToTuple = (p: StopPath) => (p.transportType, p.entry, p.exit, p.uk)
+    val updatePath = (p: Path, i: Int) => p.copy(classNumber = i)
+    val updateStopPath = (p: StopPath, i: Int) => p.copy(classNumber = i)
+
+    def renumber[A <: PathLike](paths: Seq[A], toTuple: A => PathProp, updateClass: (A, Int) => A): Seq[A] = {
+      val lastIndex = collection.mutable.Map.empty[PathProp, Int] // stores index of a given class number
+      val ps = collection.mutable.ArrayBuffer.empty[A]
+      for ((p, i) <- paths.zipWithIndex; prop = toTuple(p)) {
+        if (!lastIndex.contains(prop)) // class does not yet exist
+          ps += updateClass(p, 0)
+        else {
+          val j = lastIndex(prop)
+          val q = ps(j)
+          if (q.classNumber == 0) { // we need to update class number of q
+            ps(j) = updateClass(q, 1)
+            ps += updateClass(p, 2)
+          } else {
+            ps += updateClass(p, q.classNumber + 1)
+          }
+        }
+        lastIndex(prop) = i
+      }
+      ps.to[Seq]
+    }
+
+    val result = copy(paths = renumber(paths, pathToTuple, updatePath),
+      stopPaths = renumber(stopPaths, stopPathToTuple, updateStopPath))
+    assert(result.paths.size == paths.size && result.stopPaths.size == stopPaths.size)
+    result
+  }
 
   override def toString: String = {
     val sb = new StringBuilder
@@ -88,6 +145,8 @@ object Sc4Path {
     def header: String
 
     def * (rf: RotFlip): Self
+    /** Shifts the path vertically by translation `t`. */
+    def shiftHeight(t: Float): Self
 
     private[Sc4Path] def classAsString = if (classNumber == 0) "" else ('a' + classNumber - 1).toChar + "_"
     private[Sc4Path] def commentLines = { // adds -- delimiters if missing
@@ -132,6 +191,8 @@ object Sc4Path {
     }
 
     def reverse: Path = copy(entry = exit, exit = entry, coords = coords.reverse)
+
+    def shiftHeight(t: Float) = copy(coords = coords map { case (x,y,z) => (x, y, z + t) })
   }
 
   case class StopPath(
@@ -158,6 +219,8 @@ object Sc4Path {
     def * (rf: RotFlip): StopPath = {
       copy(uk = uk ^ rf.flipped, entry = entry *: rf, exit = exit *: rf, coord = coord *: rf)
     }
+
+    def shiftHeight(t: Float) = copy(coord = coord.copy(_3 = coord._3 + t))
   }
 
   private class FreeSc4Path(val terrainVariance: Boolean, val paths: Seq[Path], val stopPaths: Seq[StopPath]) extends Sc4Path {

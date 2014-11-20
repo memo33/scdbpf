@@ -36,6 +36,88 @@ trait S3d extends DbpfType {
     case a: AnimSection => a.foldLeft(24)(_ + _.binarySize)
     case _ => groups.foldLeft(12)(_ + _.binarySize)
   }
+
+  private[this] def reversedIndx =
+    if (prim.exists(_.exists(_.primType != PrimType.Triangle)))
+      throw new UnsupportedOperationException("currently, normals of models consisting of polygons other than triangles cannot be flipped")
+    else
+      indx map (ig => IndxGroup(ig.grouped(3).flatMap(_.reverse).toIndexedSeq))
+
+  /** Flips the normals by reversing the order of every triangle in the
+    * PrimGroups. Currently, only supported for models consisting of triangles.
+    * @throws UnsupportedOperationException if PrimGroup has other than
+    * triangles.
+    */
+  def withNormalsFlipped: S3d = copy(indx = reversedIndx)
+
+  /** Rotates and flips the model. If it is flipped, the normals will be flipped
+    * back automatically. Currently only supported for models without RegpGroup,
+    * and flipping is only supported for models consisting of triangles.
+    * @throws UnsupportedOperationException if model has a non-empty RegpGroup
+    * or if rf.flipped and PrimGroup has other than triangles.
+    */
+  def * (rf: RotFlip): S3d = {
+    if (regp.nonEmpty) throw new UnsupportedOperationException("currently, models with a REGP group cannot be rotated")
+    else copy(vert = vert map (_ map (_ *: rf)),
+              indx = if (!rf.flipped) indx else reversedIndx)
+  }
+
+  /** Removes Mats, Indx, Prim and Vert groups that are unused, i.e. are not
+    * referenced in the Anim section. It does not perform a deep check, i.e. to
+    * the individual vertices that might be redundant.
+    */
+  def trim = {
+    def reindex(is: Iterator[Int]) = is.to[SortedSet].zipWithIndex.toMap
+    def filtered[G](gs: IndexedSeq[G], reindex: Map[Int, Int]) =
+      gs.zipWithIndex collect { case (g, i) if reindex.contains(i) => g }
+
+    val reindexVert = reindex(anim.iterator.flatMap(_.vertBlock))
+    val reindexIndx = reindex(anim.iterator.flatMap(_.indxBlock))
+    val reindexPrim = reindex(anim.iterator.flatMap(_.primBlock))
+    val reindexMats = reindex(anim.iterator.flatMap(_.matsBlock))
+
+    val animReindexed = anim.copy(groups = anim map { ag => ag.copy(
+      vertBlock = ag.vertBlock map reindexVert,
+      indxBlock = ag.indxBlock map reindexIndx,
+      primBlock = ag.primBlock map reindexPrim,
+      matsBlock = ag.matsBlock map reindexMats)
+    })
+
+    this.copy(
+      vert = filtered(vert, reindexVert),
+      indx = filtered(indx, reindexIndx),
+      prim = filtered(prim, reindexPrim),
+      mats = filtered(mats, reindexMats),
+      anim = animReindexed)
+  }
+
+  /** Combines two S3d-models by appending `that` to `this`. Anim-properties
+    * `playMode`, `numFrames`, `frameRate` and `displacement` or copied from
+    * `this`, only.
+    */
+  def ++ (that: S3d): S3d = S3d(
+    vert = this.vert ++ that.vert,
+    indx = this.indx ++ that.indx,
+    prim = this.prim ++ that.prim,
+    mats = this.mats ++ that.mats,
+    prop = this.prop ++ that.prop,
+    regp = this.regp ++ that.regp,
+    anim = this.anim.copy(groups = this.anim.groups ++ that.anim.groups.map { ag => ag.copy(
+      vertBlock = ag.vertBlock map (_ + this.vert.size),
+      indxBlock = ag.indxBlock map (_ + this.indx.size),
+      primBlock = ag.primBlock map (_ + this.prim.size),
+      matsBlock = ag.matsBlock map (_ + this.mats.size))
+    })
+  )
+
+  /** Scales the model uniformly by a factor. */
+  def scale(s: Float) =
+    copy(vert = vert map (_ map (v => Vert(v.x * s, v.y * s, v.z * s, v.u, v.v))))
+
+  /** Translates the model on the three axes. */
+  def translate(t: Translation) =
+    copy(vert = vert map (_ map (v => Vert(v.x + t.x, v.y + t.y, v.z + t.z, v.u, v.v))))
+
 }
 
 object S3d {
@@ -122,6 +204,9 @@ object S3d {
     private[scdbpf] def binarySize: Int
     private[scdbpf] def encode(buf: ByteBuffer): Unit
   }
+  private[scdbpf] abstract class AbstractCBF[-From, -Elem, +To] extends collection.generic.CanBuildFrom[From, Elem, To] {
+    def apply(from: From) = apply()
+  }
 
   case class Vert(x: Float, y: Float, z: Float, u: Float, v: Float) extends IndexedSeq[Float] {
     def length = 5
@@ -140,6 +225,9 @@ object S3d {
       }
     }
   }
+  implicit object VertGroupCBF extends AbstractCBF[Seq[Vert], Vert, VertGroup] {
+    def apply() = IndexedSeq.newBuilder[Vert].mapResult(vs => VertGroup(vs))
+  }
 
   case class IndxGroup(indxs: IndexedSeq[Int]) extends IndexedSeqProxy(indxs) with S3dGroup {
     override def stringPrefix: String = "IndxGroup"
@@ -152,6 +240,9 @@ object S3d {
         buf.putShort(i.toShort)
       }
     }
+  }
+  implicit object IndxGroupCBF extends AbstractCBF[Seq[Int], Int, IndxGroup] {
+    def apply() = IndexedSeq.newBuilder[Int].mapResult(is => IndxGroup(is))
   }
 
   case class Prim(primType: PrimType.Value, firstIndx: Int, numIndxs: Int)
@@ -168,24 +259,46 @@ object S3d {
       }
     }
   }
+  implicit object PrimGroupCBF extends AbstractCBF[Seq[Prim], Prim, PrimGroup] {
+    def apply() = IndexedSeq.newBuilder[Prim].mapResult(ps => PrimGroup(ps))
+  }
 
+  /** Settings of a material.
+    * @param flags
+    * @param alphaFunc greater
+    * @param depthFunc less equal
+    * @param sourceBlend one
+    * @param destBlend zero
+    * @param alphaThreshold 0, 0xFF or 0x7FF
+    * @param matClass 0
+    * @param reserved 0
+    * @param textureCount 1
+    * @param iid
+    * @param wrapU
+    * @param wrapV
+    * @param magFilter
+    * @param minFilter
+    * @param animRate 0 or 33
+    * @param animMode 0 or 2
+    * @param name
+    */
   case class MatsGroup(
     flags: MatsFlags.ValueSet,
-    alphaFunc: MatsFunc.Value,
-    depthFunc: MatsFunc.Value,
-    sourceBlend: MatsBlend.Value,
-    destBlend: MatsBlend.Value,
+    alphaFunc: MatsFunc.Value = MatsFunc.Greater,
+    depthFunc: MatsFunc.Value = MatsFunc.LessEqual,
+    sourceBlend: MatsBlend.Value = MatsBlend.One,
+    destBlend: MatsBlend.Value = MatsBlend.Zero,
     alphaThreshold: Short,
-    matClass: Int,
-    reserved: Byte,
-    textureCount: Byte,
+    matClass: Int = 0,
+    reserved: Byte = 0,
+    textureCount: Byte = 1,
     iid: Int,
     wrapU: WrapMode.Value,
     wrapV: WrapMode.Value,
     magFilter: MagnifFilter.Value,
     minFilter: MinifFilter.Value,
-    animRate: Short,
-    animMode: Short,
+    animRate: Short = 0,
+    animMode: Short = 0,
     name: Option[String]
   ) extends S3dGroup {
 
