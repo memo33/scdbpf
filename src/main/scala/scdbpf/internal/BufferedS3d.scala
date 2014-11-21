@@ -130,15 +130,19 @@ private object BufferedS3d {
         alphaThreshold = buf.getShort(),
         matClass = buf.getInt(),
         reserved = buf.get(),
-        textureCount = buf.get(),
-        iid = buf.getInt(),
-        wrapU = WrapMode(buf.get()),
-        wrapV = WrapMode(buf.get()),
-        magFilter = MagnifFilter(if (minor < 5) (0: Byte) else buf.get()),
-        minFilter = MinifFilter(if (minor < 5) (0: Byte) else buf.get()),
-        animRate = buf.getShort(),
-        animMode = buf.getShort(),
-        name = getString(buf, buf.get() & 0xFF)
+        materials = {
+          val textureCount = buf.get() & 0xff
+          IndexedSeq.fill(textureCount) { Material(
+            id = buf.getInt(),
+            wrapU = WrapMode(buf.get()),
+            wrapV = WrapMode(buf.get()),
+            magFilter = MagnifFilter(if (minor < 5) (0: Byte) else buf.get()),
+            minFilter = MinifFilter(if (minor < 5) (0: Byte) else buf.get()),
+            animRate = buf.getShort(),
+            animMode = buf.getShort(),
+            name = getString(buf, buf.get() & 0xFF)
+          )}
+        }
       )
     }
   }
@@ -161,8 +165,12 @@ private object BufferedS3d {
         // vert, indx, prim, mats
         Seq(buf.getShort(), buf.getShort(), buf.getShort(), buf.getShort()) map (_ & 0xFFFF)
       }
-      val trans = blockIndices.transpose
-      AnimGroup(name, groupFlags, trans(0), trans(1), trans(2), trans(3))
+      if (blockIndices.isEmpty) {
+        AnimGroup(name, groupFlags, IndexedSeq.empty, IndexedSeq.empty, IndexedSeq.empty, IndexedSeq.empty)
+      } else {
+        val trans = blockIndices.transpose
+        AnimGroup(name, groupFlags, trans(0), trans(1), trans(2), trans(3))
+      }
     }
     AnimSection(numFrames, frameRate, playMode, displacement, groups)
   }

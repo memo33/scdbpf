@@ -263,6 +263,29 @@ object S3d {
     def apply() = IndexedSeq.newBuilder[Prim].mapResult(ps => PrimGroup(ps))
   }
 
+  /** A material referencing a specific ID.
+    * @param id
+    * @param wrapU
+    * @param wrapV
+    * @param magFilter
+    * @param minFilter
+    * @param animRate 0 or 33
+    * @param animMode 0 or 2
+    * @param name
+    */
+  case class Material(
+    id: Int,
+    wrapU: WrapMode.Value,
+    wrapV: WrapMode.Value,
+    magFilter: MagnifFilter.Value,
+    minFilter: MinifFilter.Value,
+    animRate: Short = 0,
+    animMode: Short = 0,
+    name: Option[String]) {
+
+    require(name forall (_.length < 255), "max name length is 254")
+  }
+
   /** Settings of a material.
     * @param flags
     * @param alphaFunc greater
@@ -272,15 +295,7 @@ object S3d {
     * @param alphaThreshold 0, 0xFF or 0x7FF
     * @param matClass 0
     * @param reserved 0
-    * @param textureCount 1
-    * @param iid
-    * @param wrapU
-    * @param wrapV
-    * @param magFilter
-    * @param minFilter
-    * @param animRate 0 or 33
-    * @param animMode 0 or 2
-    * @param name
+    * @param materials usually has length 1 (or 0).
     */
   case class MatsGroup(
     flags: MatsFlags.ValueSet,
@@ -291,20 +306,11 @@ object S3d {
     alphaThreshold: Short,
     matClass: Int = 0,
     reserved: Byte = 0,
-    textureCount: Byte = 1,
-    iid: Int,
-    wrapU: WrapMode.Value,
-    wrapV: WrapMode.Value,
-    magFilter: MagnifFilter.Value,
-    minFilter: MinifFilter.Value,
-    animRate: Short = 0,
-    animMode: Short = 0,
-    name: Option[String]
+    materials: IndexedSeq[Material]
   ) extends S3dGroup {
 
-    require(name forall (_.length < 255), "max name length is 254")
-
-    private[scdbpf] def binarySize = 29 + stringLength(name) // assumes version >= 1.5
+    private[scdbpf] def binarySize =                         // assumes version >= 1.5
+      materials.foldLeft(16)((sum, mat) => sum + 12 + 1 + stringLength(mat.name))
     private[scdbpf] def encode(buf: ByteBuffer): Unit = {    // assumes version >= 1.5
       buf.putInt(flags.toBitMask(0).toInt)
       buf.put(alphaFunc.id.toByte)
@@ -314,15 +320,20 @@ object S3d {
       buf.putShort(alphaThreshold)
       buf.putInt(matClass)
       buf.put(reserved)
-      buf.put(textureCount)
-      buf.putInt(iid)
-      buf.put(wrapU.id.toByte)
-      buf.put(wrapV.id.toByte)
-      buf.put(magFilter.id.toByte)
-      buf.put(minFilter.id.toByte)
-      buf.putShort(animRate)
-      buf.putShort(animMode)
-      putString(buf, name)
+      buf.put(materials.size.toByte)
+      // 16 bytes before here
+      for (mat <- materials) {
+        import mat._
+        buf.putInt(id)
+        buf.put(wrapU.id.toByte)
+        buf.put(wrapV.id.toByte)
+        buf.put(magFilter.id.toByte)
+        buf.put(minFilter.id.toByte)
+        buf.putShort(animRate)
+        buf.putShort(animMode)
+        // 12 bytes before here
+        putString(buf, name) // 1 + stringLength(name) bytes
+      }
     }
   }
 
