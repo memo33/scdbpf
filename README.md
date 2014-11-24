@@ -23,7 +23,7 @@ For automatic dependency management, add the following to your sbt build file:
 
     resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/repo/releases/"
 
-    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.4"
+    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.5"
 
 (Replace version number by latest release tag.)
 
@@ -31,8 +31,8 @@ For automatic dependency management, add the following to your sbt build file:
  Documentation
 ---------------
 
-The ScalaDocs can be found
-[here](http://memo33.github.io/scdbpfdoc/api/index.html#scdbpf.package),
+The current ScalaDocs can be found
+[here](https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/docs/com/github/memo33/scdbpf/api/current/index.html#scdbpf.package),
 can be downloaded from the above repository
 or can be generated via `sbt doc`. The main page also contains
 some examples to get started. For example, the simple task of sorting the

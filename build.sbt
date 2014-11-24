@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.5-SNAPSHOT"
+version := "0.1.5"
 
 scalaVersion := "2.11.2"
 
@@ -23,6 +23,10 @@ import scdbpf._
 import DbpfUtil._
 import java.io.File
 """
+
+scalacOptions in (Compile, doc) <++= (baseDirectory).map { bd =>
+  Seq("-sourcepath", bd.getAbsolutePath, "-doc-source-url", "https://github.com/memo33/scdbpf/tree/master€{FILE_PATH}.scala")
+}
 
 autoAPIMappings := true
 
