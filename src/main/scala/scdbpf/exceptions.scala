@@ -4,7 +4,7 @@ import java.io.IOException
 
 object DbpfExceptions {
 
-  sealed trait DbpfException
+  sealed trait DbpfException extends Exception
 
   class DbpfIoException(msg: String = "") extends IOException(msg) with DbpfException
 

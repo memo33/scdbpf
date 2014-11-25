@@ -57,7 +57,8 @@ trait S3d extends DbpfType {
     * or if rf.flipped and PrimGroup has other than triangles.
     */
   def * (rf: RotFlip): S3d = {
-    if (regp.nonEmpty) throw new UnsupportedOperationException("currently, models with a REGP group cannot be rotated")
+    if (rf == RotFlip.R0F0) this
+    else if (regp.nonEmpty) throw new UnsupportedOperationException("currently, models with a REGP group cannot be rotated")
     else copy(vert = vert map (_ map (_ *: rf)),
               indx = if (!rf.flipped) indx else reversedIndx)
   }
@@ -92,7 +93,7 @@ trait S3d extends DbpfType {
   }
 
   /** Combines two S3d-models by appending `that` to `this`. Anim-properties
-    * `playMode`, `numFrames`, `frameRate` and `displacement` or copied from
+    * `playMode`, `numFrames`, `frameRate` and `displacement` are copied from
     * `this`, only.
     */
   def ++ (that: S3d): S3d = S3d(

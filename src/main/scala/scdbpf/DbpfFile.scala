@@ -295,7 +295,7 @@ object DbpfFile {
               n
             }
           })
-        } acquireAndGet { input =>
+        } acquireFor { input =>
           input > output
         }
 

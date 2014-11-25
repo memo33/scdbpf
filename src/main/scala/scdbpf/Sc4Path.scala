@@ -17,7 +17,9 @@ trait Sc4Path extends DbpfType {
   /** Rotates and flips all paths and stop paths in this `Sc4Path`. If
     * `rf.flipped`, the paths will also be reversed (as would be expected).
     */
-  def * (rf: RotFlip): Sc4Path = copy(paths = paths map (_ * rf), stopPaths = stopPaths map (_ * rf))
+  def * (rf: RotFlip): Sc4Path =
+    if (rf == RotFlip.R0F0) this
+    else copy(paths = paths map (_ * rf), stopPaths = stopPaths map (_ * rf))
 
   /** Shifts the path vertically by translation `t`. */
   def shiftHeight(t: Float) = copy(paths = paths map (_.shiftHeight(t)), stopPaths = stopPaths map (_.shiftHeight(t)))
