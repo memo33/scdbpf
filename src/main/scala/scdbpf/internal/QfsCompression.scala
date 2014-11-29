@@ -17,7 +17,7 @@ private object QfsCompression {
   val MaxMatch = 1028
   val MaxIter = 0x80
 
-  private class Hash(sizeHint: Int) {
+  private final class Hash(sizeHint: Int) {
 
     val WSize = 0x20000 min Integer.highestOneBit(sizeHint)
     val WMask = WSize - 1
@@ -39,7 +39,7 @@ private object QfsCompression {
 
   private object DestinationIsFull extends scala.util.control.ControlThrowable
 
-  private class SlidingWindow(@inline val arr: Array[Byte]) {
+  private final class SlidingWindow(@inline val arr: Array[Byte]) {
     @inline var pos = 0
     @inline def apply(i: Int) = arr(pos + i)
     @inline def inc() = { pos += 1 }
