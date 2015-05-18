@@ -15,10 +15,10 @@ private object DxtDecoding {
   }
 
   @inline private def interpolate(a: Double, col0: RGBA, b: Double, col1: RGBA): RGBA = rgbaFromChannels(
-    (a * (col0.red   & 0xFF) + b * (col1.red   & 0xFF)).toInt,
-    (a * (col0.green & 0xFF) + b * (col1.green & 0xFF)).toInt,
-    (a * (col0.blue  & 0xFF) + b * (col1.blue  & 0xFF)).toInt,
-    (a * (col0.alpha & 0xFF) + b * (col1.alpha & 0xFF)).toInt
+    Math.round(a * (col0.red   & 0xFF) + b * (col1.red   & 0xFF)).toInt,
+    Math.round(a * (col0.green & 0xFF) + b * (col1.green & 0xFF)).toInt,
+    Math.round(a * (col0.blue  & 0xFF) + b * (col1.blue  & 0xFF)).toInt,
+    Math.round(a * (col0.alpha & 0xFF) + b * (col1.alpha & 0xFF)).toInt
   )
 
   private def readDxtBlock(buf: ByteBuffer, img: DxtImage, xPos: Int, yPos: Int, dxt3: Boolean): Unit = {

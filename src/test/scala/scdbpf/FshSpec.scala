@@ -23,5 +23,12 @@ class FshSpec extends WordSpec with Matchers with PrivateMethodTester {
       short0565toRGBA(31) should be (rgbaFromChannels(0,0,255,255))
       rgbaToShort0565(rgbaFromChannels(0,0,255,0)) should be (31.toShort)
     }
+    "interpolate symmetrically" in {
+      import conversions._
+      for (e <- 4 to 7) {
+        val vs = (0 until 1 << e).map(conversions invokePrivate interpolate(1 << e, 256, _))
+        vs shouldBe vs.reverse.map(v => 255 - v)
+      }
+    }
   }
 }

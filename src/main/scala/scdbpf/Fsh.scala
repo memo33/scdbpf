@@ -207,13 +207,17 @@ object Fsh {
 
   private[scdbpf] object conversions {
 
+    // sup and newSup need to be powers of 2
     private def interpolate(sup: Int, newSup: Int, v: Int): Int = {
       if (newSup <= sup)
         v * newSup / sup
       else if (sup == 1) // e.g. we want opacity, not transparency, if no alpha channel
         newSup - 1
-      else
-        v * (newSup - 1) / (sup - 1)
+      else {
+        //v * (newSup - 1) / (sup - 1)
+        val v2 = v * (newSup / sup)
+        v2 + v2 / sup
+      }
     }
 
     private def toRGBA(a: Int, r: Int, g: Int, b: Int)(i: Int): RGBA = RGBA(
