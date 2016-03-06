@@ -207,31 +207,30 @@ object Fsh {
 
   private[scdbpf] object conversions {
 
-    // sup and newSup need to be powers of 2
+    // sup and newSup are number of bits, essentially
     private def interpolate(sup: Int, newSup: Int, v: Int): Int = {
       if (newSup <= sup)
-        v * newSup / sup
-      else if (sup == 1) // e.g. we want opacity, not transparency, if no alpha channel
-        newSup - 1
+        v >>> (sup - newSup)
+      else if (sup == 0) // e.g. we want opacity, not transparency, if no alpha channel
+        (1 << newSup) - 1
       else {
-        //v * (newSup - 1) / (sup - 1)
-        val v2 = v * (newSup / sup)
-        v2 + v2 / sup
+        val v2 = v << (newSup - sup)
+        v2 + (v2 >>> sup)
       }
     }
 
     private def toRGBA(a: Int, r: Int, g: Int, b: Int)(i: Int): RGBA = RGBA(
-      interpolate(1 << a, 1 << 8, i >>> (r+g+b) & (1 << a)-1) << 24 | // alpha
-      interpolate(1 << b, 1 << 8, i             & (1 << b)-1) << 16 | // blue
-      interpolate(1 << g, 1 << 8, i >>> (    b) & (1 << g)-1) <<  8 | // green
-      interpolate(1 << r, 1 << 8, i >>> (  g+b) & (1 << r)-1)         // red
+      interpolate(a, 8, i >>> (r+g+b) & (1 << a)-1) << 24 | // alpha
+      interpolate(b, 8, i             & (1 << b)-1) << 16 | // blue
+      interpolate(g, 8, i >>> (    b) & (1 << g)-1) <<  8 | // green
+      interpolate(r, 8, i >>> (  g+b) & (1 << r)-1)         // red
     )
 
     private def fromRGBA(a: Int, r: Int, g: Int, b: Int)(p: RGBA): Int = {
-      interpolate(1 << 8, 1 << a, p.alpha & 0xFF) << (r+g+b) | // alpha
-      interpolate(1 << 8, 1 << r, p.red   & 0xFF) <<   (g+b) | // red
-      interpolate(1 << 8, 1 << g, p.green & 0xFF) <<      b  | // green
-      interpolate(1 << 8, 1 << b, p.blue  & 0xFF)              // blue
+      interpolate(8, a, p.alpha & 0xFF) << (r+g+b) | // alpha
+      interpolate(8, r, p.red   & 0xFF) <<   (g+b) | // red
+      interpolate(8, g, p.green & 0xFF) <<      b  | // green
+      interpolate(8, b, p.blue  & 0xFF)              // blue
     }
 
     val short1555toRGBA = { s: Short => s & 0xffff } andThen toRGBA(1,5,5,5) _
