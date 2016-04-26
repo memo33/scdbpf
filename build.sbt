@@ -2,9 +2,9 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.6-SNAPSHOT"
+version := "0.1.6"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq(
   "-unchecked",
@@ -51,4 +51,4 @@ resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34
 
 libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.2"
 
-libraryDependencies += "com.github.memo33" % "jsquish" % "0.1"
+libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.0"

@@ -160,14 +160,12 @@ object Fsh {
           for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort4444(img(x, y)))
         case Dxt1 =>
-          import gr.zdimensions.jsquish.Squish
-          // Attention! JSquish is not thread-safe!
-          val arr = classOf[Squish] synchronized Squish.compressImage(imageToByteArray(img), img.width, img.height, null, Squish.CompressionType.DXT1, Squish.CompressionMethod.CLUSTER_FIT)
+          import com.github.memo33.jsquish.Squish._
+          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT1, CompressionMethod.CLUSTER_FIT)
           buf.put(arr)
         case Dxt3 =>
-          import gr.zdimensions.jsquish.Squish
-          // Attention! JSquish is not thread-safe!
-          val arr = classOf[Squish] synchronized Squish.compressImage(imageToByteArray(img), img.width, img.height, null, Squish.CompressionType.DXT3, Squish.CompressionMethod.CLUSTER_FIT)
+          import com.github.memo33.jsquish.Squish._
+          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT3, CompressionMethod.CLUSTER_FIT)
           buf.put(arr)
       }
 
