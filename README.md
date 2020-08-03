@@ -1,6 +1,7 @@
-
  scdbpf
 ========
+
+[ ![Download](https://api.bintray.com/packages/memo33/maven/scdbpf/images/download.svg) ](https://bintray.com/memo33/maven/scdbpf/_latestVersion)
 
 This is a DBPF library written in Scala, which runs on the JVM. Its most
 important features are immutability, which makes the library thread-safe,
@@ -21,9 +22,9 @@ has been rewritten entirely.
 
 For automatic dependency management, add the following to your sbt build file:
 
-    resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/repo/releases/"
+    resolvers += "memo33-bintray" at "https://dl.bintray.com/memo33/maven"
 
-    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.5"
+    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.7"
 
 (Replace version number by latest release tag.)
 

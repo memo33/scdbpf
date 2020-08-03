@@ -2,7 +2,9 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.6"
+version := "0.1.7"
+
+licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
 scalaVersion := "2.11.8"
 
@@ -42,13 +44,13 @@ libraryDependencies += "com.propensive" %% "rapture-io" % "0.9.1"
 libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
 
 
-resolvers += "stephenjudkins-bintray" at "http://dl.bintray.com/stephenjudkins/maven"
+resolvers += "stephenjudkins-bintray" at "https://dl.bintray.com/stephenjudkins/maven"
 
 libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1"
 
 
-resolvers += "memo33-gdrive-repo" at "https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/repo/releases/"
+resolvers += "memo33-bintray" at "https://dl.bintray.com/memo33/maven"
 
-libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.2"
+libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3"
 
-libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.0"
+libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1"
