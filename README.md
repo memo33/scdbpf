@@ -34,8 +34,7 @@ For automatic dependency management, add the following to your sbt build file:
 ---------------
 
 The current ScalaDocs can be found
-[here](https://googledrive.com/host/0B9r6o2oTyY34ZVc4SFBWMV9yb0E/docs/com/github/memo33/scdbpf/api/current/index.html#scdbpf.package),
-can be downloaded from the above repository
+[here](https://memo33.github.io/scdbpf/#scdbpf.package)
 or can be generated via `sbt doc`. The main page also contains
 some examples to get started. For example, the simple task of sorting the
 entries of a DBPF file by TGI would be achieved via `sbt console` like
