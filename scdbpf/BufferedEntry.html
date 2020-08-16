@@ -1,0 +1,625 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>BufferedEntry - scdbpf.BufferedEntry</title>
+          <meta name="description" content="BufferedEntry - scdbpf.BufferedEntry" />
+          <meta name="keywords" content="BufferedEntry scdbpf.BufferedEntry" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../index.html';
+            var hash = 'scdbpf.BufferedEntry';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img alt="Class" src="../lib/class_big.png" />
+        <p id="owner"><a href="package.html" class="extype" name="scdbpf">scdbpf</a></p>
+        <h1>BufferedEntry</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="scdbpf">package scdbpf</a>
+          </div></span></h3><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">BufferedEntry</span><span class="tparams">[<span name="A">+A &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="params">(<span name="tgi">tgi: <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a></span>, <span name="content">content: <span class="extype" name="scdbpf.BufferedEntry.A">A</span></span>, <span name="compressed">compressed: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>)</span><span class="result"> extends <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a> with <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Product" class="extype" target="_top">Product</a> with <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Serializable" class="extype" target="_top">Serializable</a></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A buffered entry whose data is held in memory in <i>uncompressed</i> form.
+The actual data will be held by the <code>content</code> type. As such, this entry
+will be immutable, if its <code>content</code> is immutable.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>the type of the content</p></dd><dt class="param">tgi</dt><dd class="cmt"><p>the TGI of this entry</p></dd><dt class="param">content</dt><dd class="cmt"><p>the actual content of this entry</p></dd><dt class="param">compressed</dt><dd class="cmt"><p><code>true</code>, if the <a href="#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.BufferedEntry#input">input</a> <i>should try</i> to return the data
+in compressed form. If compression fails (if the compressed data would be
+larger than the compressed one, for instance), the data may be uncompressed
+nevertheless.</p></dd></dl><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/memo33/scdbpf/tree/master/src/main/scala/scdbpf/entries.scala" target="_blank">entries.scala</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="StreamedEntry.html" class="extype" name="scdbpf.StreamedEntry">StreamedEntry</a></p></span><span class="cmt"><p><a href="RawEntry.html" class="extype" name="scdbpf.RawEntry">RawEntry</a></p></span></dd></dl><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Serializable" class="extype" target="_top">Serializable</a>, <span class="extype" name="java.io.Serializable">Serializable</span>, <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Product" class="extype" target="_top">Product</a>, <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Equals" class="extype" target="_top">Equals</a>, <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="scdbpf.BufferedEntry"><span>BufferedEntry</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scdbpf.DbpfEntry"><span>DbpfEntry</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="scdbpf.BufferedEntry#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(tgi:scdbpf.Tgi,content:A,compressed:Boolean):scdbpf.BufferedEntry[A]"></a>
+      <a id="&lt;init&gt;:BufferedEntry[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">BufferedEntry</span><span class="params">(<span name="tgi">tgi: <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a></span>, <span name="content">content: <span class="extype" name="scdbpf.BufferedEntry.A">A</span></span>, <span name="compressed">compressed: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@&lt;init&gt;(tgi:scdbpf.Tgi,content:A,compressed:Boolean):scdbpf.BufferedEntry[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">tgi</dt><dd class="cmt"><p>the TGI of this entry</p></dd><dt class="param">content</dt><dd class="cmt"><p>the actual content of this entry</p></dd><dt class="param">compressed</dt><dd class="cmt"><p><code>true</code>, if the <a href="#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.BufferedEntry#input">input</a> <i>should try</i> to return the data
+in compressed form. If compression fails (if the compressed data would be
+larger than the compressed one, for instance), the data may be uncompressed
+nevertheless.</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Int" class="extype" target="_top">Int</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#compressed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="compressed:Boolean"></a>
+      <a id="compressed:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">compressed</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@compressed:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><code>true</code>, if the <a href="#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.BufferedEntry#input">input</a> <i>should try</i> to return the data
+in compressed form.</p><div class="fullcomment"><div class="comment cmt"><p><code>true</code>, if the <a href="#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.BufferedEntry#input">input</a> <i>should try</i> to return the data
+in compressed form. If compression fails (if the compressed data would be
+larger than the compressed one, for instance), the data may be uncompressed
+nevertheless.</p></div></div>
+    </li><li name="scdbpf.BufferedEntry#content" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="content:A"></a>
+      <a id="content:A"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">content</span><span class="result">: <span class="extype" name="scdbpf.BufferedEntry.A">A</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@content:A" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">the actual content of this entry</p>
+    </li><li name="scdbpf.BufferedEntry#convert" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="convert[B&lt;:scdbpf.DbpfType](impliciteh:scdbpf.ExceptionHandler,implicitconv:scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[A],scdbpf.BufferedEntry[B]]):eh.![scdbpf.BufferedEntry[B],scdbpf.DbpfDecodeFailedException]"></a>
+      <a id="convert[B&lt;:DbpfType](ExceptionHandler,Converter[BufferedEntry[A],BufferedEntry[B]]):![BufferedEntry[B],DbpfDecodeFailedException]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">convert</span><span class="tparams">[<span name="B">B &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="eh">eh: <span class="extype" name="scdbpf.ExceptionHandler">ExceptionHandler</span></span>, <span name="conv">conv: <a href="DbpfUtil$$Converter.html" class="extype" name="scdbpf.DbpfUtil.Converter">Converter</a>[<a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.BufferedEntry.A">A</span>], <a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.BufferedEntry.convert.B">B</span>]]</span>)</span><span class="result">: <span class="extype" name="rapture.core.ExceptionHandler.!">!</span>[<a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.BufferedEntry.convert.B">B</span>], <a href="package.html#DbpfDecodeFailedException=scdbpf.DbpfExceptions.DbpfDecodeFailedException" class="extmbr" name="scdbpf.DbpfDecodeFailedException">DbpfDecodeFailedException</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@convert[B&lt;:scdbpf.DbpfType](impliciteh:scdbpf.ExceptionHandler,implicitconv:scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[A],scdbpf.BufferedEntry[B]]):eh.![scdbpf.BufferedEntry[B],scdbpf.DbpfDecodeFailedException]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates a new <code>BufferedEntry</code>, with this entry's <code>content</code> converted to <code>B</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new <code>BufferedEntry</code>, with this entry's <code>content</code> converted to <code>B</code>.
+Usually this delegates to the <code>convert</code> method of <code>content</code>, but in some
+cases this is not possible, like for <a href="Exemplar.html" class="extype" name="scdbpf.Exemplar">Exemplar</a>, which requires the
+<code>tgi</code> for conversion.
+</p></div></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#input" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="input():rapture.io.Input[Byte]"></a>
+      <a id="input():Input[Byte]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">input</span><span class="params">()</span><span class="result">: <span class="extype" name="rapture.io.Input">Input</span>[<a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Byte" class="extype" target="_top">Byte</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@input():rapture.io.Input[Byte]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"> the byte input that provides the raw byte data that gets written to DBPF
+files</p><div class="fullcomment"><div class="comment cmt"><p> the byte input that provides the raw byte data that gets written to DBPF
+files</p><p>It is tried to respect the <code>compressed</code> flag, as long as this reduces the
+data size.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a> → <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#map" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="map[B&lt;:scdbpf.DbpfType](f:A=&gt;B):scdbpf.BufferedEntry[B]"></a>
+      <a id="map[B&lt;:DbpfType]((A)⇒B):BufferedEntry[B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">map</span><span class="tparams">[<span name="B">B &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scdbpf.BufferedEntry.A">A</span>) ⇒ <span class="extype" name="scdbpf.BufferedEntry.map.B">B</span></span>)</span><span class="result">: <a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.BufferedEntry.map.B">B</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@map[B&lt;:scdbpf.DbpfType](f:A=&gt;B):scdbpf.BufferedEntry[B]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Maps the <code>content</code> of this buffered entry and returns a new
+<code>BufferedEntry</code> with the <code>content</code> replaced by the image of the map.</p>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#tgi" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tgi:scdbpf.Tgi"></a>
+      <a id="tgi:Tgi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tgi</span><span class="result">: <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@tgi:scdbpf.Tgi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">the TGI of this entry</p><div class="fullcomment"><div class="comment cmt"><p>the TGI of this entry</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a> → <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#toBufferedEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toBufferedEntry(impliciteh:scdbpf.ExceptionHandler):eh.![scdbpf.BufferedEntry[scdbpf.DbpfType],scdbpf.DbpfIoException]"></a>
+      <a id="toBufferedEntry(ExceptionHandler):![BufferedEntry[DbpfType],DbpfIoException]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toBufferedEntry</span><span class="params">(<span class="implicit">implicit </span><span name="eh">eh: <span class="extype" name="scdbpf.ExceptionHandler">ExceptionHandler</span></span>)</span><span class="result">: <span class="extype" name="rapture.core.ExceptionHandler.!">!</span>[<a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a>], <a href="package.html#DbpfIoException=scdbpf.DbpfExceptions.DbpfIoException" class="extmbr" name="scdbpf.DbpfIoException">DbpfIoException</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@toBufferedEntry(impliciteh:scdbpf.ExceptionHandler):eh.![scdbpf.BufferedEntry[scdbpf.DbpfType],scdbpf.DbpfIoException]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Converts this entry to a <code>BufferedEntry</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Converts this entry to a <code>BufferedEntry</code>.</p><p>An <code>ExceptionHandler</code> needs to be brought into scope via imports (either
+<code>strategy.throwExceptions</code> or <code>strategy.captureExceptions</code> from the
+<code>rapture.core</code> package).
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a> → <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></dd></dl></div>
+    </li><li name="scdbpf.BufferedEntry#toRawEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toRawEntry(impliciteh:scdbpf.ExceptionHandler):eh.![scdbpf.RawEntry,scdbpf.DbpfIoException]"></a>
+      <a id="toRawEntry(ExceptionHandler):![RawEntry,DbpfIoException]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toRawEntry</span><span class="params">(<span class="implicit">implicit </span><span name="eh">eh: <span class="extype" name="scdbpf.ExceptionHandler">ExceptionHandler</span></span>)</span><span class="result">: <span class="extype" name="rapture.core.ExceptionHandler.!">!</span>[<a href="RawEntry.html" class="extype" name="scdbpf.RawEntry">RawEntry</a>, <a href="package.html#DbpfIoException=scdbpf.DbpfExceptions.DbpfIoException" class="extmbr" name="scdbpf.DbpfIoException">DbpfIoException</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@toRawEntry(impliciteh:scdbpf.ExceptionHandler):eh.![scdbpf.RawEntry,scdbpf.DbpfIoException]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Converts this entry to a <code>RawEntry</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Converts this entry to a <code>RawEntry</code>.</p><p>An <code>ExceptionHandler</code> needs to be brought into scope via imports (either
+<code>strategy.throwExceptions</code> or <code>strategy.captureExceptions</code> from the
+<code>rapture.core</code> package).
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a> → <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Long" class="extype" target="_top">Long</a></span>, <span name="arg1">arg1: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Int" class="extype" target="_top">Int</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Long" class="extype" target="_top">Long</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.BufferedEntry@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Serializable" class="extype" target="_top">Serializable</a></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Product" class="extype" target="_top">Product</a></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Equals" class="extype" target="_top">Equals</a></h3>
+            </div><div class="parent" name="scdbpf.DbpfEntry">
+              <h3>Inherited from <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>scdbpf - scdbpf</title>
+          <meta name="description" content="scdbpf - scdbpf" />
+          <meta name="keywords" content="scdbpf scdbpf" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../index.html';
+            var hash = 'scdbpf.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../lib/package_big.png" />
+        
+        <h1>scdbpf</h1><span class="permalink">
+      <a href="../index.html#scdbpf.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">scdbpf</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Provides methods for accessing and modifying the contents of DBPF formatted
+files. Currently, only DBPF version 1.0 is supported (used by SimCity 4).</p><p>DBPF files are accessed via <a href="DbpfFile.html" class="extype" name="scdbpf.DbpfFile">DbpfFiles</a>, a container of
+<a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntries</a>. The content of a <code>DbpfEntry</code> can be accessed from
+<a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntries</a> in decoded form as <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a>, such as
+<code>Exemplar</code>, <code>Fsh</code> or <code>Sc4Path</code>.</p><p>This package object provides additional type aliases for <code>DbpfExceptions</code> as
+well as generic implicit converters of <code>DbpfTypes</code>.</p><h4> Examples </h4><p>To get started, it is easiest to start the REPL via <code>sbt console</code>, which
+loads all the dependencies and useful initial import statements. Reading a
+DBPF file, sorting its entries by TGI and writing back to the same file
+could be achieved like this:</p><pre><span class="kw">val</span> dbpf = DbpfFile.read(<span class="kw">new</span> File(<span class="lit">"foobar.dat"</span>))
+dbpf.write(dbpf.entries.sortBy(_.tgi))</pre><p>This example shifts the GIDs of all LTexts by +3:</p><pre>dbpf.write(dbpf.entries.map { e <span class="kw">=&gt;</span>
+  <span class="kw">if</span> (e.tgi matches Tgi.LText)
+    e.copy(e.tgi.copy(gid = e.tgi.gid + <span class="num">3</span>))
+  <span class="kw">else</span>
+    e
+})</pre><p>Another example: This decodes all the <code>Sc4Path</code> entries and rotates
+them by 90 degree.</p><pre><span class="kw">val</span> writeList = <span class="kw">for</span> (e <span class="kw">&lt;-</span> dbpf.entries) <span class="kw">yield</span> {
+  <span class="kw">if</span> (e.tgi matches Tgi.Sc4Path) {
+    <span class="kw">val</span> be = e.toBufferedEntry.convert[Sc4Path]
+    be.copy(content = be.content * RotFlip.R1F0)
+  } <span class="kw">else</span> {
+    e
+  }
+}
+dbpf.write(writeList)</pre><p>The following example finds the first entry that is an exemplar and
+contains a property with a specific ID. (Note the <code>view</code> to avoid
+unnecessary decoding if the exemplar is already among the first entries.)</p><pre><span class="kw">val</span> id = UInt(<span class="num">0</span>x12345678)
+dbpf.entries.view.
+  filter(_.tgi matches Tgi.Exemplar).
+  map(_.toBufferedEntry.convert[Exemplar]).
+  find(_.content.properties.contains(id))</pre></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/memo33/scdbpf/tree/master/src/main/scala/scdbpf/package.scala" target="_blank">package.scala</a></dd></dl><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="scdbpf"><span>scdbpf</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="scdbpf.BufferedEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BufferedEntry[+A&lt;:scdbpf.DbpfType]extendsDbpfEntrywithProductwithSerializable"></a>
+      <a id="BufferedEntry[+A&lt;:DbpfType]:BufferedEntry[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BufferedEntry.html"><span class="name">BufferedEntry</span></a><span class="tparams">[<span name="A">+A &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="params">(<span name="tgi">tgi: <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a></span>, <span name="content">content: <span class="extype" name="scdbpf.BufferedEntry.A">A</span></span>, <span name="compressed">compressed: <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>)</span><span class="result"> extends <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a> with <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Product" class="extype" target="_top">Product</a> with <a href="http://www.scala-lang.org/api/2.11.8/index.html#scala.Serializable" class="extype" target="_top">Serializable</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@BufferedEntry[+A&lt;:scdbpf.DbpfType]extendsDbpfEntrywithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A buffered entry whose data is held in memory in <i>uncompressed</i> form.</p><div class="fullcomment"><div class="comment cmt"><p>A buffered entry whose data is held in memory in <i>uncompressed</i> form.
+The actual data will be held by the <code>content</code> type. As such, this entry
+will be immutable, if its <code>content</code> is immutable.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>the type of the content</p></dd><dt class="param">tgi</dt><dd class="cmt"><p>the TGI of this entry</p></dd><dt class="param">content</dt><dd class="cmt"><p>the actual content of this entry</p></dd><dt class="param">compressed</dt><dd class="cmt"><p><code>true</code>, if the <a href="BufferedEntry.html#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.BufferedEntry#input">input</a> <i>should try</i> to return the data
+in compressed form. If compression fails (if the compressed data would be
+larger than the compressed one, for instance), the data may be uncompressed
+nevertheless.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StreamedEntry.html" class="extype" name="scdbpf.StreamedEntry">StreamedEntry</a></p></span><span class="cmt"><p><a href="RawEntry.html" class="extype" name="scdbpf.RawEntry">RawEntry</a></p></span></dd></dl></div>
+    </li><li name="scdbpf.DbpfDecodeFailedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfDecodeFailedException=scdbpf.DbpfExceptions.DbpfDecodeFailedException"></a>
+      <a id="DbpfDecodeFailedException:DbpfDecodeFailedException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DbpfDecodeFailedException</span><span class="result"> = <a href="DbpfExceptions$$DbpfDecodeFailedException.html" class="extype" name="scdbpf.DbpfExceptions.DbpfDecodeFailedException">scdbpf.DbpfExceptions.DbpfDecodeFailedException</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfDecodeFailedException=scdbpf.DbpfExceptions.DbpfDecodeFailedException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfEntry" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="DbpfEntryextendsAnyRef"></a>
+      <a id="DbpfEntry:DbpfEntry"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfEntry.html"><span class="name">DbpfEntry</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfEntryextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The base trait for entries of a DBPF file.</p>
+    </li><li name="scdbpf.DbpfException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfException=scdbpf.DbpfExceptions.DbpfException"></a>
+      <a id="DbpfException:DbpfException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DbpfException</span><span class="result"> = <a href="DbpfExceptions$$DbpfException.html" class="extype" name="scdbpf.DbpfExceptions.DbpfException">scdbpf.DbpfExceptions.DbpfException</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfException=scdbpf.DbpfExceptions.DbpfException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfFile" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DbpfFileextendsAnyRef"></a>
+      <a id="DbpfFile:DbpfFile"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfFile.html"><span class="name">DbpfFile</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfFileextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A container for <code>DbpfEntries</code> that are read from and written to a file.</p><div class="fullcomment"><div class="comment cmt"><p>A container for <code>DbpfEntries</code> that are read from and written to a file.
+Instances of this class may be obtained via the <a href="DbpfFile$.html#read(file:scdbpf.JFile)(impliciteh:scdbpf.ExceptionHandler):eh.![scdbpf.DbpfFile,java.io.IOException]" class="extmbr" name="scdbpf.DbpfFile#read">DbpfFile.read</a> method.
+The <code>write</code> methods may be used for writing entries back to a file.</p><p>A <code>DbpfFile</code> is immutable, but the entries of this file might not be.
+</p></div></div>
+    </li><li name="scdbpf.DbpfFileFormatException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfFileFormatException=scdbpf.DbpfExceptions.DbpfFileFormatException"></a>
+      <a id="DbpfFileFormatException:DbpfFileFormatException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DbpfFileFormatException</span><span class="result"> = <a href="DbpfExceptions$$DbpfFileFormatException.html" class="extype" name="scdbpf.DbpfExceptions.DbpfFileFormatException">scdbpf.DbpfExceptions.DbpfFileFormatException</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfFileFormatException=scdbpf.DbpfExceptions.DbpfFileFormatException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfIoException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfIoException=scdbpf.DbpfExceptions.DbpfIoException"></a>
+      <a id="DbpfIoException:DbpfIoException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DbpfIoException</span><span class="result"> = <a href="DbpfExceptions$$DbpfIoException.html" class="extype" name="scdbpf.DbpfExceptions.DbpfIoException">scdbpf.DbpfExceptions.DbpfIoException</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfIoException=scdbpf.DbpfExceptions.DbpfIoException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfStreamOutOfDateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfStreamOutOfDateException=scdbpf.DbpfExceptions.DbpfStreamOutOfDateException"></a>
+      <a id="DbpfStreamOutOfDateException:DbpfStreamOutOfDateException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DbpfStreamOutOfDateException</span><span class="result"> = <a href="DbpfExceptions$$DbpfStreamOutOfDateException.html" class="extype" name="scdbpf.DbpfExceptions.DbpfStreamOutOfDateException">scdbpf.DbpfExceptions.DbpfStreamOutOfDateException</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfStreamOutOfDateException=scdbpf.DbpfExceptions.DbpfStreamOutOfDateException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfType" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="DbpfTypeextendsAnyRef"></a>
+      <a id="DbpfType:DbpfType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfType.html"><span class="name">DbpfType</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfTypeextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The base trait for the content type of <code>DbpfEntries</code>.</p><div class="fullcomment"><div class="comment cmt"><p>The base trait for the content type of <code>DbpfEntries</code>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a></p></span></dd></dl></div>
+    </li><li name="scdbpf.Exemplar" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ExemplarextendsDbpfType"></a>
+      <a id="Exemplar:Exemplar"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Exemplar.html"><span class="name">Exemplar</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@ExemplarextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Fsh" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FshextendsDbpfType"></a>
+      <a id="Fsh:Fsh"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Fsh.html"><span class="name">Fsh</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@FshextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.LText" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="LTextextendsDbpfType"></a>
+      <a id="LText:LText"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="LText.html"><span class="name">LText</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@LTextextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.RawEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="RawEntryextendsDbpfEntry"></a>
+      <a id="RawEntry:RawEntry"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="RawEntry.html"><span class="name">RawEntry</span></a><span class="result"> extends <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@RawEntryextendsDbpfEntry" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A buffered entry whose raw byte data is held in an array, that is, the exact
+data that would be written to a file (compressed or uncompressed).</p><div class="fullcomment"><div class="comment cmt"><p>A buffered entry whose raw byte data is held in an array, that is, the exact
+data that would be written to a file (compressed or uncompressed).</p><p>This differs from a <a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a> in that the latter always holds the
+<i>uncompressed</i> data. Thus, a <code>BufferedEntry</code> is suited for access and
+modification of the content, but a <code>RawEntry</code> is usually suitable for just
+holding the data in memory, as creating the <a href="RawEntry.html#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.RawEntry#input">input</a> does not require an
+intermediate compression. If the data is not compressed, this distinction
+is not as important.</p><p>Instances of this class are immutable, if the data it was created from was.
+Note that conversion between <code>RawEntries</code> and <code>BufferedEntries</code>
+references the same backing array if possible. If created from a
+<a href="StreamedEntry.html" class="extype" name="scdbpf.StreamedEntry">StreamedEntry</a>, a new data array will be created, hence, the
+entry will be immutable.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StreamedEntry.html" class="extype" name="scdbpf.StreamedEntry">StreamedEntry</a></p></span><span class="cmt"><p><a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a></p></span></dd></dl></div>
+    </li><li name="scdbpf.RawType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="RawTypeextendsDbpfType"></a>
+      <a id="RawType:RawType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="RawType.html"><span class="name">RawType</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@RawTypeextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A raw type that does not represent any specific format.</p><div class="fullcomment"><div class="comment cmt"><p>A raw type that does not represent any specific format. Its data is backed
+by an array. As such, it is also suited as a super class of specialized
+types which are backed by an array.</p><p>Instances of this class my be obtained via the companion object.
+</p></div><dl class="attributes block"> <dt>Note</dt><dd><span class="cmt"><p>This is one of the few spots where the raw backing array gets exposed.
+If instances of this class or created from instances of this class are meant
+to be immutable, it is required to ensure that this array does not get
+modified.</p></span></dd></dl></div>
+    </li><li name="scdbpf.S3d" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="S3dextendsDbpfType"></a>
+      <a id="S3d:S3d"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="S3d.html"><span class="name">S3d</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@S3dextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Sc4Path" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="Sc4PathextendsDbpfType"></a>
+      <a id="Sc4Path:Sc4Path"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Sc4Path.html"><span class="name">Sc4Path</span></a><span class="result"> extends <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Sc4PathextendsDbpfType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.StreamedEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="StreamedEntryextendsDbpfEntry"></a>
+      <a id="StreamedEntry:StreamedEntry"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StreamedEntry.html"><span class="name">StreamedEntry</span></a><span class="result"> extends <a href="DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntry</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@StreamedEntryextendsDbpfEntry" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A lightweight entry that reads its data as stream from a file without
+holding all the data constantly in memory.</p><div class="fullcomment"><div class="comment cmt"><p>A lightweight entry that reads its data as stream from a file without
+holding all the data constantly in memory.</p><p>Usually, it is not necessary to load all the entries into memory,
+especially when processing large files, so instances of this class can be
+directly read from and written to files. Note that this is sensitive to
+changes of the source file: If the source file has been modified since this
+entry had been created, a <a href="#DbpfStreamOutOfDateException=scdbpf.DbpfExceptions.DbpfStreamOutOfDateException" class="extmbr" name="scdbpf.DbpfStreamOutOfDateException">DbpfStreamOutOfDateException</a> will be thrown
+upon calling <a href="StreamedEntry.html#input():rapture.io.Input[Byte]" class="extmbr" name="scdbpf.StreamedEntry#input">input</a> so as to preclude malformed data.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a></p></span><span class="cmt"><p><a href="RawEntry.html" class="extype" name="scdbpf.RawEntry">RawEntry</a></p></span></dd></dl></div>
+    </li><li name="scdbpf.Tgi" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="TgiextendsTgi.LabeledTgi"></a>
+      <a id="Tgi:Tgi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Tgi.html"><span class="name">Tgi</span></a><span class="result"> extends <a href="Tgi$$LabeledTgi.html" class="extype" name="scdbpf.Tgi.LabeledTgi">LabeledTgi</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@TgiextendsTgi.LabeledTgi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Represents Type, Group, Instance identifiers of <code>DbpfEntries</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Represents Type, Group, Instance identifiers of <code>DbpfEntries</code>.
+<code>Tgi</code> objects are immutable.</p><p>Instances of this class may be obtained via the companion object's <code>apply</code>
+method, for example:</p><pre><span class="kw">val</span> tgi = Tgi(<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>x12345678)</pre><p>Alternatively, the <code>copy</code> methods can be used to create modified copies.</p><pre>tgi.copy(iid = <span class="num">0</span>x87654321)
+tgi.copy(Tgi.Sc4Path)</pre><p>The <a href="Tgi.html#matches(tgi:scdbpf.Tgi.TgiLike):Boolean" class="extmbr" name="scdbpf.Tgi#matches">matches</a> method is used to test whether a <code>Tgi</code> matches another <code>Tgi</code>
+object or <code>TgiMask</code>.</p></div></div>
+    </li><li name="scdbpf.TgiMask" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="TgiMaskextendsTgi.TgiLike"></a>
+      <a id="TgiMask:TgiMask"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TgiMask.html"><span class="name">TgiMask</span></a><span class="result"> extends <a href="Tgi$$TgiLike.html" class="extype" name="scdbpf.Tgi.TgiLike">TgiLike</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@TgiMaskextendsTgi.TgiLike" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Represents masks of TGIs that are used for the <code>match</code> method of <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Represents masks of TGIs that are used for the <code>match</code> method of <a href="Tgi.html" class="extype" name="scdbpf.Tgi">Tgi</a>.</p><p>Instances of this class may be obtained via the companion object's <code>apply</code>
+methods.</p></div></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scdbpf.DbpfExceptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfExceptions"></a>
+      <a id="DbpfExceptions:DbpfExceptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfExceptions$.html"><span class="name">DbpfExceptions</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfExceptions" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfFile"></a>
+      <a id="DbpfFile:DbpfFile"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfFile$.html"><span class="name">DbpfFile</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfFile" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides factory methods for reading and writing DBPF files.</p>
+    </li><li name="scdbpf.DbpfPackager" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfPackager"></a>
+      <a id="DbpfPackager:DbpfPackager"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfPackager$.html"><span class="name">DbpfPackager</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfPackager" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides method for QFS compressing and decompressing.</p>
+    </li><li name="scdbpf.DbpfProperty" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfProperty"></a>
+      <a id="DbpfProperty:DbpfProperty"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfProperty$.html"><span class="name">DbpfProperty</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfProperty" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.DbpfUtil" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DbpfUtil"></a>
+      <a id="DbpfUtil:DbpfUtil"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DbpfUtil$.html"><span class="name">DbpfUtil</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@DbpfUtil" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Exemplar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Exemplar"></a>
+      <a id="Exemplar:Exemplar"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Exemplar$.html"><span class="name">Exemplar</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Exemplar" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Experimental" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Experimental"></a>
+      <a id="Experimental:Experimental"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Experimental$.html"><span class="name">Experimental</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Experimental" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides a few experimental functions that are useful, but which may still
+be changed in the future.</p>
+    </li><li name="scdbpf.Fsh" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Fsh"></a>
+      <a id="Fsh:Fsh"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Fsh$.html"><span class="name">Fsh</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Fsh" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.LText" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LText"></a>
+      <a id="LText:LText"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LText$.html"><span class="name">LText</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@LText" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.RawType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RawType"></a>
+      <a id="RawType:RawType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="RawType$.html"><span class="name">RawType</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@RawType" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.S3d" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="S3d"></a>
+      <a id="S3d:S3d"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="S3d$.html"><span class="name">S3d</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@S3d" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Sc4Path" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Sc4Path"></a>
+      <a id="Sc4Path:Sc4Path"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Sc4Path$.html"><span class="name">Sc4Path</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Sc4Path" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scdbpf.Tgi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Tgi"></a>
+      <a id="Tgi:Tgi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Tgi$.html"><span class="name">Tgi</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@Tgi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides various masks that <code>Tgi</code>s can be matched against.</p>
+    </li><li name="scdbpf.TgiMask" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TgiMask"></a>
+      <a id="TgiMask:TgiMask"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TgiMask$.html"><span class="name">TgiMask</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@TgiMask" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides factory methods for creating <code>TgiMask</code>s.</p>
+    </li><li name="scdbpf#genericConverter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="genericConverter[A&lt;:scdbpf.DbpfType](implicitconv:scdbpf.DbpfUtil.Converter[scdbpf.DbpfType,A]):scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[scdbpf.DbpfType],scdbpf.BufferedEntry[A]]"></a>
+      <a id="genericConverter[A&lt;:DbpfType](Converter[DbpfType,A]):Converter[BufferedEntry[DbpfType],BufferedEntry[A]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">genericConverter</span><span class="tparams">[<span name="A">A &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="params">(<span class="implicit">implicit </span><span name="conv">conv: <a href="DbpfUtil$$Converter.html" class="extype" name="scdbpf.DbpfUtil.Converter">Converter</a>[<a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a>, <span class="extype" name="scdbpf.genericConverter.A">A</span>]</span>)</span><span class="result">: <a href="DbpfUtil$$Converter.html" class="extype" name="scdbpf.DbpfUtil.Converter">Converter</a>[<a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a>], <a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.genericConverter.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@genericConverter[A&lt;:scdbpf.DbpfType](implicitconv:scdbpf.DbpfUtil.Converter[scdbpf.DbpfType,A]):scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[scdbpf.DbpfType],scdbpf.BufferedEntry[A]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">provides a converter for <code>BufferedEntries</code>, given a converter of <code>DbpfTypes</code></p>
+    </li><li name="scdbpf#noopConverter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="noopConverter[A&lt;:scdbpf.DbpfType]:scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[A],scdbpf.BufferedEntry[A]]"></a>
+      <a id="noopConverter[A&lt;:DbpfType]:Converter[BufferedEntry[A],BufferedEntry[A]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">noopConverter</span><span class="tparams">[<span name="A">A &lt;: <a href="DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a></span>]</span><span class="result">: <a href="DbpfUtil$$Converter.html" class="extype" name="scdbpf.DbpfUtil.Converter">Converter</a>[<a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.noopConverter.A">A</span>], <a href="BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntry</a>[<span class="extype" name="scdbpf.noopConverter.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#scdbpf.package@noopConverter[A&lt;:scdbpf.DbpfType]:scdbpf.DbpfUtil.Converter[scdbpf.BufferedEntry[A],scdbpf.BufferedEntry[A]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">resolves generalizing conversions from specialized types to general ones</p>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

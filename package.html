@@ -1,0 +1,148 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>root - _root_</title>
+          <meta name="description" content="root - root " />
+          <meta name="keywords" content="root root " />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="lib/template.js"></script>
+      <script type="text/javascript" src="lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = 'index.html';
+            var hash = 'package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="lib/package_big.png" />
+        
+        <h1>root package</h1><span class="permalink">
+      <a href="index.html#package" title="Permalink" target="_top">
+        <img src="lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">root</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="_root_.scdbpf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="scdbpf"></a>
+      <a id="scdbpf:scdbpf"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="scdbpf/package.html"><span class="name">scdbpf</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="index.html#package@scdbpf" title="Permalink" target="_top">
+        <img src="lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Provides methods for accessing and modifying the contents of DBPF formatted
+files.</p><div class="fullcomment"><div class="comment cmt"><p>Provides methods for accessing and modifying the contents of DBPF formatted
+files. Currently, only DBPF version 1.0 is supported (used by SimCity 4).</p><p>DBPF files are accessed via <a href="scdbpf/DbpfFile.html" class="extype" name="scdbpf.DbpfFile">DbpfFiles</a>, a container of
+<a href="scdbpf/DbpfEntry.html" class="extype" name="scdbpf.DbpfEntry">DbpfEntries</a>. The content of a <code>DbpfEntry</code> can be accessed from
+<a href="scdbpf/BufferedEntry.html" class="extype" name="scdbpf.BufferedEntry">BufferedEntries</a> in decoded form as <a href="scdbpf/DbpfType.html" class="extype" name="scdbpf.DbpfType">DbpfType</a>, such as
+<code>Exemplar</code>, <code>Fsh</code> or <code>Sc4Path</code>.</p><p>This package object provides additional type aliases for <code>DbpfExceptions</code> as
+well as generic implicit converters of <code>DbpfTypes</code>.</p><h4> Examples </h4><p>To get started, it is easiest to start the REPL via <code>sbt console</code>, which
+loads all the dependencies and useful initial import statements. Reading a
+DBPF file, sorting its entries by TGI and writing back to the same file
+could be achieved like this:</p><pre><span class="kw">val</span> dbpf = DbpfFile.read(<span class="kw">new</span> File(<span class="lit">"foobar.dat"</span>))
+dbpf.write(dbpf.entries.sortBy(_.tgi))</pre><p>This example shifts the GIDs of all LTexts by +3:</p><pre>dbpf.write(dbpf.entries.map { e <span class="kw">=&gt;</span>
+  <span class="kw">if</span> (e.tgi matches Tgi.LText)
+    e.copy(e.tgi.copy(gid = e.tgi.gid + <span class="num">3</span>))
+  <span class="kw">else</span>
+    e
+})</pre><p>Another example: This decodes all the <code>Sc4Path</code> entries and rotates
+them by 90 degree.</p><pre><span class="kw">val</span> writeList = <span class="kw">for</span> (e <span class="kw">&lt;-</span> dbpf.entries) <span class="kw">yield</span> {
+  <span class="kw">if</span> (e.tgi matches Tgi.Sc4Path) {
+    <span class="kw">val</span> be = e.toBufferedEntry.convert[Sc4Path]
+    be.copy(content = be.content * RotFlip.R1F0)
+  } <span class="kw">else</span> {
+    e
+  }
+}
+dbpf.write(writeList)</pre><p>The following example finds the first entry that is an exemplar and
+contains a property with a specific ID. (Note the <code>view</code> to avoid
+unnecessary decoding if the exemplar is already among the first entries.)</p><pre><span class="kw">val</span> id = UInt(<span class="num">0</span>x12345678)
+dbpf.entries.view.
+  filter(_.tgi matches Tgi.Exemplar).
+  map(_.toBufferedEntry.convert[Exemplar]).
+  find(_.content.properties.contains(id))</pre></div></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
