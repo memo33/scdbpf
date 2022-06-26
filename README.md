@@ -21,13 +21,12 @@ has been rewritten entirely.
  Installation
 --------------
 
-For automatic dependency management, add the following to your sbt build file:
+Add the following to your sbt build file:
 
-    resolvers += "memo33-bintray" at "https://dl.bintray.com/memo33/maven"
-
-    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.7"
+    libraryDependencies += "com.github.memo33" %% "scdbpf" % "0.1.7" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/scdbpf_2.11-0.1.7.jar"
 
 (Replace version number by latest release tag.)
+Additionally, add all the dependencies from [build.sbt](build.sbt).
 
 
  Documentation

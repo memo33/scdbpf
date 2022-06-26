@@ -1,6 +1,7 @@
 package scdbpf
 
 import scala.collection.immutable._
+import scala.collection.JavaConversions
 import Sc4Path._
 import DbpfUtil._
 
@@ -152,7 +153,7 @@ object Sc4Path {
 
     private[Sc4Path] def classAsString = if (classNumber == 0) "" else ('a' + classNumber - 1).toChar + "_"
     private[Sc4Path] def commentLines = { // adds -- delimiters if missing
-      comment.toList flatMap (_.lines) map (_.trim) map
+      comment.toList flatMap (s => JavaConversions.asScalaIterator(s.lines.iterator)) map (_.trim) map
         (c => if (c.startsWith("--")) c else "-- " + c)
     }
     private[Sc4Path] def coordString(c: Coord): String = c.productIterator.mkString(",")

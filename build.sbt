@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.7"
+version := "0.1.8"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
@@ -17,7 +17,7 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-target:jvm-1.6")
 
-initialCommands in console := """
+console / initialCommands := """
 import rapture.io._, rapture.core._
 import strategy.throwExceptions
 import passera.unsigned._
@@ -26,9 +26,9 @@ import DbpfUtil._
 import java.io.File
 """
 
-scalacOptions in (Compile, doc) <++= (baseDirectory).map { bd =>
+Compile / doc / scalacOptions ++= { ((baseDirectory).map { bd =>
   Seq("-sourcepath", bd.getAbsolutePath, "-doc-source-url", "https://github.com/memo33/scdbpf/tree/master€{FILE_PATH}.scala")
-}
+}).value }
 
 autoAPIMappings := true
 
@@ -44,13 +44,8 @@ libraryDependencies += "com.propensive" %% "rapture-io" % "0.9.1"
 libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
 
 
-resolvers += "stephenjudkins-bintray" at "https://dl.bintray.com/stephenjudkins/maven"
+libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/pureimage_2.11-0.1.1.jar"
 
-libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1"
+libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3" from "https://github.com/memo33/scala-unsigned/releases/download/v0.1.3/scala-unsigned_2.11-0.1.3.jar"
 
-
-resolvers += "memo33-bintray" at "https://dl.bintray.com/memo33/maven"
-
-libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3"
-
-libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1"
+libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1" from "https://github.com/memo33/jsquish/releases/download/v2.0.1/jsquish-2.0.1.jar"
