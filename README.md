@@ -1,9 +1,6 @@
  scdbpf
 ========
 
-[ ![Download](https://api.bintray.com/packages/memo33/maven/scdbpf/images/download.svg) ](https://bintray.com/memo33/maven/scdbpf/_latestVersion)
-[![Build Status](https://travis-ci.org/memo33/scdbpf.svg?branch=master)](https://travis-ci.org/memo33/scdbpf)
-
 This is a DBPF library written in Scala, which runs on the JVM. Its most
 important features are immutability, which makes the library thread-safe,
 as well as a simple API, which also makes it particularly suitable for
