@@ -1,7 +1,6 @@
 package scdbpf
 
-import scala.collection.immutable.Seq
-import scala.collection.JavaConversions
+import scala.collection.immutable.{Seq, StringOps}
 import org.parboiled.scala._
 import Sc4Path._
 
@@ -110,7 +109,7 @@ private class Sc4PathParser extends Parser {
   // effectively simply drops the last line of the trimmed string
   // which commonly is something like "-- Sim_1_2" and will be recreated computationally
   private def stripSectionHeader(s: String): Option[String] = {
-    val lines = JavaConversions.asScalaIterator(s.trim.lines.iterator).toSeq
+    val lines = new StringOps(s.trim).lines.toSeq
     if (lines.isEmpty)
       None
     else

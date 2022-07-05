@@ -6,7 +6,7 @@ version := "0.1.8"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.12"
 
 scalacOptions ++= Seq(
   "-unchecked",
