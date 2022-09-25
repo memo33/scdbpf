@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "com.github.memo33"
 
-version := "0.1.8"
+version := "0.1.9"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
