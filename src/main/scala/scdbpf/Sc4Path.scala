@@ -75,6 +75,16 @@ trait Sc4Path extends DbpfType {
     result
   }
 
+  def validateClassNumbers: Boolean = {
+    type PathProp = (TransportType, Int, Cardinal, Cardinal, Boolean)
+    val pathToTuple = (p: Path) => (p.transportType, p.classNumber, p.entry, p.exit, false)
+    val stopPathToTuple = (p: StopPath) => (p.transportType, p.classNumber, p.entry, p.exit, p.uk)
+    def validate[A <: PathLike](paths: Seq[A], toTuple: A => PathProp): Boolean = {
+      paths.map(toTuple).toSet.size == paths.size  // if there are no duplicates, sizes agree
+    }
+    validate(paths, pathToTuple) && validate(stopPaths, stopPathToTuple)
+  }
+
   override def toString: String = {
     val sb = new StringBuilder
     def addln(s: String): Unit = { sb ++= s + "\r\n" } // explicitly use windows line breaks to ensure compatibility across editors

@@ -17,5 +17,20 @@ class Sc4PathSpec extends WordSpec with Matchers {
       test(Seq(4,5,13,12,4,14), Seq(1,2,1,2,3,3))
       test(Seq(4,13), Seq(0,0))
     }
+
+    "correctly validate against duplicate class numbers" in {
+      def path(c: Int, tt: TransportType, dir: Cardinal = Cardinal.East) = Path(None, tt, c, dir, Cardinal.South, false, Seq((0,0,0), (0,0,0)))
+      def stop(c: Int, tt: TransportType, uk: Boolean, dir: Cardinal = Cardinal.East) = StopPath(None, uk, tt, c, dir, Cardinal.Special, (0,0,0))
+      import TransportType._
+      Sc4Path(false, Seq(path(1, Car), path(1, Car))).validateClassNumbers shouldBe false
+      Sc4Path(false, Seq(path(1, Car), path(2, Car))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(path(1, Car), path(1, Sim))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(path(1, Car), path(1, Car, dir = Cardinal.North))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Car, false))).validateClassNumbers shouldBe false
+      Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(2, Car, false))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Car, true))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Sim, false))).validateClassNumbers shouldBe true
+      Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Car, false, dir = Cardinal.North))).validateClassNumbers shouldBe true
+    }
   }
 }
