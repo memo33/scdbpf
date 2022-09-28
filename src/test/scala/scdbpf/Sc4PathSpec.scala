@@ -32,5 +32,14 @@ class Sc4PathSpec extends WordSpec with Matchers {
       Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Sim, false))).validateClassNumbers shouldBe true
       Sc4Path(false, Seq(), Seq(stop(1, Car, false), stop(1, Car, false, dir = Cardinal.North))).validateClassNumbers shouldBe true
     }
+
+    "support custom decimal formatting" in {
+      val path = Sc4Path(false, Seq(Path(None, TransportType.Car, 0, Cardinal.North, Cardinal.South, false, Seq((0,0,0), (0f,-16f,1f/3)))))
+      path.toString.trim.linesWithSeparators.toSeq.last.stripLineEnd shouldBe "0.0,-16.0,0.33333334"
+      path.copy(decFormat = Some(Sc4Path.threeDecimals)).toString.trim.linesWithSeparators.toSeq.last.stripLineEnd shouldBe "0,-16,0.333"
+      val stop = Sc4Path(false, Seq(), Seq(StopPath(None, false, TransportType.Car, 0, Cardinal.North, Cardinal.Special, (0f,-16f,1f/3))))
+      stop.toString.trim.linesWithSeparators.toSeq.last.stripLineEnd shouldBe "0.0,-16.0,0.33333334"
+      stop.copy(decFormat = Some(Sc4Path.threeDecimals)).toString.trim.linesWithSeparators.toSeq.last.stripLineEnd shouldBe "0,-16,0.333"
+    }
   }
 }

@@ -8,11 +8,13 @@ trait Sc4Path extends DbpfType {
   def terrainVariance: Boolean
   def paths: Seq[Path]
   def stopPaths: Seq[StopPath]
+  def decFormat: Option[java.text.DecimalFormat]
 
   def copy(
     terrainVariance: Boolean = terrainVariance,
     paths: Seq[Path] = paths,
-    stopPaths: Seq[StopPath] = stopPaths): Sc4Path = Sc4Path(terrainVariance, paths, stopPaths)
+    stopPaths: Seq[StopPath] = stopPaths,
+    decFormat: Option[java.text.DecimalFormat] = decFormat): Sc4Path = Sc4Path(terrainVariance, paths, stopPaths, decFormat)
 
   /** Rotates and flips all paths and stop paths in this `Sc4Path`. If
     * `rf.flipped`, the paths will also be reversed (as would be expected).
@@ -101,8 +103,8 @@ trait Sc4Path extends DbpfType {
       addln(stopPaths.size.toString)
     addln(if (terrainVariance) "1" else "0")
 
-    paths flatMap (_.lines(version)) foreach addln
-    stopPaths flatMap (_.lines) foreach addln
+    paths flatMap (_.lines(version, decFormat)) foreach addln
+    stopPaths flatMap (_.lines(decFormat)) foreach addln
 
     sb.toString
   }
@@ -110,8 +112,8 @@ trait Sc4Path extends DbpfType {
 
 object Sc4Path {
 
-  def apply(terrainVariance: Boolean, paths: Seq[Path], stopPaths: Seq[StopPath] = Seq()): Sc4Path =
-    new FreeSc4Path(terrainVariance, paths, stopPaths)
+  def apply(terrainVariance: Boolean, paths: Seq[Path], stopPaths: Seq[StopPath] = Seq(), decFormat: Option[java.text.DecimalFormat] = None): Sc4Path =
+    new FreeSc4Path(terrainVariance, paths, stopPaths, decFormat)
 
   implicit val converter = new Converter[DbpfType, Sc4Path] {
     def apply(from: DbpfType): Sc4Path = {
@@ -129,6 +131,9 @@ object Sc4Path {
   }
 
   type Coord = (Float, Float, Float)
+
+  /** useful format for new paths (three decimal digits) */
+  val threeDecimals = new java.text.DecimalFormat("0.###")
 
   type TransportType = TransportType.Value
   object TransportType extends Enumeration {
@@ -165,7 +170,10 @@ object Sc4Path {
       comment.toList flatMap (s => new StringOps(s).lines) map (_.trim) map
         (c => if (c.startsWith("--")) c else "-- " + c)
     }
-    private[Sc4Path] def coordString(c: Coord): String = c.productIterator.mkString(",")
+    private[Sc4Path] def coordString(c: Coord, decFormat: Option[java.text.DecimalFormat]): String = {
+      val fmt = decFormat.fold[Float => String](_.toString)(_.format)
+      s"${fmt(c._1)},${fmt(c._2)},${fmt(c._3)}"
+    }
   }
 
   case class Path(
@@ -186,13 +194,13 @@ object Sc4Path {
     def header: String =
       s"-- ${transportType.toString}_${classAsString}${entry.id}_${exit.id}${if (junction) "_J" else ""}"
 
-    def lines(version: Int): List[String] = {
+    def lines(version: Int, decFormat: Option[java.text.DecimalFormat] = None): List[String] = {
       var res: List[Any] = commentLines ++ List(header, transportType.id, classNumber, entry.id, exit.id)
       if (version >= 2) {
         res :+= (if (junction) 1 else 0)
       }
       res :+= coords.size
-      res ++= coords map (c => coordString(c))
+      res ++= coords map (c => coordString(c, decFormat))
       res map (_.toString)
     }
 
@@ -221,9 +229,10 @@ object Sc4Path {
     def header: String =
       s"-- Stop${if (uk) "UK" else ""}_${transportType.toString}_${classAsString}${entry.id}_${exit.id}"
 
-    def lines: List[String] = {
+    def lines: List[String] = lines(None)  // for backward compatibility
+    def lines(decFormat: Option[java.text.DecimalFormat]): List[String] = {
       commentLines ++ List(
-        header, if (uk) 2 else 1, transportType.id, classNumber, entry.id, exit.id, coordString(coord)
+        header, if (uk) 2 else 1, transportType.id, classNumber, entry.id, exit.id, coordString(coord, decFormat)
       ) map (_.toString)
     }
 
@@ -235,7 +244,7 @@ object Sc4Path {
     def shiftHeight(t: Float) = copy(coord = coord.copy(_3 = coord._3 + t))
   }
 
-  private class FreeSc4Path(val terrainVariance: Boolean, val paths: Seq[Path], val stopPaths: Seq[StopPath]) extends Sc4Path {
+  private class FreeSc4Path(val terrainVariance: Boolean, val paths: Seq[Path], val stopPaths: Seq[StopPath], val decFormat: Option[java.text.DecimalFormat]) extends Sc4Path {
 
     protected lazy val data: Array[Byte] = toString.getBytes(DbpfUtil.asciiEncoding)
   }
@@ -253,6 +262,7 @@ object Sc4Path {
         (p.terrainVariance, p.paths, p.stopPaths)
       }
     }
+    def decFormat = None
   }
 
 }
