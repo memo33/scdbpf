@@ -482,4 +482,53 @@ object S3d {
     case Some(s) => 1 + s.length
   }
 
+  object Transparency extends Enumeration {
+    val Opaque, Transparent, Semitransparent = Value
+  }
+
+  /** Commonly used settings for materials.
+    */
+  def defaultMats(transparency: Transparency.Value,
+      id: Int,
+      name: Option[String] = None,
+      mipmap: Boolean = false,  // for use with embedded mipmaps
+      wrapU: WrapMode.Value = WrapMode.Clamp,
+      wrapV: WrapMode.Value = WrapMode.Clamp): MatsGroup = {
+    val flags0 = MatsFlags.ValueSet(
+      MatsFlags.DepthTest,
+      MatsFlags.BackfaceCulling,
+      MatsFlags.Texturing)
+    import Transparency._
+    MatsGroup(
+      flags = transparency match {
+        case Opaque => flags0
+        case Transparent => flags0 + MatsFlags.AlphaTest
+        case Semitransparent => flags0 + MatsFlags.AlphaTest + MatsFlags.FrameBufferBlending
+      },
+      alphaFunc = MatsFunc.Greater,
+      depthFunc = MatsFunc.LessEqual,
+      sourceBlend = transparency match {
+        case Opaque => MatsBlend.One
+        case Transparent => MatsBlend.One
+        case Semitransparent => MatsBlend.SourceAlpha
+      },
+      destBlend = transparency match {
+        case Opaque => MatsBlend.Zero
+        case Transparent => MatsBlend.Zero
+        case Semitransparent => MatsBlend.OneMinusSourceAlpha
+      },
+      alphaThreshold = transparency match {
+        case Opaque => 0x7FFF  // 32767
+        case Transparent => 0x7FFF  // 32767
+        case Semitransparent => 0xFF  // 255
+      },
+      materials = IndexedSeq(Material(
+        id = id,
+        wrapU = wrapU,
+        wrapV = wrapV,
+        magFilter = MagnifFilter.Bilinear,
+        minFilter = if (mipmap) MinifFilter.LinearMipmapLinear else MinifFilter.BilinearNoMipmap,
+        name = name))
+    )
+  }
 }
