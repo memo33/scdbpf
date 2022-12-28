@@ -355,12 +355,12 @@ object S3d {
   }
 
   case class AnimGroup(
-    name: Option[String],
-    flags: Int,
     vertBlock: IndexedSeq[Int],
     indxBlock: IndexedSeq[Int],
     primBlock: IndexedSeq[Int],
-    matsBlock: IndexedSeq[Int]
+    matsBlock: IndexedSeq[Int],
+    name: Option[String] = None,
+    flags: Int = 0  // almost always 0 (currently ignored)
   ) extends S3dGroup {
 
     require(name forall (_.length < 255), "max name length is 254")
