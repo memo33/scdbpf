@@ -146,6 +146,8 @@ object S3d {
     }
   }
 
+  /** Construct a new S3D model.
+    */
   def apply(
     vert: IndexedSeq[VertGroup],
     indx: IndexedSeq[IndxGroup],
@@ -155,6 +157,20 @@ object S3d {
     prop: IndexedSeq[PropGroup],
     regp: IndexedSeq[RegpGroup]): S3d =
       new FreeS3d(vert, indx, prim, mats, anim, prop, regp)
+
+  /** Construct a new S3D model (shorthand for non-animated models).
+    */
+  def apply(
+    vert: IndexedSeq[VertGroup],
+    indx: IndexedSeq[IndxGroup],
+    prim: IndexedSeq[PrimGroup],
+    mats: IndexedSeq[MatsGroup],
+    anim: IndexedSeq[AnimGroup],
+    prop: IndexedSeq[PropGroup] = IndexedSeq.empty,
+    regp: IndexedSeq[RegpGroup] = IndexedSeq.empty): S3d = {
+      val animSec = AnimSection(numFrames = 1, frameRate = 0, playMode = PlayMode.Looping, displacement = 0, groups = anim)
+      S3d.apply(vert, indx, prim, mats, animSec, prop, regp)
+  }
 
   object PlayMode extends Enumeration {
     val PingPong = Value(1)
@@ -361,6 +377,28 @@ object S3d {
         buf.putShort(matsBlock(i).toShort)
       }
     }
+  }
+  object AnimGroup {
+    /** Deprecated: For backward compatibility (use other constructor instead).
+      */
+    def apply(
+      name: Option[String],
+      flags: Int,  // almost always 0 (currently ignored)
+      vertBlock: IndexedSeq[Int],
+      indxBlock: IndexedSeq[Int],
+      primBlock: IndexedSeq[Int],
+      matsBlock: IndexedSeq[Int]
+    ): AnimGroup = AnimGroup(vertBlock, indxBlock, primBlock, matsBlock, name, flags)
+
+    /** Shorthand constructor for non-animated models (each block is a single integer).
+      */
+    def vipm(
+      vertBlock: Int,
+      indxBlock: Int,
+      primBlock: Int,
+      matsBlock: Int,
+      name: Option[String] = None
+    ): AnimGroup = AnimGroup(IndexedSeq(vertBlock), IndexedSeq(indxBlock), IndexedSeq(primBlock), IndexedSeq(matsBlock), name)
   }
 
   case class AnimSection(
