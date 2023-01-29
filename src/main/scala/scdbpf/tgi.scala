@@ -146,6 +146,7 @@ object Tgi {
   val ExemplarRail          = MaskVal(0x6534284a, 0xe8347989, None,       "Exemplar (Rail)");
   val ExemplarLightrail     = MaskVal(0x6534284a, 0x2b79dffb, None,       "Exemplar (Lightrail)");
   val ExemplarMonorail      = MaskVal(0x6534284a, 0xebe084c2, None,       "Exemplar (Monorail)");
+  val ExemplarSubway        = MaskVal(0x6534284a, 0x8a15f3f2, None,       "Exemplar (Subway)");
   val ExemplarPowerpole     = MaskVal(0x6534284a, 0x088e1962, None,       "Exemplar (Power Pole)");
   val ExemplarT21           = MaskVal(0x6534284a, 0x89ac5643, None,       "Exemplar (T21)");
   val Exemplar              = MaskVal(0x6534284a, None,       None,       "Exemplar")
