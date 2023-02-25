@@ -20,7 +20,7 @@ class DbpfFileSpec extends WordSpec with Matchers with CancelAfterFailure {
       val d = DbpfFile.read(tmpFile)
       d.entries.length should be (1)
       d.entries(0).tgi should be (tgi)
-      d.entries(0).toBufferedEntry.convert[LText].content.text should be (ltext.text)
+      d.entries(0).toBufferedEntry.convertContentTo(LText).content.text should be (ltext.text)
     }
   }
 }

@@ -110,7 +110,7 @@ trait Sc4Path extends DbpfType {
   }
 }
 
-object Sc4Path {
+object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
 
   def apply(terrainVariance: Boolean, paths: Seq[Path], stopPaths: Seq[StopPath] = Seq(), decFormat: Option[java.text.DecimalFormat] = None): Sc4Path =
     new FreeSc4Path(terrainVariance, paths, stopPaths, decFormat)

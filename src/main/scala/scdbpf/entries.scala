@@ -76,7 +76,9 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
     new ByteArrayInput(outData)
   }
 
-  /** Creates a new `BufferedEntry`, with this entry's `content` converted to `B`.
+  /** Deprecated: Prefer `convertContentTo` instead.
+    *
+    * Creates a new `BufferedEntry`, with this entry's `content` converted to `B`.
     * Usually this delegates to the `convert` method of `content`, but in some
     * cases this is not possible, like for [[Exemplar]], which requires the
     * `tgi` for conversion.
@@ -84,6 +86,15 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
   def convert[B <: DbpfType](implicit eh: ExceptionHandler,
       conv: Converter[BufferedEntry[A], BufferedEntry[B]]): eh.![BufferedEntry[B], DbpfDecodeFailedException] = {
     eh wrap conv(this)
+  }
+
+  /** Creates a new `BufferedEntry`, with this entry's `content` converted to `B`.
+    * Usually this delegates to the `convert` method of `content`, but in some
+    * cases this is not possible, like for [[Exemplar]], which requires the
+    * `tgi` for conversion.
+    */
+  def convertContentTo[B <: DbpfType](dbpfType: WithContentConverter[B])(implicit eh: ExceptionHandler): eh.![BufferedEntry[B], DbpfDecodeFailedException] = {
+    eh wrap dbpfType.contentConverter(this)
   }
 
   /** Maps the `content` of this buffered entry and returns a new
@@ -191,4 +202,11 @@ final class StreamedEntry private[scdbpf] (file: JFile, val tgi: Tgi, offset: UI
       }
     }
   }
+}
+
+/** This trait is used for companion objects of `DbpfType`s and is needed in
+  *  particular for [[Exemplar]]s.
+  */
+trait WithContentConverter[B <: DbpfType] {
+  def contentConverter: Converter[BufferedEntry[DbpfType], BufferedEntry[B]]
 }

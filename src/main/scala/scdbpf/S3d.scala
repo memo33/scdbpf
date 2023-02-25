@@ -121,7 +121,7 @@ trait S3d extends DbpfType {
 
 }
 
-object S3d {
+object S3d extends DbpfTypeCompanion[S3d] {
 
   private[scdbpf] val HEAD = MagicNumber.fromString("HEAD")
   private[scdbpf] val VERT = MagicNumber.fromString("VERT")

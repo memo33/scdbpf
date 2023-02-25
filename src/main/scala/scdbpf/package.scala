@@ -7,8 +7,7 @@
   * [[BufferedEntry BufferedEntries]] in decoded form as [[DbpfType]], such as
   * `Exemplar`, `Fsh` or `Sc4Path`.
   *
-  * This package object provides additional type aliases for `DbpfExceptions` as
-  * well as generic implicit converters of `DbpfTypes`.
+  * This package object provides additional type aliases for `DbpfExceptions`.
   *
   * == Examples ==
   *
@@ -39,7 +38,7 @@
   * {{{
   * val writeList = for (e <- dbpf.entries) yield {
   *   if (e.tgi matches Tgi.Sc4Path) {
-  *     val be = e.toBufferedEntry.convert[Sc4Path]
+  *     val be = e.toBufferedEntry.convertContentTo(Sc4Path)
   *     be.copy(content = be.content * RotFlip.R1F0)
   *   } else {
   *     e
@@ -56,7 +55,7 @@
   * val id = UInt(0x12345678)
   * dbpf.entries.view.
   *   filter(_.tgi matches Tgi.Exemplar).
-  *   map(_.toBufferedEntry.convert[Exemplar]).
+  *   map(_.toBufferedEntry.convertContentTo(Exemplar)).
   *   find(_.content.properties.contains(id))
   * }}}
   */

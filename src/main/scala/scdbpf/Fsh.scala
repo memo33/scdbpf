@@ -20,7 +20,7 @@ trait Fsh extends DbpfType {
   def image: Image[RGBA] = elements.head.images.head
 }
 
-object Fsh {
+object Fsh extends DbpfTypeCompanion[Fsh] {
 
   implicit val converter = new Converter[DbpfType, Fsh] {
     def apply(from: DbpfType): Fsh = {

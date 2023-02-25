@@ -8,7 +8,7 @@ sealed trait LText extends DbpfType {
   val text: String
 }
 
-object LText {
+object LText extends DbpfTypeCompanion[LText] {
 
   def apply(text: String): LText = new FreeLText(text)
 

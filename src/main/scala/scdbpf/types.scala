@@ -18,7 +18,9 @@ trait DbpfType {
   protected def data: Array[Byte]
   private[scdbpf] final def dataView: Array[Byte] = data // to make the data visible within this package
 
-  /** Converts this type to `B`. The implicit converter is usually provided by
+  /** Deprecated: Prefer `convertTo` instead.
+    *
+    * Converts this type to `B`. The implicit converter is usually provided by
     * the companion object of `B`.
     *
     * $EXCEPTIONHANDLER
@@ -29,6 +31,19 @@ trait DbpfType {
     */
   def convert[B <: DbpfType](implicit eh: ExceptionHandler, conv: Converter[DbpfType, B]):
     eh.![B, DbpfDecodeFailedException] = eh wrap conv(this)
+
+  /** Convert this type to `B`.
+    *
+    * $EXCEPTIONHANDLER
+    *
+    * @tparam B the type which this type gets converted to
+    * @param dbpfType (the companion object of) the type which this type gets converted to
+    * @throws DbpfDecodeFailedException if this type cannot be converted to
+    * type `B` structurally
+    */
+  def convertTo[B <: DbpfType](dbpfType: DbpfTypeCompanion[B])(implicit eh: ExceptionHandler): eh.![B, DbpfDecodeFailedException] = {
+    eh wrap dbpfType.converter(this)
+  }
 }
 
 /** A raw type that does not represent any specific format. Its data is backed
@@ -51,4 +66,12 @@ object RawType {
     * compressed.
     */
   def apply(data: Array[Byte]): RawType = new RawType(DbpfPackager.decompress(data))
+}
+
+/** This trait defines the converters that should be implemented by companion
+  * objects of `DbpfType`s.
+  */
+trait DbpfTypeCompanion[B <: DbpfType] extends WithContentConverter[B] {
+  def converter: Converter[DbpfType, B]
+  def contentConverter: Converter[BufferedEntry[DbpfType], BufferedEntry[B]] = genericConverter(converter)
 }

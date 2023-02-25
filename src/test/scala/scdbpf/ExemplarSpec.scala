@@ -40,7 +40,7 @@ class ExemplarSpec extends WordSpec with Matchers {
     "encode/decode inversively" in {
       val ex = Exemplar(isCohort = false, props = props)
       val be = BufferedEntry(Tgi.Blank.copy(Tgi.Exemplar), ex, true)
-      val ex2 = be.toRawEntry.toBufferedEntry.convert[Exemplar].content
+      val ex2 = be.toRawEntry.toBufferedEntry.convertContentTo(Exemplar).content
 
       assert(ex ne ex2)
       ex.parent shouldBe ex2.parent

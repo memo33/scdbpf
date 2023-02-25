@@ -29,7 +29,7 @@ sealed trait Exemplar extends DbpfType {
   def apply(id: UInt): Property = (id, properties(id))
 }
 
-object Exemplar {
+object Exemplar extends WithContentConverter[Exemplar] {
 
   def apply(parent: Tgi = Tgi.Blank, isCohort: Boolean, props: TraversableOnce[Property]): Exemplar = {
     var builder = SortedMap.newBuilder[UInt, PropList](ordering)
@@ -52,6 +52,7 @@ object Exemplar {
       }
     }
   }
+  def contentConverter = converter
 
   /** unsigned int ordering; to be used for properties map */
   val ordering = UIntOrdering
