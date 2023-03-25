@@ -4,6 +4,19 @@ import scala.collection.immutable.{Seq, StringOps}
 import org.parboiled.scala._
 import Sc4Path._
 
+/** A path that has not been validated yet. */
+private case class ParsedPath(
+    comment: Option[String],
+    transportType: TransportType,
+    classNumber: Int,
+    entry: Cardinal,
+    exit: Cardinal,
+    junction: Option[Boolean],
+    numCoords: Int,
+    coords: Seq[Coord])
+
+private case class ParsedSc4Path(head: (Int, Int, Option[Int], Boolean), paths: Seq[ParsedPath], stopPaths: Seq[StopPath])
+
 private class Sc4PathParser extends Parser {
 
   def LineBreak = rule { optional("\r") ~ "\n" | "\r" }
@@ -66,7 +79,7 @@ private class Sc4PathParser extends Parser {
     oneOrMore(MultiLineEnd ~ Coordinate) ~~> ((c: Coord, cs) => c :: cs)
   }
 
-  def PathSection: Rule1[Path] = rule {
+  def PathSection: Rule1[ParsedPath] = rule {
     MultiLineEnd ~> identity ~ Transport ~
     MultiLineEnd ~ Number ~
     MultiLineEnd ~ EntryExit ~
@@ -77,38 +90,28 @@ private class Sc4PathParser extends Parser {
     CoordinateSection ~~> {
       (tup: Tuple7[String, TransportType, Int, Cardinal, Cardinal, Option[Boolean], Int], cs: List[Coord]) => {
         val (comment, tt, cl, entry, exit, junc, cnt) = tup
-        if (cnt != cs.size) {
-          // TODO ???
-          println(s"number of path sections was ${cs.size}, declared $cnt")
-        }
-        Path(stripSectionHeader(comment), tt, cl, entry, exit, junc exists identity, cs)
+        ParsedPath(stripSectionHeader(comment), tt, cl, entry, exit, junc, cnt, cs)
       }
     }
   }
 
   def Header = rule {
     Signature ~ MultiLineEnd ~ (
-      "1.0" ~ push(0)      ~ MultiLineEnd ~ Number ~ MultiLineEnd ~ push(0)               ~ Bool |
-      Version ~~~? (_ > 0) ~ MultiLineEnd ~ Number ~ MultiLineEnd ~ Number ~ MultiLineEnd ~ Bool
+      "1.0" ~ push(0)      ~ MultiLineEnd ~ Number ~ MultiLineEnd ~ push(Option.empty[Int])               ~ Bool |
+      Version ~~~? (_ > 0) ~ MultiLineEnd ~ Number ~ MultiLineEnd ~ (Number ~~> (Some(_))) ~ MultiLineEnd ~ Bool
     ) ~~> ((a, b, c, d) => (a, b, c, d)) // collect in tuple for testing
   }
 
   def Sc4PathSection = rule {
     Header ~ zeroOrMore(PathSection) ~ zeroOrMore(StopSection) ~
     zeroOrMore(LineEnd, separator = LineBreak) ~ EOI ~~> {
-      (head: (Int, Int, Int, Boolean), paths: Seq[Path], stopPaths: Seq[StopPath]) =>
-        val (v, numPaths, numStopPaths, terrain) = head
-        if (numPaths != paths.size || numStopPaths != stopPaths.size) {
-          // TODO ???
-          println(s"number of path sections was ${paths.size}, declared $numPaths; stop path sections ${stopPaths.size}, declared $numStopPaths")
-        }
-        Sc4Path(terrain, paths, stopPaths)
+      (head: (Int, Int, Option[Int], Boolean), paths: Seq[ParsedPath], stopPaths: Seq[StopPath]) => ParsedSc4Path(head, paths, stopPaths)
     }
   }
 
   // effectively simply drops the last line of the trimmed string
   // which commonly is something like "-- Sim_1_2" and will be recreated computationally
-  private def stripSectionHeader(s: String): Option[String] = {
+  private[scdbpf] def stripSectionHeader(s: String): Option[String] = {
     val lines = new StringOps(s.trim).lines.toSeq
     if (lines.isEmpty)
       None
@@ -116,10 +119,62 @@ private class Sc4PathParser extends Parser {
       Some(lines.init mkString "\r\n") filterNot (_.isEmpty)
   }
 
-  def parseSc4Path(text: String): Sc4Path = {
+  private def validatePath(parsed: ParsedSc4Path): Option[String] = {
+    val (version, numPaths, numStopPaths, terrain) = parsed.head
+    if (numPaths != parsed.paths.size) {
+      Some(s"number of path sections was ${parsed.paths.size}, declared $numPaths")
+    } else if (version == 0 && parsed.stopPaths.nonEmpty) {
+      Some(s"version was 1.0 but path file contains stop paths")
+    } else if (version == 0 && numStopPaths.nonEmpty) {
+      Some(s"version was 1.0 but path file has declared ${numStopPaths.get} stop paths")
+    } else if (version != 0 && numStopPaths.isEmpty) {
+      Some(s"version was 1.$version but path file has not declared stop paths")
+    } else if (numStopPaths.exists(_ != parsed.stopPaths.size)) {
+      Some(s"number of stop path sections was ${parsed.stopPaths.size}, declared ${numStopPaths.get}")
+    } else {
+      val idx = parsed.paths.indexWhere(p => p.numCoords != p.coords.size)
+      if (idx != -1) {
+        val p = parsed.paths(idx)
+        Some(s"path section $idx has ${p.coords.size} coordinates but declared ${p.numCoords}")
+      } else {
+        val idx = parsed.paths.indexWhere(p => p.junction.isEmpty ^ (version < 2)) // if valid, both booleans should be equal
+        if (idx != -1) {
+          if (version < 2) {
+            Some(s"version was 1.$version but path section $idx has junction key")
+          } else {
+            Some(s"version was 1.2 but path section $idx lacks junction key")
+          }
+        } else {
+          None
+        }
+      }
+    }
+  }
+
+  /** Convert parsing result without any validation */
+  private def parsingResultToSc4Path(parsed: ParsedSc4Path): Sc4Path = {
+    val paths2 = for (p <- parsed.paths) yield {
+      Path(p.comment, p.transportType, p.classNumber, p.entry, p.exit, p.junction exists identity, p.coords)
+    }
+    val terrain = parsed.head._4
+    Sc4Path(terrain, paths2, parsed.stopPaths)
+  }
+
+  def parseSc4Path(text: String, strict: Boolean = false): Sc4Path = {
     val parsingResult = ReportingParseRunner(Sc4PathSection).run(text)
     parsingResult.result match {
-      case Some(a) => a
+      case Some(parsedSc4Path) => {
+        val err = validatePath(parsedSc4Path)
+        if (strict) {
+          err match {
+            case Some(msg) => throw new DbpfDecodeFailedException("Invalid SC4Paths: " + msg)
+            case None => parsingResultToSc4Path(parsedSc4Path)
+          }
+        } else {
+          err.foreach(println)  // the validation errors are an issue for the game, but are recoverable in scdbpf
+          parsingResultToSc4Path(parsedSc4Path)
+        }
+      }
       case None => throw new DbpfDecodeFailedException("Invalid SC4Paths: " +
         org.parboiled.errors.ErrorUtils.printParseErrors(parsingResult))
     }

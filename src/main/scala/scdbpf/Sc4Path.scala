@@ -251,6 +251,8 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
 
   private lazy val parser = new Sc4PathParser() // needs to be locked for concurrent access
 
+  private val strictParsing = false  // for now, we only toggle this manually
+
   private class BufferedSc4Path(arr: Array[Byte]) extends RawType(arr) with Sc4Path {
 
     override lazy val toString = new String(data, DbpfUtil.asciiEncoding)
@@ -258,7 +260,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
     val (terrainVariance, paths, stopPaths) = {
       val text = toString
       parser.synchronized {
-        val p = parser.parseSc4Path(text)
+        val p = parser.parseSc4Path(text, strict=strictParsing)
         (p.terrainVariance, p.paths, p.stopPaths)
       }
     }

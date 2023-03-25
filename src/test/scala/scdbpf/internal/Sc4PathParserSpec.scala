@@ -97,6 +97,130 @@ class Sc4PathParserSpec extends WordSpec with Matchers {
       handleResult(RPR(parser.Sc4PathSection).run(s + "--foo\n\n"))
       handleResult(RPR(parser.Sc4PathSection).run(s + "--foo\n\n --foo"))
     }
+    "validate number of path sections" in {
+      val s =
+        """SC4PATHS
+          |1.0
+          |2
+          |1
+          |-- Sim_3_1
+          |2
+          |0
+          |3
+          |1
+          |2
+          |2.5,-8.0,0.0
+          |2.5,8.0,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s, strict=true)).getMessage shouldBe "Invalid SC4Paths: number of path sections was 1, declared 2"
+      val s2 =
+        """SC4PATHS
+          |1.0
+          |0
+          |1
+          |-- Sim_3_1
+          |2
+          |0
+          |3
+          |1
+          |2
+          |2.5,-8.0,0.0
+          |2.5,8.0,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s2, strict=true)).getMessage shouldBe "Invalid SC4Paths: number of path sections was 1, declared 0"
+    }
+    "validate number of stop paths" in {
+      val s =
+        """SC4PATHS
+          |1.1
+          |0
+          |2
+          |1
+          |-- Stop
+          |2
+          |1
+          |0
+          |1
+          |255
+          |2.54713,7.26555,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s, strict=true)).getMessage shouldBe "Invalid SC4Paths: number of stop path sections was 1, declared 2"
+      val s2 =
+        """SC4PATHS
+          |1.1
+          |0
+          |0
+          |1
+          |-- Stop
+          |2
+          |1
+          |0
+          |1
+          |255
+          |2.54713,7.26555,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s2, strict=true)).getMessage shouldBe "Invalid SC4Paths: number of stop path sections was 1, declared 0"
+    }
+    "validate against stop paths in version 1.0" in {
+      val s =
+        """SC4PATHS
+          |1.0
+          |0
+          |1
+          |-- Stop
+          |2
+          |1
+          |0
+          |1
+          |255
+          |2.54713,7.26555,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s, strict=true)).getMessage shouldBe "Invalid SC4Paths: version was 1.0 but path file contains stop paths"
+    }
+    "validate number of coordinates" in {
+      val s =
+        """SC4PATHS
+          |1.0
+          |1
+          |1
+          |-- Sim_3_1
+          |2
+          |0
+          |3
+          |1
+          |3
+          |2.5,-8.0,0.0
+          |2.5,8.0,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s, strict=true)).getMessage shouldBe "Invalid SC4Paths: path section 0 has 2 coordinates but declared 3"
+    }
+    "validate junction keys" in {
+      val s =
+        """SC4PATHS
+          |1.1
+          |1
+          |0
+          |1
+          |-- Sim_3_1
+          |2
+          |0
+          |3
+          |1
+          |0
+          |2
+          |2.5,-8.0,0.0
+          |2.5,8.0,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s, strict=true)).getMessage shouldBe "Invalid SC4Paths: version was 1.1 but path section 0 has junction key"
+      val s2 =
+        """SC4PATHS
+          |1.2
+          |1
+          |0
+          |1
+          |-- Sim_3_1
+          |2
+          |0
+          |3
+          |1
+          |2
+          |2.5,-8.0,0.0
+          |2.5,8.0,0.0""".stripMargin
+      intercept[DbpfDecodeFailedException](parser.parseSc4Path(s2, strict=true)).getMessage shouldBe "Invalid SC4Paths: version was 1.2 but path section 0 lacks junction key"
+    }
   }
 }
 
