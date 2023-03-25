@@ -118,7 +118,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
   implicit val converter = new Converter[DbpfType, Sc4Path] {
     def apply(from: DbpfType): Sc4Path = {
       try {
-        new BufferedSc4Path(from.dataView)
+        new BufferedSc4Path(from.dataView, strict=false)
       } catch {
         case e @ (_: NoSuchElementException
                  |_: IllegalArgumentException
@@ -251,20 +251,34 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
 
   private lazy val parser = new Sc4PathParser() // needs to be locked for concurrent access
 
-  private val strictParsing = false  // for now, we only toggle this manually
-
-  private class BufferedSc4Path(arr: Array[Byte]) extends RawType(arr) with Sc4Path {
+  private class BufferedSc4Path(arr: Array[Byte], strict: Boolean) extends RawType(arr) with Sc4Path {
 
     override lazy val toString = new String(data, DbpfUtil.asciiEncoding)
 
     val (terrainVariance, paths, stopPaths) = {
       val text = toString
       parser.synchronized {
-        val p = parser.parseSc4Path(text, strict=strictParsing)
+        val p = parser.parseSc4Path(text, strict)
         (p.terrainVariance, p.paths, p.stopPaths)
       }
     }
     def decFormat = None
   }
 
+  object StrictParsing extends DbpfTypeCompanion[Sc4Path] {
+    val converter = new Converter[DbpfType, Sc4Path] {
+      def apply(from: DbpfType): Sc4Path = {
+        try {
+          new BufferedSc4Path(from.dataView, strict=true)
+        } catch {
+          case e @ (_: NoSuchElementException
+                   |_: IllegalArgumentException
+                   |_: IndexOutOfBoundsException
+                   |_: NumberFormatException
+                   |_: org.parboiled.errors.ParserRuntimeException) =>
+            throw new DbpfDecodeFailedException(e.toString, e)
+        }
+      }
+    }
+  }
 }
