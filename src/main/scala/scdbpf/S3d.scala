@@ -2,7 +2,7 @@ package io.github.memo33
 package scdbpf
 
 import scala.collection.immutable._
-import S3d._
+import scala.collection.compat._
 import DbpfUtil._
 import java.nio.ByteBuffer
 
@@ -11,6 +11,7 @@ trait S3d extends DbpfType {
   // only 1.5 encoding supported anyway
   //val majorVersion: Short
   //val minorVersion: Short
+  import S3d._
 
   val vert: IndexedSeq[VertGroup]
   val indx: IndexedSeq[IndxGroup]
@@ -69,7 +70,7 @@ trait S3d extends DbpfType {
     * the individual vertices that might be redundant.
     */
   def trim = {
-    def reindex(is: Iterator[Int]) = is.to[SortedSet].zipWithIndex.toMap
+    def reindex(is: Iterator[Int]) = is.to(SortedSet).zipWithIndex.toMap
     def filtered[G](gs: IndexedSeq[G], reindex: Map[Int, Int]) =
       gs.zipWithIndex collect { case (g, i) if reindex.contains(i) => g }
 

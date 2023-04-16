@@ -2,10 +2,12 @@ package io.github.memo33
 package scdbpf
 
 import scala.collection.immutable._
-import Sc4Path._
+import scala.collection.compat._
 import DbpfUtil._
 
 trait Sc4Path extends DbpfType {
+  import Sc4Path._
+
   def terrainVariance: Boolean
   def paths: Seq[Path]
   def stopPaths: Seq[StopPath]
@@ -69,7 +71,7 @@ trait Sc4Path extends DbpfType {
         }
         lastIndex(prop) = i
       }
-      ps.to[Seq]
+      ps.to(Seq)
     }
 
     val result = copy(paths = renumber(paths, pathToTuple, updatePath),
@@ -168,7 +170,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
 
     private[Sc4Path] def classAsString = if (classNumber == 0) "" else ('a' + classNumber - 1).toChar + "_"
     private[Sc4Path] def commentLines = { // adds -- delimiters if missing
-      comment.toList flatMap (s => new StringOps(s).lines) map (_.trim) map
+      comment.toList flatMap (s => new collection.immutable.StringOps(s).lines) map (_.trim) map
         (c => if (c.startsWith("--")) c else "-- " + c)
     }
     private[Sc4Path] def coordString(c: Coord, decFormat: Option[java.text.DecimalFormat]): String = {

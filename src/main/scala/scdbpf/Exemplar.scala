@@ -4,9 +4,6 @@ package scdbpf
 import DbpfUtil._
 import DbpfProperty.{PropList, Property}
 import scala.collection.immutable.SortedMap
-import scala.collection.{SortedMapLike, GenTraversableOnce}
-import scala.collection.mutable.{Builder, MapBuilder}
-import scala.collection.generic.CanBuildFrom
 import io.github.memo33.passera.unsigned._
 
 

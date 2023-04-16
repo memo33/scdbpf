@@ -29,7 +29,7 @@ class DbpfFile private (
     * that would be seen by the game).
     */
   lazy val tgiMap: Map[Tgi, StreamedEntry] =
-    entries.reverseMap(e => (e.tgi, e))(scala.collection.breakOut)
+    entries.reverseIterator.map(e => (e.tgi, e)).toMap
 
   /** Writes a `DbpfFile` back to a file.
     *
@@ -225,9 +225,9 @@ object DbpfFile {
       }
     }
 
-    val streamedEntries: IndexedSeq[StreamedEntry] = indexList.map { ie =>
+    val streamedEntries: IndexedSeq[StreamedEntry] = indexList.iterator.map { ie =>
       new StreamedEntry(file, ie.tgi, ie.offset, ie.size, header.dateModified)
-    }(scala.collection.breakOut)
+    }.toIndexedSeq
     new DbpfFile(file, header, streamedEntries)
   }
 
@@ -258,7 +258,7 @@ object DbpfFile {
     }
 
     import scala.collection.mutable.ArrayBuffer
-    val writeList = entries match {
+    val writeList: ArrayBuffer[WrappedDbpfInput] = entries match {
       case indexed: scala.collection.IndexedSeq[_] => new ArrayBuffer[WrappedDbpfInput](indexed.size + 1)
       case _ => new ArrayBuffer[WrappedDbpfInput]()
     }
@@ -273,7 +273,7 @@ object DbpfFile {
             private[this] val iter: Iterator[DbpfEntry] = entries.withFilter(_.tgi != Tgi.Directory)
             def hasNext: Boolean = iter.hasNext
             def next: WrappedDbpfInput = {
-              val n = new WrappedDbpfInput(iter.next)
+              val n = new WrappedDbpfInput(iter.next())
               writeList += n // lazily collect results in ArrayBuffer
               n
             }

@@ -2,12 +2,12 @@ package io.github.memo33
 package scdbpf
 
 import compat.{Image, RGBA}
-import Fsh._
 import java.nio.ByteBuffer
 import DbpfUtil._
 import io.github.memo33.passera.unsigned._
 
 trait Fsh extends DbpfType {
+  import Fsh._
 
   val elements: Seq[FshElement]
   val dirId: FshDirectoryId

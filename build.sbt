@@ -51,6 +51,8 @@ libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked 
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
+libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"
+
 
 libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0"
 
