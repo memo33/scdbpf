@@ -1,6 +1,6 @@
 package scdbpf
 
-import rapture.io.{Input, ByteArrayInput}
+import compat.{Input, ByteArrayInput}
 import resource._
 import DbpfUtil._
 import passera.unsigned._

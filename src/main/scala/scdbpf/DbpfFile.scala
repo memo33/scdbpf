@@ -1,7 +1,7 @@
 package scdbpf
 
 import resource._
-import rapture.io.{Input, ByteArrayInput, ByteOutput}
+import compat.{Input, ByteArrayInput, ByteOutput}
 import java.io.{RandomAccessFile, IOException, EOFException, FileOutputStream, SequenceInputStream}
 import java.nio.{ByteBuffer, IntBuffer}
 import passera.unsigned.UInt
