@@ -31,7 +31,7 @@ object Experimental {
     }
   }
 
-  import ps.tricerato.pureimage._
+  import ps.tricerato.pureimage.{Image, RGBA}
   import java.awt.image.BufferedImage
   /** Creates a new `BufferedImage` from an `Image`.
     */

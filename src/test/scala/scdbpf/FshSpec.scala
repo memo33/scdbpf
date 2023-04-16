@@ -4,7 +4,7 @@ import Fsh._
 import org.scalatest.PrivateMethodTester
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import ps.tricerato.pureimage._
+import ps.tricerato.pureimage.RGBA
 
 class FshSpec extends AnyWordSpec with Matchers with PrivateMethodTester {
 

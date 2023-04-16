@@ -1,6 +1,6 @@
 package scdbpf
 
-import ps.tricerato.pureimage._
+import ps.tricerato.pureimage.{Image, RGBA}
 import java.nio.ByteBuffer
 import Fsh.conversions._
 import Fsh.FshFormat
