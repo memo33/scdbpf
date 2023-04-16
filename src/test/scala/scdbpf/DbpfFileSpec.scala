@@ -1,7 +1,7 @@
 package scdbpf
 
 import org.scalatest.{WordSpec, Matchers, CancelAfterFailure}
-import rapture.core.strategy.throwExceptions
+import strategy.throwExceptions
 
 class DbpfFileSpec extends WordSpec with Matchers with CancelAfterFailure {
 

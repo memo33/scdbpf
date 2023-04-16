@@ -20,11 +20,8 @@ scalacOptions ++= Seq(
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 console / initialCommands := """
-import rapture.core._
-import strategy.throwExceptions
 import passera.unsigned._
-import scdbpf._
-import DbpfUtil._
+import scdbpf._, strategy.throwExceptions, DbpfUtil._
 import java.io.File
 """
 
@@ -40,8 +37,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.6"
-
-libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
 
 
 libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/pureimage_2.11-0.1.1.jar"

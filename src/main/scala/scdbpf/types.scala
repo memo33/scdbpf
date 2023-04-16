@@ -10,7 +10,7 @@ import DbpfUtil._
   * @define EXCEPTIONHANDLER
   * An `ExceptionHandler` needs to be brought into scope via imports (either
   * `strategy.throwExceptions` or `strategy.captureExceptions` from the
-  * `rapture.io` package).
+  * `scdbpf` package).
   */
 trait DbpfType {
   /** the uncompressed raw byte data of the entry */

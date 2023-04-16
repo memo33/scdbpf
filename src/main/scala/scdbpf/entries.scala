@@ -12,7 +12,7 @@ import java.io.{RandomAccessFile, EOFException}
   * @define EXCEPTIONHANDLER
   * An `ExceptionHandler` needs to be brought into scope via imports (either
   * `strategy.throwExceptions` or `strategy.captureExceptions` from the
-  * `rapture.core` package).
+  * `scdbpf` package).
   */
 trait DbpfEntry {
 
