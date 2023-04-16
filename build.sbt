@@ -39,8 +39,6 @@ libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 
-libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/pureimage_2.11-0.1.1.jar"
-
 libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3" from "https://github.com/memo33/scala-unsigned/releases/download/v0.1.3/scala-unsigned_2.11-0.1.3.jar"
 
 libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1" from "https://github.com/memo33/jsquish/releases/download/v2.0.1/jsquish-2.0.1.jar"
