@@ -20,7 +20,7 @@ scalacOptions ++= Seq(
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
 console / initialCommands := """
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 import scdbpf._, strategy.throwExceptions, DbpfUtil._
 import java.io.File
 """
@@ -39,6 +39,6 @@ libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 
-libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3" from "https://github.com/memo33/scala-unsigned/releases/download/v0.1.3/scala-unsigned_2.11-0.1.3.jar"
+libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0"
 
 libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1" from "https://github.com/memo33/jsquish/releases/download/v2.0.1/jsquish-2.0.1.jar"

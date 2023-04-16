@@ -3,7 +3,7 @@ package scdbpf
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import DbpfProperty._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 class ExemplarSpec extends AnyWordSpec with Matchers {
 

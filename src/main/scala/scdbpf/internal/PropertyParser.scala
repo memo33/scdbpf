@@ -2,7 +2,7 @@ package scdbpf
 
 import org.parboiled.scala._
 import DbpfProperty._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 private class PropertyParser extends Parser {
 

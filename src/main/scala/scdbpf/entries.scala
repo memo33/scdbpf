@@ -3,7 +3,7 @@ package scdbpf
 import compat.{Input, ByteArrayInput}
 import resource._
 import DbpfUtil._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 import java.io.{RandomAccessFile, EOFException}
 
 /** The base trait for entries of a DBPF file.

@@ -4,7 +4,7 @@ import compat.{Image, RGBA}
 import Fsh._
 import java.nio.ByteBuffer
 import DbpfUtil._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 trait Fsh extends DbpfType {
 

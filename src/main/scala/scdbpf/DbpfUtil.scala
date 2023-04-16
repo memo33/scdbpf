@@ -1,7 +1,7 @@
 package scdbpf
 
 import java.nio.{ByteBuffer, ByteOrder}
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 object DbpfUtil {
 

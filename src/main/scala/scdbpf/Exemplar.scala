@@ -6,7 +6,7 @@ import scala.collection.immutable.SortedMap
 import scala.collection.{SortedMapLike, GenTraversableOnce}
 import scala.collection.mutable.{Builder, MapBuilder}
 import scala.collection.generic.CanBuildFrom
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 
 sealed trait Exemplar extends DbpfType {
