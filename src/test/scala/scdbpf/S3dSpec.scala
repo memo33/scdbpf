@@ -1,10 +1,11 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import collection.immutable._
 import S3d._
 
-class S3dSpec extends WordSpec with Matchers {
+class S3dSpec extends AnyWordSpec with Matchers {
 
   // mock objects
   val vert = IndexedSeq(1,2,3).map(i => VertGroup(IndexedSeq.tabulate(10 * i)(j => Vert(j,j,j,0,0))))

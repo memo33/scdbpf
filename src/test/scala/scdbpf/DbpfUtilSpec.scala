@@ -1,9 +1,10 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import DbpfUtil._
 
-class DbpfUtilSpec extends WordSpec with Matchers {
+class DbpfUtilSpec extends AnyWordSpec with Matchers {
 
   "toHex" should {
     "pass test cases" in {

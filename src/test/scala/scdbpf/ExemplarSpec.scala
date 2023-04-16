@@ -1,10 +1,11 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import DbpfProperty._
 import passera.unsigned._
 
-class ExemplarSpec extends WordSpec with Matchers {
+class ExemplarSpec extends AnyWordSpec with Matchers {
 
   val propLists = Seq(
     Multi(1,2,3,4),

@@ -1,9 +1,11 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers, CancelAfterFailure}
+import org.scalatest.CancelAfterFailure
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import strategy.throwExceptions
 
-class DbpfFileSpec extends WordSpec with Matchers with CancelAfterFailure {
+class DbpfFileSpec extends AnyWordSpec with Matchers with CancelAfterFailure {
 
   "DbpfFile" should {
     val tmpFile = java.io.File.createTempFile("dbpffile-", ".dat", new java.io.File("target"))

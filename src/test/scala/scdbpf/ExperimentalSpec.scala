@@ -1,9 +1,10 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import Experimental._
 
-class ExperimentalSpec extends WordSpec with Matchers {
+class ExperimentalSpec extends AnyWordSpec with Matchers {
 
   "PreviewEffect" should {
     "be constructible from resource" in {

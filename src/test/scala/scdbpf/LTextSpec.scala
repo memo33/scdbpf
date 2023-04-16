@@ -1,8 +1,9 @@
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class LTextSpec extends WordSpec with Matchers {
+class LTextSpec extends AnyWordSpec with Matchers {
 
   import strategy.throwExceptions
 

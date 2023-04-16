@@ -32,7 +32,7 @@ Compile / doc / scalacOptions ++= { ((baseDirectory).map { bd =>
 autoAPIMappings := true
 
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
 
