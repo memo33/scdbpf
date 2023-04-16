@@ -36,7 +36,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
 
-libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.6"
+libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 
 libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/pureimage_2.11-0.1.1.jar"
