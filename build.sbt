@@ -34,7 +34,7 @@ autoAPIMappings := true
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
-libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
+libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked from com.jsuereth to support scala-2.13
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
