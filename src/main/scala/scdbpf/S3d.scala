@@ -61,7 +61,7 @@ trait S3d extends DbpfType {
   def * (rf: RotFlip): S3d = {
     if (rf == RotFlip.R0F0) this
     else if (regp.nonEmpty) throw new UnsupportedOperationException("currently, models with a REGP group cannot be rotated")
-    else copy(vert = vert map (_ map (_ *: rf)),
+    else copy(vert = vert.map((_: VertGroup).map((_: Vert) *: rf)),
               indx = if (!rf.flipped) indx else reversedIndx)
   }
 
@@ -79,7 +79,7 @@ trait S3d extends DbpfType {
     val reindexPrim = reindex(anim.iterator.flatMap(_.primBlock))
     val reindexMats = reindex(anim.iterator.flatMap(_.matsBlock))
 
-    val animReindexed = anim.copy(groups = anim map { ag => ag.copy(
+    val animReindexed = anim.copy(groups = anim map { ag: AnimGroup => ag.copy(
       vertBlock = ag.vertBlock map reindexVert,
       indxBlock = ag.indxBlock map reindexIndx,
       primBlock = ag.primBlock map reindexPrim,
@@ -115,11 +115,11 @@ trait S3d extends DbpfType {
 
   /** Scales the model uniformly by a factor. */
   def scale(s: Float) =
-    copy(vert = vert map (_ map (v => Vert(v.x * s, v.y * s, v.z * s, v.u, v.v))))
+    copy(vert = vert.map((_: VertGroup).map((v: Vert) => Vert(v.x * s, v.y * s, v.z * s, v.u, v.v))))
 
   /** Translates the model on the three axes. */
   def translate(t: Translation) =
-    copy(vert = vert map (_ map (v => Vert(v.x + t.x, v.y + t.y, v.z + t.z, v.u, v.v))))
+    copy(vert = vert.map((_: VertGroup).map((v: Vert) => Vert(v.x + t.x, v.y + t.y, v.z + t.z, v.u, v.v))))
 
 }
 
@@ -223,17 +223,16 @@ object S3d extends DbpfTypeCompanion[S3d] {
     private[scdbpf] def binarySize: Int
     private[scdbpf] def encode(buf: ByteBuffer): Unit
   }
-  private[scdbpf] abstract class AbstractCBF[-From, -Elem, +To] extends collection.generic.CanBuildFrom[From, Elem, To] {
-    def apply(from: From) = apply()
-  }
 
   case class Vert(x: Float, y: Float, z: Float, u: Float, v: Float) extends IndexedSeq[Float] {
     def length = 5
     def apply(idx: Int) = productElement(idx).asInstanceOf[Float]
   }
 
-  case class VertGroup(verts: IndexedSeq[Vert]) extends IndexedSeqProxy(verts) with S3dGroup {
+  case class VertGroup(verts: IndexedSeq[Vert]) extends IndexedSeqProxy[Vert](verts) with S3dGroup {
     override def stringPrefix: String = "VertGroup"
+    def map(f: Vert => Vert): VertGroup = copy(verts = verts.map(f))
+    override def filter(p: Vert => Boolean): VertGroup = copy(verts = verts.filter(p))
     private[scdbpf] def binarySize = 8 + verts.size * 20 // assumes format 0x80004001
     private[scdbpf] def encode(buf: ByteBuffer): Unit = {
       buf.putShort(0) // flags
@@ -244,12 +243,11 @@ object S3d extends DbpfTypeCompanion[S3d] {
       }
     }
   }
-  implicit object VertGroupCBF extends AbstractCBF[Seq[Vert], Vert, VertGroup] {
-    def apply() = IndexedSeq.newBuilder[Vert].mapResult(vs => VertGroup(vs))
-  }
 
-  case class IndxGroup(indxs: IndexedSeq[Int]) extends IndexedSeqProxy(indxs) with S3dGroup {
+  case class IndxGroup(indxs: IndexedSeq[Int]) extends IndexedSeqProxy[Int](indxs) with S3dGroup {
     override def stringPrefix: String = "IndxGroup"
+    def map(f: Int => Int): IndxGroup = copy(indxs = indxs.map(f))
+    override def filter(p: Int => Boolean): IndxGroup = copy(indxs = indxs.filter(p))
     private[scdbpf] def binarySize = 6 + indxs.size * 2 // assumes stride 2
     private[scdbpf] def encode(buf: ByteBuffer): Unit = {
       buf.putShort(0) // flags
@@ -260,14 +258,13 @@ object S3d extends DbpfTypeCompanion[S3d] {
       }
     }
   }
-  implicit object IndxGroupCBF extends AbstractCBF[Seq[Int], Int, IndxGroup] {
-    def apply() = IndexedSeq.newBuilder[Int].mapResult(is => IndxGroup(is))
-  }
 
   case class Prim(primType: PrimType.Value, firstIndx: Int, numIndxs: Int)
 
-  case class PrimGroup(prims: IndexedSeq[Prim]) extends IndexedSeqProxy(prims) with S3dGroup {
+  case class PrimGroup(prims: IndexedSeq[Prim]) extends IndexedSeqProxy[Prim](prims) with S3dGroup {
     override def stringPrefix: String = "PrimGroup"
+    def map(f: Prim => Prim): PrimGroup = copy(prims = prims.map(f))
+    override def filter(p: Prim => Boolean): PrimGroup = copy(prims = prims.filter(p))
     private[scdbpf] def binarySize = 2 + prims.size * 12
     private[scdbpf] def encode(buf: ByteBuffer): Unit = {
       buf.putShort(prims.size.toShort)
@@ -277,9 +274,6 @@ object S3d extends DbpfTypeCompanion[S3d] {
         buf.putInt(p.numIndxs)
       }
     }
-  }
-  implicit object PrimGroupCBF extends AbstractCBF[Seq[Prim], Prim, PrimGroup] {
-    def apply() = IndexedSeq.newBuilder[Prim].mapResult(ps => PrimGroup(ps))
   }
 
   /** A material referencing a specific ID.
@@ -408,7 +402,10 @@ object S3d extends DbpfTypeCompanion[S3d] {
     frameRate: Short,
     playMode: PlayMode.Value,
     displacement: Float,
-    groups: IndexedSeq[AnimGroup]) extends IndexedSeqProxy(groups)
+    groups: IndexedSeq[AnimGroup]) extends IndexedSeqProxy[AnimGroup](groups) {
+    def map(f: AnimGroup => AnimGroup): AnimSection = copy(groups = groups.map(f))
+    override def filter(p: AnimGroup => Boolean): AnimSection = copy(groups = groups.filter(p))
+  }
 
   case class PropGroup(
     meshIndex: Short,
@@ -459,9 +456,9 @@ object S3d extends DbpfTypeCompanion[S3d] {
   private[scdbpf] val VertFormat: Int = 0x80004001
   private[scdbpf] val IndxStride: Short = 2
 
-  private[S3d] class IndexedSeqProxy[A](seq: IndexedSeq[A]) extends IndexedSeq[A] {
-    def length = seq.length
-    def apply(idx: Int) = seq(idx)
+  private[S3d] class IndexedSeqProxy[A](protected val elems: IndexedSeq[A]) extends IndexedSeq[A] {
+    def length = elems.length
+    def apply(idx: Int) = elems(idx)
   }
 
   private def putString(buf: ByteBuffer, name: Option[String], asShort: Boolean = false): Unit = {
