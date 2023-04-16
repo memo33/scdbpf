@@ -1,6 +1,5 @@
 package scdbpf
 
-import rapture.io._
 import resource._
 import DbpfUtil._
 

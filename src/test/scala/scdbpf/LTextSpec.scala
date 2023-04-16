@@ -1,7 +1,6 @@
 package scdbpf
 
 import org.scalatest.{WordSpec, Matchers}
-import rapture.io._
 
 class LTextSpec extends WordSpec with Matchers {
 

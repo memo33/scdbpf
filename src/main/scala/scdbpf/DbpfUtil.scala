@@ -63,7 +63,7 @@ object DbpfUtil {
     "0x" + "0" * (8 - s.length) + s.toUpperCase
   }
 
-  import rapture.io._
+  import rapture.io.{Input, Encodings}
   private[scdbpf] def slurpBytes(input: Input[Byte]): Array[Byte] = {
     import strategy.throwExceptions
     input.slurp[Byte]()
