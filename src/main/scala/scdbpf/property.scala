@@ -137,7 +137,7 @@ object DbpfProperty {
 
     def apply[A](value: A)(implicit vt: ValueType[A]): Single[A] = vt match {
       case ValueType.String => (new StringProperty(value.asInstanceOf[String])).asInstanceOf[Single[A]]
-      case vt: ValueType.Numerical[A] => new SingleImpl(vt, value)
+      case vt: ValueType.Numerical[_] => new SingleImpl(vt.asInstanceOf[ValueType[A] with ValueType.Numerical[A]], value)
       case x if x == null => throw new IllegalArgumentException
     }
     def unapply[A](prop: PropertyList[A]): Option[Single[A]] = prop match {
