@@ -12,7 +12,7 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
     Multi(1,2,3,4),
     Single(0),
     Single("foo"),
-    { val m = Multi(5,6,7,8); m.copy(values = m.values.map(UInt(_))) },
+    Multi(5,6,7,8).map(UInt(_)),
     Single(true),
     Single(UShort(42)),
     Single(-1L))

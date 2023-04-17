@@ -24,6 +24,7 @@ object DbpfProperty {
   type PropList = PropertyList[_]
   type Property = (UInt, PropList)
   type ValueType[D] = ValueType.ValueType[D]
+  type NumericalValueType[D] = ValueType.ValueType[D] with ValueType.Numerical[D]
 
   object ValueType extends Enumeration {
 
@@ -115,7 +116,7 @@ object DbpfProperty {
   }
 
   /** (for convenience) calls Multi.apply() */
-  def apply[A](values: Seq[A])(implicit vt: ValueType[A] with ValueType.Numerical[A]): Multi[A] = Multi(values: _*)
+  def apply[A : NumericalValueType](values: Seq[A]): Multi[A] = Multi(values: _*)
 
   /** (for convenience) calls Single.apply() */
   def apply[A](value: A)(implicit vt: ValueType[A]): Single[A] = Single(value)
@@ -148,7 +149,7 @@ object DbpfProperty {
     }
   }
 
-  case class Multi[A](values: IndexedSeq[A])(implicit val valueType: ValueType[A] with ValueType.Numerical[A]) extends PropertyList[A] {
+  case class Multi[A](values: IndexedSeq[A])(implicit val valueType: NumericalValueType[A]) extends PropertyList[A] {
     def apply(idx: Int): A = values(idx)
     override def toString: String = valueType.toString + "PropList(" + values.mkString(", ") + ")"
     private[scdbpf] def binaryLength: Int = 13 + values.length * valueType.wordLength
@@ -161,6 +162,7 @@ object DbpfProperty {
       buf.putInt(values.length)
       values.foreach(v => valueType.putValue(buf, v))
     }
+    def map[B : NumericalValueType](f: A => B) = Multi(values.map(f))
   }
 
   object Single {
@@ -171,7 +173,7 @@ object DbpfProperty {
   }
 
   object Multi {
-    def apply[A](values: A*)(implicit vt: ValueType[A] with ValueType.Numerical[A]): Multi[A] = {
+    def apply[A : NumericalValueType](values: A*): Multi[A] = {
       new Multi(values.toIndexedSeq)
     }
     def unapply[A](prop: PropertyList[A]): Option[IndexedSeq[A]] = prop match {
