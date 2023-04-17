@@ -12,7 +12,7 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
     Multi(1,2,3,4),
     Single(0),
     Single("foo"),
-    Multi(5,6,7,8).map(UInt(_)),
+    { val m = Multi(5,6,7,8); m.copy(values = m.values.map(UInt(_))) },
     Single(true),
     Single(UShort(42)),
     Single(-1L))
@@ -22,12 +22,12 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
     "allow proper extraction" in {
       import ValueType._
       def extract(p: PropList) = p match {
-        case Multi(Sint32(_)) => 0
-        case Single(Sint32(_)) => 1
+        case Sint32(Multi(_)) => 0
+        case Sint32(Single(_)) => 1
         case String(_) => 2
-        case Multi(Uint32(_)) => 3
-        case Single(Bool(_)) => 4
-        case Single(Uint16(_)) => 5
+        case Uint32(Multi(_)) => 3
+        case Bool(Single(_)) => 4
+        case Uint16(Single(_)) => 5
         case Sint64(Single(_)) => 6
       }
 

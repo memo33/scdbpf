@@ -62,9 +62,9 @@ class PropertyParserSpec extends AnyWordSpec with Matchers {
       val b = """0x27812810:{"Occupant Size"}=Float32:3:{0.2,10,-0.2}"""
       val c = """0x69F14D33:{"Orient To Slope"}=Bool:0:{False}"""
       val d = """0x00000020:{"Exemplar Name"}=String:0:{"RTMT_Prop_Ninja_BusSign_Road"}"""
-      parser.parseProperty(a) match { case (id, Multi(Uint32(p))) => p should have size (3) }
-      parser.parseProperty(b) match { case (id, Multi(Float32(p))) => p should have size (3) }
-      parser.parseProperty(c) match { case (id, Single(Bool(p))) => p.value should be (false) }
+      parser.parseProperty(a) match { case (id, Uint32(Multi(p))) => p should have size (3) }
+      parser.parseProperty(b) match { case (id, Float32(Multi(p))) => p should have size (3) }
+      parser.parseProperty(c) match { case (id, Bool(Single(p))) => p should be (false) }
       parser.parseProperty(d) match { case (id, String(p)) => p.value should be ("RTMT_Prop_Ninja_BusSign_Road") }
     }
     "parse named text properties" in {
@@ -74,11 +74,11 @@ class PropertyParserSpec extends AnyWordSpec with Matchers {
       val c = """0x27812851:{"Pollution at center"}=Sint32:4:{Air: 0x00000000, Water: 0x00000000, Garbage: 0x00000000, Radiation: 0x00000000}"""
       val d = """0x68EE9764:{"Pollution radii"}=Float32:4:{Air: 0, Water: 0, Garbage: 0, Radiation: 0}"""
       val e = """0x87CD6399:{"Landmark Effect"}=Float32:2:{Magnitude: 5, Radius: 5}"""
-      parser.parseProperty(a) match { case (id, Multi(Float32(p))) => p should be (Multi(0.00999f, 0.00999f, 0.00999f)) }
-      parser.parseProperty(b) match { case (id, Multi(Sint32(p))) => p should be (Multi(0, 0)) }
-      parser.parseProperty(c) match { case (id, Multi(Sint32(p))) => p should be (Multi(0, 0, 0, 0)) }
-      parser.parseProperty(d) match { case (id, Multi(Float32(p))) => p should be (Multi[Float](0, 0, 0, 0)) }
-      parser.parseProperty(e) match { case (id, Multi(Float32(p))) => p should be (Multi[Float](5, 5)) }
+      parser.parseProperty(a) match { case (id, Float32(Multi(p))) => p should be (Seq(0.00999f, 0.00999f, 0.00999f)) }
+      parser.parseProperty(b) match { case (id, Sint32(Multi(p))) => p should be (Seq(0, 0)) }
+      parser.parseProperty(c) match { case (id, Sint32(Multi(p))) => p should be (Seq(0, 0, 0, 0)) }
+      parser.parseProperty(d) match { case (id, Float32(Multi(p))) => p should be (Seq[Float](0, 0, 0, 0)) }
+      parser.parseProperty(e) match { case (id, Float32(Multi(p))) => p should be (Seq[Float](5, 5)) }
     }
     "parse parent cohort" in {
       val res = RPR(parser.Parent).run("""ParentCohort=Key:{0x00000000,0x00000000,0x00000000}""")

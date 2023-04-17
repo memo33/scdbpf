@@ -7,6 +7,7 @@ import io.github.memo33.passera.unsigned._
 import scala.reflect.ClassTag
 import scala.collection.mutable.{Builder, ArrayBuilder}
 import scala.collection.generic.CanBuildFrom
+import scala.collection.immutable.IndexedSeq
 import DbpfProperty.ValueType
 import DbpfUtil.asciiEncoding
 
@@ -36,10 +37,10 @@ object DbpfProperty {
 
       private[DbpfProperty] def buildProperty(buf: ByteBuffer, count: Option[Int]): PropertyList[A] = count match {
         case Some(cnt) =>
-          val values: Array[A] = Array.fill(cnt)(getValue(buf))
-          new Multi(this, values)
+          val values: IndexedSeq[A] = IndexedSeq.fill(cnt)(getValue(buf))
+          new Multi(values)(this)
         case None =>
-          new SingleImpl(this, getValue(buf))
+          new Single(getValue(buf))(this)
       }
     }
 
@@ -54,7 +55,7 @@ object DbpfProperty {
         assert(count.isDefined)
         val bytes = new Array[Byte](count.get)
         buf.get(bytes)
-        new StringProperty(new String(bytes, asciiEncoding))
+        new Single(new String(bytes, asciiEncoding))(ValueType.String)
       }
     }
 
@@ -119,117 +120,63 @@ object DbpfProperty {
   /** (for convenience) calls Single.apply() */
   def apply[A](value: A)(implicit vt: ValueType[A]): Single[A] = Single(value)
 
-  sealed trait Single[A] extends PropertyList[A] {
-
-    val value: A
+  case class Single[A](value: A)(implicit val valueType: ValueType[A]) extends PropertyList[A] {
     def apply(idx: Int): A = if (idx == 0) value else throw new IndexOutOfBoundsException
-    def copy(value: A): Single[A]
-
-    final override def equals(obj: Any): Boolean = obj match {
-      case that: Single[_] => this.valueType == that.valueType && this.value == that.value
-      case _ => false
-    }
-
     override def toString: String = valueType.toString + "Prop(" + value + ")"
-  }
-
-  object Single {
-
-    def apply[A](value: A)(implicit vt: ValueType[A]): Single[A] = vt match {
-      case ValueType.String => (new StringProperty(value.asInstanceOf[String])).asInstanceOf[Single[A]]
-      case vt: ValueType.Numerical[_] => new SingleImpl(vt.asInstanceOf[ValueType[A] with ValueType.Numerical[A]], value)
-      case x if x == null => throw new IllegalArgumentException
+    private[this] lazy val bytes = valueType match {
+      case ValueType.String => value.asInstanceOf[String].getBytes(asciiEncoding)
+      case _ => null
     }
-    def unapply[A](prop: PropertyList[A]): Option[Single[A]] = prop match {
-      case p: Single[_] => Some(p)
-      case _ => None
+    private[scdbpf] def binaryLength: Int = valueType match {
+      case ValueType.String => 13 + bytes.length
+      case _ => 9 + valueType.wordLength
     }
-  }
-
-  private final class SingleImpl[A](val valueType: ValueType[A] with ValueType.Numerical[A], val value: A) extends Single[A] {
-
-    private[scdbpf] lazy val binaryLength: Int = 9 + valueType.wordLength
-    def copy(value: A): SingleImpl[A] = new SingleImpl(valueType, value)
-
     private[scdbpf] def encode(buf: ByteBuffer, id: UInt): Unit = {
       assert(buf.order == LittleEndian)
       buf.putInt(id.toInt)
       buf.putShort(valueType.valueId)
-      buf.putShort(0)
-      buf.put(0: Byte)
-      valueType.putValue(buf, value)
+      if (valueType != ValueType.String) {
+        buf.putShort(0)
+        buf.put(0: Byte)
+        valueType.putValue(buf, value)
+      } else {
+        buf.putShort(0x80)
+        buf.put(0: Byte)
+        buf.putInt(bytes.length)
+        buf.put(bytes)
+      }
     }
   }
 
-  private[DbpfProperty] sealed trait MultiLike[A] extends PropertyList[A] {
-
-    protected def encValues(buf: ByteBuffer): Unit
-
+  case class Multi[A](values: IndexedSeq[A])(implicit val valueType: ValueType[A] with ValueType.Numerical[A]) extends PropertyList[A] {
+    def apply(idx: Int): A = values(idx)
+    override def toString: String = valueType.toString + "PropList(" + values.mkString(", ") + ")"
+    private[scdbpf] def binaryLength: Int = 13 + values.length * valueType.wordLength
     private[scdbpf] def encode(buf: ByteBuffer, id: UInt): Unit = {
       assert(buf.order == LittleEndian)
       buf.putInt(id.toInt)
       buf.putShort(valueType.valueId)
       buf.putShort(0x80)
       buf.put(0: Byte)
-      encValues(buf)
+      buf.putInt(values.length)
+      values.foreach(v => valueType.putValue(buf, v))
     }
   }
 
-  private final class StringProperty(val value: String) extends Single[String] with MultiLike[String] {
-    val valueType = ValueType.String
-
-    private[this] lazy val bytes = value.getBytes(asciiEncoding)
-    private[scdbpf] lazy val binaryLength: Int = 13 + bytes.length
-
-    protected def encValues(buf: ByteBuffer): Unit = {
-      buf.putInt(bytes.length)
-      buf.put(bytes)
+  object Single {
+    def unapply[A](prop: PropertyList[A]): Option[A] = prop match {
+      case p: Single[_] => Some(p.value)
+      case _ => None
     }
-
-    def copy(value: String): StringProperty = new StringProperty(value)
-  }
-
-  final class Multi[A : ClassTag] private[DbpfProperty] (val valueType: ValueType[A] with ValueType.Numerical[A], values: Array[A])
-      extends MultiLike[A]
-      with IndexedSeq[A] with scala.collection.IndexedSeqOptimized[A, Multi[A]] {
-
-    private[scdbpf] lazy val binaryLength: Int = 13 + this.length * valueType.wordLength
-
-    protected def encValues(buf: ByteBuffer): Unit = {
-      buf.putInt(length)
-      this foreach (v => valueType.putValue(buf, v))
-    }
-
-    final override def equals(obj: Any): Boolean = obj match {
-      case that: Multi[_] => this.valueType == that.valueType && super.equals(that)
-      case _ => false
-    }
-    override def canEqual(that: Any): Boolean = that.isInstanceOf[Multi[_]]
-
-    override protected[this] def newBuilder: Builder[A, Multi[A]] = Multi.newBuilder(implicitly[ClassTag[A]], valueType)
-
-    def apply(idx: Int): A = values(idx)
-    val length: Int = values.length
-
-    override def stringPrefix: String = valueType.toString + "PropList"
   }
 
   object Multi {
-
     def apply[A](values: A*)(implicit vt: ValueType[A] with ValueType.Numerical[A]): Multi[A] = {
-      new Multi(vt, values.toArray(vt.tag))(vt.tag)
+      new Multi(values.toIndexedSeq)
     }
-    def unapply[A](prop: PropertyList[A]): Option[Multi[A]] = prop match {
-      case p: Multi[_] => Some(p)
+    def unapply[A](prop: PropertyList[A]): Option[IndexedSeq[A]] = prop match {
+      case p: Multi[_] => Some(p.values)
       case _ => None
-    }
-
-    def newBuilder[A](implicit ev: ClassTag[A], vt: ValueType[A] with ValueType.Numerical[A]): Builder[A, Multi[A]] =
-      ArrayBuilder.make[A]() mapResult { arr: Array[A] => new Multi(vt, arr) }
-
-    implicit def cbf[C](implicit ev: ClassTag[C], vt: ValueType[C] with ValueType.Numerical[C]) = new CanBuildFrom[Multi[_], C, Multi[C]] {
-      def apply(): Builder[C, Multi[C]] = newBuilder
-      def apply(from: Multi[_]) = newBuilder
     }
   }
 }
