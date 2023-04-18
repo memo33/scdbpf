@@ -7,9 +7,18 @@ package scdbpf.compat
 
 import scala.reflect.ClassTag
 import java.io.{InputStream, BufferedInputStream, ByteArrayInputStream, OutputStream, BufferedOutputStream}
+import scala.language.higherKinds
+
+/** This trait exisist for compatibility between scala 2.12 and 2.13
+  * collections, since 2.13 collections define a map method that requires an
+  * explicit override.
+  */
+private[compat] trait MapOverride[@specialized(Byte, Char) Data, C[_]] {
+  def map[T](fn: Data => T): C[T]
+}
 
 /** An Input provides an incoming stream of data */
-trait Input[@specialized(Byte, Char) Data] extends Seq[Data] { thisInput =>
+trait Input[@specialized(Byte, Char) Data] extends Seq[Data] with MapOverride[Data, Input] { thisInput =>
 
   private var beingHandled = false
 
@@ -104,7 +113,7 @@ trait Input[@specialized(Byte, Char) Data] extends Seq[Data] { thisInput =>
 
   def > (out: Output[Data])(implicit mf: ClassTag[Data]): Int = pumpTo(out)
 
-  def map[T](fn: Data => T): Input[T] = new Input[T] {
+  override def map[T](fn: Data => T): Input[T] = new Input[T] {
     def read(): Option[T] = thisInput.read().map(fn)
     def ready(): Boolean = thisInput.ready()
     def close(): Unit = thisInput.close()
