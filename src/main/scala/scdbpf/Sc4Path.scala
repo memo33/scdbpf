@@ -168,7 +168,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
     /** Shifts the path vertically by translation `t`. */
     def shiftHeight(t: Float): Self
 
-    private[Sc4Path] def classAsString = if (classNumber == 0) "" else ('a' + classNumber - 1).toChar + "_"
+    private[Sc4Path] def classAsString = if (classNumber == 0) "" else s"${('a' + classNumber - 1).toChar}_"
     private[Sc4Path] def commentLines = { // adds -- delimiters if missing
       comment.toList flatMap (s => new collection.immutable.StringOps(s).lines) map (_.trim) map
         (c => if (c.startsWith("--")) c else "-- " + c)

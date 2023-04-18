@@ -8,6 +8,7 @@ import java.nio.{ByteBuffer, IntBuffer}
 import io.github.memo33.passera.unsigned.UInt
 import strategy.throwExceptions
 import scala.collection.immutable.{IndexedSeq, Map}
+import scala.collection.compat._
 
 /** A container for `DbpfEntries` that are read from and written to a file.
   * Instances of this class may be obtained via the [[DbpfFile.read]] method.
@@ -48,7 +49,7 @@ class DbpfFile private (
     * @see [[DbpfFile.write]]
     */
   def write(
-      entries: TraversableOnce[DbpfEntry] = entries,
+      entries: IterableOnce[DbpfEntry] = entries,
       file: JFile = file)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
           DbpfFile.write(entries, file, header.dateCreated)(eh)
@@ -206,7 +207,7 @@ object DbpfFile {
     * @throws IOException in case of other IO errors
     */
   def write(
-      entries: TraversableOnce[DbpfEntry],
+      entries: IterableOnce[DbpfEntry],
       file: JFile,
       dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
@@ -231,7 +232,7 @@ object DbpfFile {
     new DbpfFile(file, header, streamedEntries)
   }
 
-  private def writeImpl(entries: TraversableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
+  private def writeImpl(entries: IterableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
 
     def buildDir(dirData: Iterable[IndexEntry]): Input[Byte] = {
       val buf = allocLEBB(dirData.size * 16)
@@ -270,7 +271,7 @@ object DbpfFile {
         // pump all entries to file, ignore dirs
         managed {
           new SequenceInput(new scala.collection.AbstractIterator[WrappedDbpfInput] {
-            private[this] val iter: Iterator[DbpfEntry] = entries.withFilter(_.tgi != Tgi.Directory)
+            private[this] val iter: Iterator[DbpfEntry] = entries.iterator.withFilter(_.tgi != Tgi.Directory)
             def hasNext: Boolean = iter.hasNext
             def next: WrappedDbpfInput = {
               val n = new WrappedDbpfInput(iter.next())
@@ -289,7 +290,7 @@ object DbpfFile {
         }
 
         // directory file
-        val dirList = writeList.view.map(_.indexEntry).filter(_.decompressedSize.isDefined).force
+        val dirList = writeList.view.map(_.indexEntry).filter(_.decompressedSize.isDefined).toIndexedSeq
         val dirIndexEntry: Option[IndexEntry] = if (dirList.isEmpty) None else {
          // write dir to file
           managed(buildDir(dirList)) acquireAndGet (_ > output)
