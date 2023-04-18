@@ -9,9 +9,9 @@ import compat.RGBA
 
 class FshSpec extends AnyWordSpec with Matchers with PrivateMethodTester {
 
-  val interpolate = PrivateMethod[Int]('interpolate)
-  val toRGBA = PrivateMethod[RGBA]('toRGBA)
-  val fromRGBA = PrivateMethod[Int]('fromRGBA)
+  val interpolate = PrivateMethod[Int](Symbol("interpolate"))
+  val toRGBA = PrivateMethod[RGBA](Symbol("toRGBA"))
+  val fromRGBA = PrivateMethod[Int](Symbol("fromRGBA"))
 
   private def interpolateOld(sup: Int, newSup: Int, v: Int): Int = {
     if (newSup <= sup)

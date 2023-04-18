@@ -9,7 +9,7 @@ import S3d._
 class S3dSpec extends AnyWordSpec with Matchers {
 
   // mock objects
-  val vert = IndexedSeq(1,2,3).map(i => VertGroup(IndexedSeq.tabulate(10 * i)(j => Vert(j,j,j,0,0))))
+  val vert = IndexedSeq(1,2,3).map(i => VertGroup(IndexedSeq.tabulate(10 * i)(j => Vert(j.toFloat,j.toFloat,j.toFloat,0,0))))
   val indx = IndexedSeq(1,2,3).map(i => IndxGroup((0 until 10 * i).toIndexedSeq))
   val prim = IndexedSeq(1,2,3).map(i => PrimGroup(IndexedSeq.tabulate(10 * i)(j => Prim(PrimType.Triangle, 0, j))))
   val mats = IndexedSeq(0,1,2,3).map(i =>

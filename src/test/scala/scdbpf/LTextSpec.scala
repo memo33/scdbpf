@@ -15,7 +15,7 @@ class LTextSpec extends AnyWordSpec with Matchers {
       val ltext2 = e.content.convertTo(LText)
       assert(ltext ne ltext2)
       ltext.text should be (ltext2.text)
-      ltext.dataView.deep should be (ltext2.dataView.deep)
+      ltext.dataView.toSeq should be (ltext2.dataView.toSeq)
     }
   }
 }
