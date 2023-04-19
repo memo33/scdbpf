@@ -164,6 +164,12 @@ trait Input[@specialized(Byte, Char) Data] extends Seq[Data] with MapOverride[Da
   }
 }
 
+object Input {
+  def slurpBytes(input: Input[Byte])(implicit eh: ExceptionHandler): eh.![Array[Byte], java.io.IOException] = eh.wrap {
+    scdbpf.DbpfUtil.slurpBytes(input)
+  }
+}
+
 /** Defines a generic output stream */
 trait Output[@specialized(Byte, Char) Data] {
   private var beingHandled = false
