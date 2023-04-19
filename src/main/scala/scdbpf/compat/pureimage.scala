@@ -2,6 +2,7 @@
  * https://github.com/stephenjudkins/pureimage/blob/master/src/main/scala/ps/tricerato/pureimage/Image.scala
  * (released under MIT license)
  */
+package io.github.memo33
 package scdbpf.compat
 
 case class RGB(i: Int) extends AnyVal {

@@ -1,6 +1,6 @@
 name := "scdbpf"
 
-organization := "com.github.memo33"
+organization := "io.github.memo33"
 
 version := "0.2.0-SNAPSHOT"
 
@@ -34,7 +34,7 @@ javacOptions ++= Seq("--release", "8")
 
 console / initialCommands := """
 import io.github.memo33.passera.unsigned._
-import scdbpf._, strategy.throwExceptions, DbpfUtil._
+import io.github.memo33.scdbpf._, strategy.throwExceptions, DbpfUtil._
 import java.io.File
 """
 

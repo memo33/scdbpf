@@ -1,4 +1,4 @@
-
+package io.github.memo33
 /** Provides methods for accessing and modifying the contents of DBPF formatted
   * files. Currently, only DBPF version 1.0 is supported (used by SimCity 4).
   *

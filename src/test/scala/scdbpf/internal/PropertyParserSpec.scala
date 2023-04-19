@@ -1,3 +1,4 @@
+package io.github.memo33
 package scdbpf
 
 import org.scalatest.matchers.should.Matchers

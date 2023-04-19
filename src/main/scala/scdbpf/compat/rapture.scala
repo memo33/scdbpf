@@ -2,6 +2,7 @@
  * Rapture Core Library Version 0.9.0 to facilitate upgrading Scala version.
  * (released under the Apache License, Version 2.0)
  */
+package io.github.memo33
 package scdbpf.compat
 
 import scala.reflect.ClassTag
