@@ -6,7 +6,7 @@ version := "0.2.0-SNAPSHOT"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-crossScalaVersions := List("2.11.12", "2.12.17")  // use `sbt +publishLocal` to publish all versions
+crossScalaVersions := List("2.11.12", "2.12.17", "2.13.10")  // use `sbt +publishLocal` to publish all versions
 
 scalaVersion := crossScalaVersions.value.last
 
