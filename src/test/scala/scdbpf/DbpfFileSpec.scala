@@ -33,5 +33,16 @@ class DbpfFileSpec extends AnyWordSpec with Matchers with CancelAfterFailure {
       val d2 = DbpfFile.read(tmpFile)
       d2.entries.length should be (d.entries.length + 1)
     }
+
+    "support deterministic write operation" in {
+      val entries = List(BufferedEntry(tgi, ltext, compressed = true))
+      import io.github.memo33.passera.unsigned.UInt
+      val d1 = DbpfFile.write(entries, tmpFile, dateCreated = Some(UInt(0)), dateModified = Some(UInt(1)))
+      val d2 = DbpfFile.read(tmpFile)
+      for (d <- Seq(d1, d2)) {
+        d.header.dateCreated shouldBe UInt(0)
+        d.header.dateModified shouldBe UInt(1)
+      }
+    }
   }
 }

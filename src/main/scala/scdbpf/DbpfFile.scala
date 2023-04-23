@@ -39,6 +39,7 @@ class DbpfFile private (
     *
     * @param entries the entries to be written, defaults to [[entries]]
     * @param file the target file, defaults to [[file]]
+    * @param dateModified (primarily for debugging) defaults to current time
     * @return a new `DbpfFile` that represents the current state of the `file`
     *
     * @throws DbpfStreamStreamOutOfDateException if the source file has been
@@ -50,9 +51,10 @@ class DbpfFile private (
     */
   def write(
       entries: IterableOnce[DbpfEntry] = entries,
-      file: JFile = file)
+      file: JFile = file,
+      dateModified: Option[UInt] = None)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
-          DbpfFile.write(entries, file, header.dateCreated)(eh)
+          DbpfFile.write(entries, file, Some(header.dateCreated), dateModified)(eh)
 }
 
 /** Provides factory methods for reading and writing DBPF files.
@@ -198,7 +200,10 @@ object DbpfFile {
     * @param file the target file
     * @param dateCreated the creation date of the DbpfFile. This is a value of
     * the DBPF file header which should be preserved if possible. If no value is
-    * given, this defaults to the current time.
+    * given, this defaults to `dateModified` if given or the current time
+    * otherwise.
+    * @param dateModified the modification date of the DbpfFile (primarily for
+    * debugging). Defaults to current time.
     * @return a new `DbpfFile` that represents the current state of the `file`
     *
     * @throws DbpfStreamStreamOutOfDateException if the source file has been
@@ -209,16 +214,17 @@ object DbpfFile {
   def write(
       entries: IterableOnce[DbpfEntry],
       file: JFile,
-      dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
+      dateCreated: Option[UInt] = None,
+      dateModified: Option[UInt] = None)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
 
     val (header, indexList) = if (!file.exists) {
-      writeImpl(entries, file, dateCreated)
+      writeImpl(entries, file, dateCreated, dateModified)
     } else {
       // writing to a temporary buffer ensures that entries can stream from the destination file
       val tmpFile = java.io.File.createTempFile(file.getName + "_", ".tmp", file.getParentFile)
       try {
-        val result = writeImpl(entries, tmpFile, dateCreated)
+        val result = writeImpl(entries, tmpFile, dateCreated, dateModified)
         java.nio.file.Files.move(tmpFile.toPath(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
         result
       } finally {
@@ -232,7 +238,7 @@ object DbpfFile {
     new DbpfFile(file, header, streamedEntries)
   }
 
-  private def writeImpl(entries: IterableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
+  private def writeImpl(entries: IterableOnce[DbpfEntry], file: JFile, dateCreated: Option[UInt], dateModified: Option[UInt]): (Header, Iterable[IndexEntry]) = {
 
     def buildDir(dirData: Iterable[IndexEntry]): Input[Byte] = {
       val buf = allocLEBB(dirData.size * 16)
@@ -302,9 +308,10 @@ object DbpfFile {
         val indexList = writeList.map(_.indexEntry) ++= dirIndexEntry
         managed(buildIndex(indexList)) acquireAndGet (_ > output)
 
+        val dateModifiedOrNow: UInt = dateModified.getOrElse(UInt((System.currentTimeMillis() / 1000).toInt))
         val header = new Header(
-          dateCreated = dateCreated,
-          dateModified = UInt((System.currentTimeMillis() / 1000).toInt),
+          dateCreated = dateCreated.getOrElse(dateModifiedOrNow),
+          dateModified = dateModifiedOrNow,
           indexEntryCount = UInt(indexList.size),
           indexOffsetLocation = offset,
           indexSize = UInt(indexList.size) * UInt(20))
