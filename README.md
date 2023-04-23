@@ -18,11 +18,11 @@ has been rewritten entirely.
  Installation
 --------------
 
-Add the following to your sbt build file:
+Add the following to your `build.sbt` file:
 
     libraryDependencies += "io.github.memo33" %% "scdbpf" % "0.2.0"
 
-(Replace version number by latest release tag.)
+The latest version is available on [Maven Central](https://mvnrepository.com/artifact/io.github.memo33/scdbpf).
 
 
  Documentation
