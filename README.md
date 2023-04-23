@@ -20,10 +20,9 @@ has been rewritten entirely.
 
 Add the following to your sbt build file:
 
-    libraryDependencies += "io.github.memo33" %% "scdbpf" % "0.1.12" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/scdbpf_2.11-0.1.7.jar"
+    libraryDependencies += "io.github.memo33" %% "scdbpf" % "0.2.0"
 
 (Replace version number by latest release tag.)
-Additionally, add all the dependencies from [build.sbt](build.sbt).
 
 
  Documentation

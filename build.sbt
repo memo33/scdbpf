@@ -4,6 +4,10 @@ organization := "io.github.memo33"
 
 version := "0.2.0-SNAPSHOT"
 
+ThisBuild / versionScheme := Some("early-semver")
+
+description := "A Scala library for the DBPF file format"
+
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
 crossScalaVersions := List("2.11.12", "2.12.17")  // use `sbt +publishLocal` to publish all versions
@@ -43,6 +47,11 @@ Compile / doc / scalacOptions ++= { ((baseDirectory).map { bd =>
 }).value }
 
 autoAPIMappings := true
+
+
+publishTo := sonatypePublishToBundle.value
+
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
