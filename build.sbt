@@ -41,4 +41,4 @@ libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0"
 
-libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1" from "https://github.com/memo33/jsquish/releases/download/v2.0.1/jsquish-2.0.1.jar"
+libraryDependencies += "io.github.memo33" % "jsquish" % "2.1.0"
