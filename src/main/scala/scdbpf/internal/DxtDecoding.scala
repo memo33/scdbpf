@@ -12,7 +12,7 @@ private object DxtDecoding {
   private class DxtImage(val width: Int, val height: Int) extends Image[RGBA] {
     private[this] val arr = new Array[Int](width * height) // ints in rgba format
     def apply(x: Int, y: Int): RGBA = RGBA(arr(x + y * width))
-    @inline def update(x: Int, y: Int, i: Int): Unit = arr(x + y * width) = i
+    @inline final def update(x: Int, y: Int, i: Int): Unit = arr(x + y * width) = i
   }
 
   @inline private def interpolate(a: Double, col0: RGBA, b: Double, col1: RGBA): RGBA = rgbaFromChannels(

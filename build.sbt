@@ -29,8 +29,7 @@ scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toSeq.flatMap 
   case ((2, v)) if v >= 12 =>
     Seq(
       // "-opt-warnings:at-inline-failed-summary",
-      "-opt:l:inline",
-      // "-opt-inline-from:**",  // leads to compiler errors with scala-2.13
+      "-opt:l:inline", "-opt-inline-from:<sources>",
       "-release:8")
 }
 
