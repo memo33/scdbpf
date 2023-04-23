@@ -1,6 +1,7 @@
+package io.github.memo33
 package scdbpf
 
-import passera.unsigned.UInt
+import io.github.memo33.passera.unsigned.UInt
 import java.nio.ByteBuffer
 import DbpfUtil.MagicNumber
 

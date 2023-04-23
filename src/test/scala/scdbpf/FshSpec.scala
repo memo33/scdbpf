@@ -1,10 +1,13 @@
+package io.github.memo33
 package scdbpf
 
 import Fsh._
-import org.scalatest.{Matchers, WordSpec, PrivateMethodTester}
-import ps.tricerato.pureimage._
+import org.scalatest.PrivateMethodTester
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import compat.RGBA
 
-class FshSpec extends WordSpec with Matchers with PrivateMethodTester {
+class FshSpec extends AnyWordSpec with Matchers with PrivateMethodTester {
 
   val interpolate = PrivateMethod[Int]('interpolate)
   val toRGBA = PrivateMethod[RGBA]('toRGBA)

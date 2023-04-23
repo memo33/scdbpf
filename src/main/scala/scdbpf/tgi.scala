@@ -1,6 +1,7 @@
+package io.github.memo33
 package scdbpf
 
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 import DbpfUtil.toHex
 import Tgi._
 

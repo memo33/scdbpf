@@ -1,10 +1,11 @@
+package io.github.memo33
 package scdbpf
 
 import resource._
-import rapture.io._
+import compat.{Input, ByteArrayInput, ByteOutput}
 import java.io.{RandomAccessFile, IOException, EOFException, FileOutputStream, SequenceInputStream}
 import java.nio.{ByteBuffer, IntBuffer}
-import passera.unsigned.UInt
+import io.github.memo33.passera.unsigned.UInt
 import strategy.throwExceptions
 import scala.collection.immutable.{IndexedSeq, Map}
 

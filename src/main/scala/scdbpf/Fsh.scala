@@ -1,10 +1,11 @@
+package io.github.memo33
 package scdbpf
 
-import ps.tricerato.pureimage._
+import compat.{Image, RGBA}
 import Fsh._
 import java.nio.ByteBuffer
 import DbpfUtil._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 trait Fsh extends DbpfType {
 
@@ -160,11 +161,11 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
           for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort4444(img(x, y)))
         case Dxt1 =>
-          import com.github.memo33.jsquish.Squish._
+          import io.github.memo33.jsquish.Squish._
           val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT1, CompressionMethod.CLUSTER_FIT)
           buf.put(arr)
         case Dxt3 =>
-          import com.github.memo33.jsquish.Squish._
+          import io.github.memo33.jsquish.Squish._
           val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT3, CompressionMethod.CLUSTER_FIT)
           buf.put(arr)
       }

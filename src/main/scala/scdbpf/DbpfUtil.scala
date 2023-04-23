@@ -1,7 +1,8 @@
+package io.github.memo33
 package scdbpf
 
 import java.nio.{ByteBuffer, ByteOrder}
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 
 object DbpfUtil {
 
@@ -63,13 +64,18 @@ object DbpfUtil {
     "0x" + "0" * (8 - s.length) + s.toUpperCase
   }
 
-  import rapture.io._
+  import compat.{Input, ByteOutput}
+  import java.io.{ByteArrayOutputStream}
   private[scdbpf] def slurpBytes(input: Input[Byte]): Array[Byte] = {
-    import strategy.throwExceptions
-    input.slurp[Byte]()
+    // import strategy.throwExceptions
+    // input.slurp[Byte]()
+    val baos = new ByteArrayOutputStream
+    val output = new ByteOutput(baos)
+    input.pumpTo(output)
+    baos.toByteArray
   }
 
-  private[scdbpf] val asciiEncoding = java.nio.charset.Charset.forName(Encodings.`US-ASCII`.name)
+  private[scdbpf] val asciiEncoding = java.nio.charset.Charset.forName("US-ASCII")
 
   private val dateModifiedOffset = 28
   private[scdbpf] def readDbpfDateModified(raf: java.io.RandomAccessFile): UInt = {

@@ -1,12 +1,14 @@
+package io.github.memo33
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.parboiled.scala._
 import org.parboiled.scala.{ReportingParseRunner => RPR}
 import org.parboiled.errors.ErrorUtils._
 import Sc4Path._
 
-class Sc4PathParserSpec extends WordSpec with Matchers {
+class Sc4PathParserSpec extends AnyWordSpec with Matchers {
 
   "Sc4PathParser" should {
     val parser = new Sc4PathParser()

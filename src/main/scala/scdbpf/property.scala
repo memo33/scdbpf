@@ -1,9 +1,9 @@
+package io.github.memo33
 package scdbpf
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder.{LITTLE_ENDIAN => LittleEndian}
-import passera.unsigned._
-import rapture.io._
+import io.github.memo33.passera.unsigned._
 import scala.reflect.ClassTag
 import scala.collection.mutable.{Builder, ArrayBuilder}
 import scala.collection.generic.CanBuildFrom

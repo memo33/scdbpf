@@ -1,3 +1,4 @@
+package io.github.memo33
 package scdbpf
 
 /** Provides a few experimental functions that are useful, but which may still
@@ -31,7 +32,7 @@ object Experimental {
     }
   }
 
-  import ps.tricerato.pureimage._
+  import compat.{Image, RGBA}
   import java.awt.image.BufferedImage
   /** Creates a new `BufferedImage` from an `Image`.
     */
@@ -59,7 +60,7 @@ object Experimental {
   object PreviewEffect extends ((Int, String) => DbpfType) {
     private val TemplateLength = 0x04F0
     private lazy val templateData = {
-      import rapture.io._, resource._
+      import compat.ByteInput, resource._
       managed(new ByteInput(getClass.getResourceAsStream("/preview_effect_template.eff"))) acquireAndGet { in =>
         val arr = DbpfUtil.slurpBytes(in)
         assert(arr.length == TemplateLength)

@@ -1,4 +1,4 @@
-
+package io.github.memo33
 /** Provides methods for accessing and modifying the contents of DBPF formatted
   * files. Currently, only DBPF version 1.0 is supported (used by SimCity 4).
   *
@@ -75,9 +75,9 @@ package object scdbpf {
   }
 
   private[scdbpf] type JFile = java.io.File
-  // the following types exist to ease migrating to rapture-io 0.9.0
-  private[scdbpf] type ExceptionHandler = rapture.core.ExceptionHandler
-  private[scdbpf] val strategy = rapture.core.strategy
+  // the following types exist to ease migrating away from rapture-io 0.9.0
+  type ExceptionHandler = scdbpf.compat.ExceptionHandler
+  val strategy = scdbpf.compat.strategy
 
   // aliases for convenience
   type DbpfException = DbpfExceptions.DbpfException

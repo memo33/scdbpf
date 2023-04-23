@@ -1,10 +1,12 @@
+package io.github.memo33
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import collection.immutable._
 import Sc4Path._
 
-class Sc4PathSpec extends WordSpec with Matchers {
+class Sc4PathSpec extends AnyWordSpec with Matchers {
 
   "Sc4Paths" should {
     "correctly renumber class numbers" in {

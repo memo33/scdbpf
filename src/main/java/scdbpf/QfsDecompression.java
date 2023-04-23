@@ -1,4 +1,4 @@
-package scdbpf;
+package io.github.memo33.scdbpf;
 
 // copied from jdbpfx.util.DBPFPackager
 class QfsDecompression {

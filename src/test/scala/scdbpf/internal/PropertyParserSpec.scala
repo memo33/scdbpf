@@ -1,12 +1,14 @@
+package io.github.memo33
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.parboiled.scala._
 import org.parboiled.scala.{ReportingParseRunner => RPR}
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 import DbpfProperty._
 
-class PropertyParserSpec extends WordSpec with Matchers {
+class PropertyParserSpec extends AnyWordSpec with Matchers {
 
   "PropertyParser" should {
     val parser = new PropertyParser()

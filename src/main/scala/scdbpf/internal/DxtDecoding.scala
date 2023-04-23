@@ -1,6 +1,7 @@
+package io.github.memo33
 package scdbpf
 
-import ps.tricerato.pureimage._
+import compat.{Image, RGBA}
 import java.nio.ByteBuffer
 import Fsh.conversions._
 import Fsh.FshFormat

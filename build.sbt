@@ -1,30 +1,40 @@
 name := "scdbpf"
 
-organization := "com.github.memo33"
+organization := "io.github.memo33"
 
-version := "0.1.12"
+version := "0.2.0-SNAPSHOT"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-scalaVersion := "2.11.12"
+crossScalaVersions := List("2.11.12", "2.12.17")  // use `sbt +publishLocal` to publish all versions
+
+scalaVersion := crossScalaVersions.value.last
 
 scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",
   "-feature",
-  //"-Yinline-warnings",
-  "-optimize",
-  "-encoding", "UTF-8",
-  "-target:jvm-1.7")
+  "-encoding", "UTF-8")
 
-javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
+scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toSeq.flatMap {
+  case ((2, v)) if v <= 11 =>
+    Seq(
+      //"-Yinline-warnings",
+      "-optimize",
+      "-target:jvm-1.8")
+  case ((2, v)) if v >= 12 =>
+    Seq(
+      // "-opt-warnings:at-inline-failed-summary",
+      "-opt:l:inline",
+      // "-opt-inline-from:**",  // leads to compiler errors with scala-2.13
+      "-release:8")
+}
+
+javacOptions ++= Seq("--release", "8")
 
 console / initialCommands := """
-import rapture.io._, rapture.core._
-import strategy.throwExceptions
-import passera.unsigned._
-import scdbpf._
-import DbpfUtil._
+import io.github.memo33.passera.unsigned._
+import io.github.memo33.scdbpf._, strategy.throwExceptions, DbpfUtil._
 import java.io.File
 """
 
@@ -35,19 +45,13 @@ Compile / doc / scalacOptions ++= { ((baseDirectory).map { bd =>
 autoAPIMappings := true
 
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
-libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
+libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked from com.jsuereth to support scala-2.13
 
-libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.1.6"
-
-libraryDependencies += "com.propensive" %% "rapture-io" % "0.9.1"
-
-libraryDependencies += "com.propensive" %% "rapture-core" % "0.9.0"
+libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 
-libraryDependencies += "ps.tricerato" %% "pureimage" % "0.1.1" from "https://github.com/memo33/scdbpf/releases/download/v0.1.7/pureimage_2.11-0.1.1.jar"
+libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0"
 
-libraryDependencies += "com.github.memo33" %% "scala-unsigned" % "0.1.3" from "https://github.com/memo33/scala-unsigned/releases/download/v0.1.3/scala-unsigned_2.11-0.1.3.jar"
-
-libraryDependencies += "com.github.memo33" % "jsquish" % "2.0.1" from "https://github.com/memo33/jsquish/releases/download/v2.0.1/jsquish-2.0.1.jar"
+libraryDependencies += "io.github.memo33" % "jsquish" % "2.1.0"

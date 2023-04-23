@@ -1,9 +1,11 @@
+package io.github.memo33
 package scdbpf
 
-import org.scalatest.{WordSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import Tgi._
 
-class TgiSpec extends WordSpec with Matchers {
+class TgiSpec extends AnyWordSpec with Matchers {
 
   "TGI" should {
 

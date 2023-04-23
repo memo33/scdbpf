@@ -1,6 +1,6 @@
+package io.github.memo33
 package scdbpf
 
-import rapture.io._
 import resource._
 import DbpfUtil._
 
@@ -11,7 +11,7 @@ import DbpfUtil._
   * @define EXCEPTIONHANDLER
   * An `ExceptionHandler` needs to be brought into scope via imports (either
   * `strategy.throwExceptions` or `strategy.captureExceptions` from the
-  * `rapture.io` package).
+  * `scdbpf` package).
   */
 trait DbpfType {
   /** the uncompressed raw byte data of the entry */

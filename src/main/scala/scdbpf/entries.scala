@@ -1,9 +1,10 @@
+package io.github.memo33
 package scdbpf
 
-import rapture.io._
+import compat.{Input, ByteArrayInput}
 import resource._
 import DbpfUtil._
-import passera.unsigned._
+import io.github.memo33.passera.unsigned._
 import java.io.{RandomAccessFile, EOFException}
 
 /** The base trait for entries of a DBPF file.
@@ -12,7 +13,7 @@ import java.io.{RandomAccessFile, EOFException}
   * @define EXCEPTIONHANDLER
   * An `ExceptionHandler` needs to be brought into scope via imports (either
   * `strategy.throwExceptions` or `strategy.captureExceptions` from the
-  * `rapture.core` package).
+  * `scdbpf` package).
   */
 trait DbpfEntry {
 
