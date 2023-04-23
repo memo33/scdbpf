@@ -22,13 +22,14 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
     "allow proper extraction" in {
       import ValueType._
       def extract(p: PropList) = p match {
-        case Multi(Sint32(_)) => 0
-        case Single(Sint32(_)) => 1
+        case Sint32(Multi(_)) => 0
+        case Sint32(Single(_)) => 1  // this case is reachable despite scala-2.13 warning
         case String(_) => 2
-        case Multi(Uint32(_)) => 3
-        case Single(Bool(_)) => 4
-        case Single(Uint16(_)) => 5
+        case Uint32(Multi(_)) => 3
+        case Bool(Single(_)) => 4
+        case Uint16(Single(_)) => 5
         case Sint64(Single(_)) => 6
+        case _ => -1
       }
 
       for ((p, i) <- propLists.zipWithIndex) {
@@ -48,7 +49,7 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
       ex.parent shouldBe ex2.parent
       ex.isCohort shouldBe ex2.isCohort
       ex.properties shouldBe ex2.properties
-      ex.dataView.deep shouldBe ex2.dataView.deep
+      ex.dataView.toSeq shouldBe ex2.dataView.toSeq
     }
   }
 }

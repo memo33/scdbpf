@@ -8,6 +8,7 @@ import java.nio.{ByteBuffer, IntBuffer}
 import io.github.memo33.passera.unsigned.UInt
 import strategy.throwExceptions
 import scala.collection.immutable.{IndexedSeq, Map}
+import scala.collection.compat._
 
 /** A container for `DbpfEntries` that are read from and written to a file.
   * Instances of this class may be obtained via the [[DbpfFile.read]] method.
@@ -29,7 +30,7 @@ class DbpfFile private (
     * that would be seen by the game).
     */
   lazy val tgiMap: Map[Tgi, StreamedEntry] =
-    entries.reverseMap(e => (e.tgi, e))(scala.collection.breakOut)
+    entries.reverseIterator.map(e => (e.tgi, e)).toMap
 
   /** Writes a `DbpfFile` back to a file.
     *
@@ -48,7 +49,7 @@ class DbpfFile private (
     * @see [[DbpfFile.write]]
     */
   def write(
-      entries: TraversableOnce[DbpfEntry] = entries,
+      entries: IterableOnce[DbpfEntry] = entries,
       file: JFile = file)
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] =
           DbpfFile.write(entries, file, header.dateCreated)(eh)
@@ -206,7 +207,7 @@ object DbpfFile {
     * @throws IOException in case of other IO errors
     */
   def write(
-      entries: TraversableOnce[DbpfEntry],
+      entries: IterableOnce[DbpfEntry],
       file: JFile,
       dateCreated: UInt = UInt((System.currentTimeMillis() / 1000).toInt))
         (implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = eh wrap {
@@ -225,13 +226,13 @@ object DbpfFile {
       }
     }
 
-    val streamedEntries: IndexedSeq[StreamedEntry] = indexList.map { ie =>
+    val streamedEntries: IndexedSeq[StreamedEntry] = indexList.iterator.map { ie =>
       new StreamedEntry(file, ie.tgi, ie.offset, ie.size, header.dateModified)
-    }(scala.collection.breakOut)
+    }.toIndexedSeq
     new DbpfFile(file, header, streamedEntries)
   }
 
-  private def writeImpl(entries: TraversableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
+  private def writeImpl(entries: IterableOnce[DbpfEntry], file: JFile, dateCreated: UInt): (Header, Iterable[IndexEntry]) = {
 
     def buildDir(dirData: Iterable[IndexEntry]): Input[Byte] = {
       val buf = allocLEBB(dirData.size * 16)
@@ -258,7 +259,7 @@ object DbpfFile {
     }
 
     import scala.collection.mutable.ArrayBuffer
-    val writeList = entries match {
+    val writeList: ArrayBuffer[WrappedDbpfInput] = entries match {
       case indexed: scala.collection.IndexedSeq[_] => new ArrayBuffer[WrappedDbpfInput](indexed.size + 1)
       case _ => new ArrayBuffer[WrappedDbpfInput]()
     }
@@ -270,10 +271,10 @@ object DbpfFile {
         // pump all entries to file, ignore dirs
         managed {
           new SequenceInput(new scala.collection.AbstractIterator[WrappedDbpfInput] {
-            private[this] val iter: Iterator[DbpfEntry] = entries.withFilter(_.tgi != Tgi.Directory)
+            private[this] val iter: Iterator[DbpfEntry] = entries.iterator.withFilter(_.tgi != Tgi.Directory)
             def hasNext: Boolean = iter.hasNext
             def next: WrappedDbpfInput = {
-              val n = new WrappedDbpfInput(iter.next)
+              val n = new WrappedDbpfInput(iter.next())
               writeList += n // lazily collect results in ArrayBuffer
               n
             }
@@ -289,7 +290,7 @@ object DbpfFile {
         }
 
         // directory file
-        val dirList = writeList.view.map(_.indexEntry).filter(_.decompressedSize.isDefined).force
+        val dirList = writeList.view.map(_.indexEntry).filter(_.decompressedSize.isDefined).toIndexedSeq
         val dirIndexEntry: Option[IndexEntry] = if (dirList.isEmpty) None else {
          // write dir to file
           managed(buildDir(dirList)) acquireAndGet (_ > output)

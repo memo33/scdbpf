@@ -10,7 +10,7 @@ description := "A Scala library for the DBPF file format"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-crossScalaVersions := List("2.11.12", "2.12.17")  // use `sbt +publishLocal` to publish all versions
+crossScalaVersions := List("2.11.12", "2.12.17", "2.13.10")  // use `sbt +publishLocal` to publish all versions
 
 scalaVersion := crossScalaVersions.value.last
 
@@ -59,6 +59,8 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked from com.jsuereth to support scala-2.13
 
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
+
+libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"
 
 
 libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0"

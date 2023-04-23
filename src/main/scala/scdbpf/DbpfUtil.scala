@@ -85,10 +85,10 @@ object DbpfUtil {
     UInt((i << 24) | (i << 8) & 0x00FF0000 | (i >>> 8) & 0x0000FF00 | (i >>> 24))
   }
 
-  type RotFlip = RotFlip.Val
+  type RotFlip = RotFlip.RFVal
   object RotFlip extends Enumeration {
 
-    class Val private[RotFlip] (val rot: Int, val flip: Int) extends super.Val {
+    class RFVal private[RotFlip] (val rot: Int, val flip: Int) extends super.Val {
 
       /** returns [[flip]] as Boolean */
       def flipped: Boolean = flip == 1
@@ -117,14 +117,14 @@ object DbpfUtil {
       override def toString = "(" + rot + "," + flip + ")"
     }
 
-    val R0F0 = new Val(0,0)
-    val R1F0 = new Val(1,0)
-    val R2F0 = new Val(2,0)
-    val R3F0 = new Val(3,0)
-    val R0F1 = new Val(0,1)
-    val R1F1 = new Val(1,1)
-    val R2F1 = new Val(2,1)
-    val R3F1 = new Val(3,1)
+    val R0F0 = new RFVal(0,0)
+    val R1F0 = new RFVal(1,0)
+    val R2F0 = new RFVal(2,0)
+    val R3F0 = new RFVal(3,0)
+    val R0F1 = new RFVal(0,1)
+    val R1F1 = new RFVal(1,1)
+    val R2F1 = new RFVal(2,1)
+    val R3F1 = new RFVal(3,1)
 
     private def withRotFlip(rot: Int, flip: Int): RotFlip = {
       RotFlip(rot + flip * 4).asInstanceOf[RotFlip]

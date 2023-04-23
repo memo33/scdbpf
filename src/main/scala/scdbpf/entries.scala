@@ -168,7 +168,7 @@ final class StreamedEntry private[scdbpf] (file: JFile, val tgi: Tgi, offset: UI
     * @throws DbpfStreamOutOfDateException if the underlying file has changed since
     * this entry was created.
     */
-  def input: Input[Byte] = new StreamedDbpfInput()
+  def input(): Input[Byte] = new StreamedDbpfInput()
 
   private class StreamedDbpfInput() extends DbpfFile.AbstractByteInput {
     var remaining = StreamedEntry.this.size.toInt

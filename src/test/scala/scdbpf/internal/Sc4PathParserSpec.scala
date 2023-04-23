@@ -52,9 +52,9 @@ class Sc4PathParserSpec extends AnyWordSpec with Matchers {
         |2.5,8.0,0.0""".stripMargin)
       for (s <- paths) {
         val res = handleResult(RPR(parser.PathSection).run(s))
-        res.result.get.comment should be ('empty)
+        res.result.get.comment should be (Symbol("empty"))
         val res2 = handleResult(RPR(parser.PathSection).run("--foo\n" + s))
-        res2.result.get.comment should not be ('empty)
+        res2.result.get.comment should not be (Symbol("empty"))
       }
     }
     "decode header sections" in {
@@ -76,7 +76,7 @@ class Sc4PathParserSpec extends AnyWordSpec with Matchers {
       for (s <- headers.take(2)) {
         handleResult(RPR(parser.Header).run(s))
       }
-      RPR(parser.Header).run(headers.last).result should be ('empty)
+      RPR(parser.Header).run(headers.last).result should be (Symbol("empty"))
     }
     "parse entire path file" in {
       val s =

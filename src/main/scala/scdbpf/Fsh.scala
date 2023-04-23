@@ -2,12 +2,12 @@ package io.github.memo33
 package scdbpf
 
 import compat.{Image, RGBA}
-import Fsh._
 import java.nio.ByteBuffer
 import DbpfUtil._
 import io.github.memo33.passera.unsigned._
 
 trait Fsh extends DbpfType {
+  import Fsh._
 
   val elements: Seq[FshElement]
   val dirId: FshDirectoryId
@@ -75,49 +75,49 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
     }
   }
 
-  type FshDirectoryId = FshDirectoryId.Val
+  type FshDirectoryId = FshDirectoryId.FshDirVal
   object FshDirectoryId extends Enumeration {
 
-    class Val private[FshDirectoryId] (name: String) extends super.Val {
+    class FshDirVal private[FshDirectoryId] (name: String) extends super.Val {
       val code: Int = MagicNumber.fromString(name) // using super.toString causes initialization issues
     }
     /** Building Textures */
-    val G354 = new Val("G354")
+    val G354 = new FshDirVal("G354")
     /** Network Textures, Sim Textures, Sim heads, Sim animations, Trees, props, Base textures, Misc colors */
-    val G264 = new Val("G264")
+    val G264 = new FshDirVal("G264")
     /** 3d Animation textures (e.g. the green rotating diamond in loteditor.dat) */
-    val G266 = new Val("G266")
+    val G266 = new FshDirVal("G266")
     /** Dispatch marker textures */
-    val G290 = new Val("G290")
+    val G290 = new FshDirVal("G290")
     /** Small Sim texture, Network Transport Model Textures (trains, etc.) */
-    val G315 = new Val("G315")
+    val G315 = new FshDirVal("G315")
     /** UI Editor textures */
-    val GIMX = new Val("GIMX")
+    val GIMX = new FshDirVal("GIMX")
     /** BAT gen texture maps */
-    val G344 = new Val("G344")
+    val G344 = new FshDirVal("G344")
     /** unknown */
-    val G231 = new Val("G231")
+    val G231 = new FshDirVal("G231")
     /** unknown */
-    val G341 = new Val("G341")
+    val G341 = new FshDirVal("G341")
     /** unknown */
-    val G349 = new Val("G349")
+    val G349 = new FshDirVal("G349")
     /** unknown */
-    val G352 = new Val("G352")
+    val G352 = new FshDirVal("G352")
     /** unknown */
-    val G357 = new Val("G357")
+    val G357 = new FshDirVal("G357")
 
     private[Fsh] def withId(id: Int): FshDirectoryId = {
-      values.find(_.asInstanceOf[Val].code == id) match {
-        case Some(dirId) => dirId.asInstanceOf[Val]
+      values.find(_.asInstanceOf[FshDirVal].code == id) match {
+        case Some(dirId) => dirId.asInstanceOf[FshDirVal]
         case None => throw new DbpfDecodeFailedException(f"Unknown FSH directory id 0x$id%08X")
       }
     }
   }
 
-  type FshFormat = FshFormat.Val
+  type FshFormat = FshFormat.FshFmtVal
   object FshFormat extends Enumeration {
 
-    class Val private[FshFormat] (name: String, val code: Byte) extends super.Val {
+    class FshFmtVal private[FshFormat] (name: String, val code: Byte) extends super.Val {
 
       private[Fsh] def dataLength(width: Int, height: Int): Int = this match {
         case Dxt1 =>
@@ -183,16 +183,16 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
       }
     }
 
-    val Dxt3 = new Val("DXT3 compressed", 0x61)
-    val Dxt1 = new Val("DXT1 compressed", 0x60)
-    val A8R8G8B8 = new Val("A8R8G8B8 32bit", 0x7D)
-    val A0R8G8B8 = new Val("A0R8G8B8 24bit", 0x7F)
-    val A1R5G5B5 = new Val("A1R5G5B5 16bit", 0x7E)
-    val A0R5G6B5 = new Val("A0R5G6B5 16bit", 0x78)
-    val A4R4G4B4 = new Val("A4R4G4B4 16bit", 0x6D)
+    val Dxt3 = new FshFmtVal("DXT3 compressed", 0x61)
+    val Dxt1 = new FshFmtVal("DXT1 compressed", 0x60)
+    val A8R8G8B8 = new FshFmtVal("A8R8G8B8 32bit", 0x7D)
+    val A0R8G8B8 = new FshFmtVal("A0R8G8B8 24bit", 0x7F)
+    val A1R5G5B5 = new FshFmtVal("A1R5G5B5 16bit", 0x7E)
+    val A0R5G6B5 = new FshFmtVal("A0R5G6B5 16bit", 0x78)
+    val A4R4G4B4 = new FshFmtVal("A4R4G4B4 16bit", 0x6D)
     //8-bit indexed with palette?
 
-    private[Fsh] def withId(id: Int): Val = id match {
+    private[Fsh] def withId(id: Int): FshFmtVal = id match {
       case 0x61 => Dxt3
       case 0x60 => Dxt1
       case 0x7D => A8R8G8B8

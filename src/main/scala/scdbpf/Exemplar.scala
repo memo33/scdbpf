@@ -4,9 +4,7 @@ package scdbpf
 import DbpfUtil._
 import DbpfProperty.{PropList, Property}
 import scala.collection.immutable.SortedMap
-import scala.collection.{SortedMapLike, GenTraversableOnce}
-import scala.collection.mutable.{Builder, MapBuilder}
-import scala.collection.generic.CanBuildFrom
+import scala.collection.compat._
 import io.github.memo33.passera.unsigned._
 
 
@@ -32,9 +30,9 @@ sealed trait Exemplar extends DbpfType {
 
 object Exemplar extends WithContentConverter[Exemplar] {
 
-  def apply(parent: Tgi = Tgi.Blank, isCohort: Boolean, props: TraversableOnce[Property]): Exemplar = {
+  def apply(parent: Tgi = Tgi.Blank, isCohort: Boolean, props: IterableOnce[Property]): Exemplar = {
     var builder = SortedMap.newBuilder[UInt, PropList](ordering)
-    props foreach (tup => builder += tup)
+    props.iterator.foreach(tup => builder += tup)
     new FreeExemplar(parent, isCohort, builder.result())
   }
 
