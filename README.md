@@ -28,10 +28,10 @@ The latest version is available on [Maven Central](https://mvnrepository.com/art
  Documentation
 ---------------
 
-The current ScalaDocs can be found
-[here](https://memo33.github.io/scdbpf/#scdbpf.package)
-or can be generated via `sbt doc`. The main page also contains
-some examples to get started. For example, the simple task of sorting the
+See here for the current
+[documentation](https://memo33.github.io/scdbpf/io/github/memo33/scdbpf/).
+It can also be generated via `sbt doc`. The main page contains
+some examples to get started. For example, the task of sorting the
 entries of a DBPF file by TGI would be achieved via `sbt console` like
 this:
 
