@@ -14,6 +14,27 @@ import DbpfUtil.asciiEncoding
 
 object DbpfProperty {
 
+  /** A `PropList` can contain a single or multiple values. To access them,
+    * match against `Single` and `Multi`:
+    * {{{
+    * import DbpfProperty._
+    * (p: PropList) match {
+    *   case Single(value) => "value is the single value of this property"
+    *   case Multi(values) => "values is an IndexedSeq"
+    * }
+    * }}}
+    * You can also match on particular value types:
+    * {{{
+    * import DbpfProperty._, ValueType._
+    * (p: PropList) match {
+    *   case String(Single(value)) => "value is a string"
+    *   case Float32(Single(value)) => "value is a float"
+    *   case Sint32(Multi(values)) => "values is an IndexedSeq[Int]"
+    *   case Uint32(Multi(values)) => "values is an IndexedSeq[UInt]"
+    *   case _ => "otherwise"
+    * }
+    * }}}
+    */
   sealed trait PropertyList[A] {
     val valueType: ValueType[A]
     def apply(idx: Int): A
