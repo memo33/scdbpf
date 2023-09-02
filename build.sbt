@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "io.github.memo33"
 
-version := "0.2.0"
+version := "0.2.1-SNAPSHOT"
 
 ThisBuild / versionScheme := Some("early-semver")
 
@@ -29,7 +29,7 @@ scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toSeq.flatMap 
   case ((2, v)) if v >= 12 =>
     Seq(
       // "-opt-warnings:at-inline-failed-summary",
-      "-opt:l:inline", "-opt-inline-from:<sources>",
+      // "-opt:l:inline", "-opt-inline-from:<sources>",
       "-release:8")
 }
 
