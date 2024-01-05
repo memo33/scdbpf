@@ -10,7 +10,7 @@ description := "A Scala library for the DBPF file format"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-crossScalaVersions := List("2.11.12", "2.12.17", "2.13.10")  // use `sbt +publishLocal` to publish all versions
+crossScalaVersions := List("2.11.12", "2.12.18", "2.13.12")  // use `sbt +publishLocal` to publish all versions
 
 scalaVersion := crossScalaVersions.value.last
 
