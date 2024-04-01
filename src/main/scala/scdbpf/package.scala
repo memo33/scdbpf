@@ -63,14 +63,14 @@ package object scdbpf {
 
   import DbpfUtil.Converter
   /** provides a converter for `BufferedEntries`, given a converter of `DbpfTypes` */
-  implicit def genericConverter[A <: DbpfType](implicit conv: Converter[DbpfType, A]) = new Converter[BufferedEntry[DbpfType], BufferedEntry[A]] {
+  implicit def genericConverter[A <: DbpfType](implicit conv: Converter[DbpfType, A]): Converter[BufferedEntry[DbpfType], BufferedEntry[A]] = new Converter[BufferedEntry[DbpfType], BufferedEntry[A]] {
     def apply(from: BufferedEntry[DbpfType]): BufferedEntry[A] = {
       from.copy(content = conv(from.content))
     }
   }
 
   /** resolves generalizing conversions from specialized types to general ones */
-  implicit def noopConverter[A <: DbpfType] = new Converter[BufferedEntry[A], BufferedEntry[A]] {
+  implicit def noopConverter[A <: DbpfType]: Converter[BufferedEntry[A], BufferedEntry[A]] = new Converter[BufferedEntry[A], BufferedEntry[A]] {
     def apply(from: BufferedEntry[A]): BufferedEntry[A] = from
   }
 

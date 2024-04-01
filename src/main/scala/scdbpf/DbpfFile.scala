@@ -279,7 +279,7 @@ object DbpfFile {
           new SequenceInput(new scala.collection.AbstractIterator[WrappedDbpfInput] {
             private[this] val iter: Iterator[DbpfEntry] = entries.iterator.withFilter(_.tgi != Tgi.Directory)
             def hasNext: Boolean = iter.hasNext
-            def next: WrappedDbpfInput = {
+            def next(): WrappedDbpfInput = {
               val n = new WrappedDbpfInput(iter.next())
               writeList += n // lazily collect results in ArrayBuffer
               n

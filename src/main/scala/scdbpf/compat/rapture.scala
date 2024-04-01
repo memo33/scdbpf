@@ -275,13 +275,13 @@ object raw extends strategy.ThrowExceptions
 
 object strategy {
 
-  implicit def throwExceptions = new ThrowExceptions
+  implicit def throwExceptions: ThrowExceptions = new ThrowExceptions
   class ThrowExceptions extends ExceptionHandler {
     type ![+T, E <: Exception] = T
     def wrap[T, E <: Exception: ClassTag](t: => T): T = t
   }
 
-  implicit def explicit = new ExplicitReturns
+  implicit def explicit: ExplicitReturns = new ExplicitReturns
   class ExplicitReturns extends ExceptionHandler {
     type ![+T, E <: Exception] = Explicit[T, E]
     def wrap[T, E <: Exception: ClassTag](t: => T): Explicit[T, E] =
@@ -301,7 +301,7 @@ object strategy {
     override def toString = "[unexpanded result]"
   }
 
-  implicit def captureExceptions = new CaptureExceptions
+  implicit def captureExceptions: CaptureExceptions = new CaptureExceptions
   class CaptureExceptions extends ExceptionHandler {
     type ![+T, E <: Exception] = Either[E, T]
     def wrap[T, E <: Exception: ClassTag](t: => T): Either[E, T] =
@@ -313,7 +313,7 @@ object strategy {
     override def toString = "[strategy.captureExceptions]"
   }
 
-  implicit def returnTry = new ReturnTry
+  implicit def returnTry: ReturnTry = new ReturnTry
   class ReturnTry extends ExceptionHandler {
     type ![+T, E <: Exception] = Try[T]
     def wrap[T, E <: Exception: ClassTag](t: => T): Try[T] = Try(t)
@@ -321,7 +321,7 @@ object strategy {
     override def toString = "[strategy.returnTry]"
   }
 
-  implicit val kcaco = new Kcaco
+  implicit val kcaco: Kcaco = new Kcaco
   class Kcaco extends ExceptionHandler {
     type ![+T, E <: Exception] = T
     def wrap[T, E <: Exception: ClassTag](t: => T): T =
@@ -330,7 +330,7 @@ object strategy {
     override def toString = "[strategy.kcaco]"
   }
 
-  implicit val discardExceptions = new DiscardExceptions
+  implicit val discardExceptions: DiscardExceptions = new DiscardExceptions
   class DiscardExceptions extends ExceptionHandler {
     type ![+T, E <: Exception] = Option[T]
     def wrap[T, E <: Exception: ClassTag](t: => T): Option[T] =
@@ -339,7 +339,7 @@ object strategy {
     override def toString = "[strategy.discardExceptions]"
   }
 
-  implicit def returnFutures(implicit ec: ExecutionContext) = new ReturnFutures
+  implicit def returnFutures(implicit ec: ExecutionContext): ReturnFutures = new ReturnFutures
   class ReturnFutures(implicit ec: ExecutionContext) extends ExceptionHandler {
     type ![+T, E <: Exception] = Future[T]
     def wrap[T, E <: Exception: ClassTag](t: => T): Future[T] = Future { t }

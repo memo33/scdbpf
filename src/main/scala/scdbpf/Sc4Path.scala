@@ -118,7 +118,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
   def apply(terrainVariance: Boolean, paths: Seq[Path], stopPaths: Seq[StopPath] = Seq(), decFormat: Option[java.text.DecimalFormat] = None): Sc4Path =
     new FreeSc4Path(terrainVariance, paths, stopPaths, decFormat)
 
-  implicit val converter = new Converter[DbpfType, Sc4Path] {
+  implicit val converter: Converter[DbpfType, Sc4Path] = new Converter[DbpfType, Sc4Path] {
     def apply(from: DbpfType): Sc4Path = {
       try {
         new BufferedSc4Path(from.dataView, strict=false)

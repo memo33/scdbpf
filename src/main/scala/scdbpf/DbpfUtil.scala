@@ -161,7 +161,7 @@ object DbpfUtil {
     }
   }
 
-  implicit def numericToNegatable[B : Numeric] = new Negatable[B] { def negate(b: B) = implicitly[Numeric[B]].negate(b) }
+  implicit def numericToNegatable[B : Numeric]: Negatable[B] = new Negatable[B] { def negate(b: B) = implicitly[Numeric[B]].negate(b) }
 
   object Dihedral {
 

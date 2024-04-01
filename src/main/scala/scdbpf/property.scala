@@ -91,14 +91,14 @@ object DbpfProperty {
       private[DbpfProperty] def buildProperty(buf: ByteBuffer, count: Option[Int]): PropertyList[A]
     }
 
-    implicit val Uint8   = new ValueType[UByte]  (0x0100, 1, buf => UByte(buf.get())      , (buf, a) => buf.put(a.toByte)              ) with Numerical[UByte]
-    implicit val Uint16  = new ValueType[UShort] (0x0200, 2, buf => UShort(buf.getShort()), (buf, a) => buf.putShort(a.toShort)        ) with Numerical[UShort]
-    implicit val Uint32  = new ValueType[UInt]   (0x0300, 4, buf => UInt(buf.getInt())    , (buf, a) => buf.putInt(a.toInt)            ) with Numerical[UInt]
-    implicit val Sint32  = new ValueType[Int]    (0x0700, 4, buf => buf.getInt()          , (buf, a) => buf.putInt(a)                  ) with Numerical[Int]
-    implicit val Sint64  = new ValueType[Long]   (0x0800, 8, buf => buf.getLong()         , (buf, a) => buf.putLong(a)                 ) with Numerical[Long]
-    implicit val Float32 = new ValueType[Float]  (0x0900, 4, buf => buf.getFloat()        , (buf, a) => buf.putFloat(a)                ) with Numerical[Float]
-    implicit val Bool    = new ValueType[Boolean](0x0B00, 1, buf => (buf.get() & 0x1) == 1, (buf, a) => buf.put((if(a) 1 else 0): Byte)) with Numerical[Boolean]
-    implicit val String  = new ValueType[String] (0x0C00, 0, null                         , null                                       ) with NonNumerical
+    implicit val Uint8  : ValueType[UByte]   with Numerical[UByte]   = new ValueType[UByte]  (0x0100, 1, buf => UByte(buf.get())      , (buf, a) => buf.put(a.toByte)              ) with Numerical[UByte]
+    implicit val Uint16 : ValueType[UShort]  with Numerical[UShort]  = new ValueType[UShort] (0x0200, 2, buf => UShort(buf.getShort()), (buf, a) => buf.putShort(a.toShort)        ) with Numerical[UShort]
+    implicit val Uint32 : ValueType[UInt]    with Numerical[UInt]    = new ValueType[UInt]   (0x0300, 4, buf => UInt(buf.getInt())    , (buf, a) => buf.putInt(a.toInt)            ) with Numerical[UInt]
+    implicit val Sint32 : ValueType[Int]     with Numerical[Int]     = new ValueType[Int]    (0x0700, 4, buf => buf.getInt()          , (buf, a) => buf.putInt(a)                  ) with Numerical[Int]
+    implicit val Sint64 : ValueType[Long]    with Numerical[Long]    = new ValueType[Long]   (0x0800, 8, buf => buf.getLong()         , (buf, a) => buf.putLong(a)                 ) with Numerical[Long]
+    implicit val Float32: ValueType[Float]   with Numerical[Float]   = new ValueType[Float]  (0x0900, 4, buf => buf.getFloat()        , (buf, a) => buf.putFloat(a)                ) with Numerical[Float]
+    implicit val Bool   : ValueType[Boolean] with Numerical[Boolean] = new ValueType[Boolean](0x0B00, 1, buf => (buf.get() & 0x1) == 1, (buf, a) => buf.put((if(a) 1 else 0): Byte)) with Numerical[Boolean]
+    implicit val String : ValueType[String]  with NonNumerical       = new ValueType[String] (0x0C00, 0, null                         , null                                       ) with NonNumerical
 
     def withId(id: Short): Option[ValueType[_]] = id match {
       case 0x0100 => Some(Uint8)

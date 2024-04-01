@@ -36,7 +36,7 @@ object Exemplar extends WithContentConverter[Exemplar] {
     new FreeExemplar(parent, isCohort, builder.result())
   }
 
-  implicit def converter = new Converter[BufferedEntry[DbpfType], BufferedEntry[Exemplar]] {
+  implicit def converter: Converter[BufferedEntry[DbpfType], BufferedEntry[Exemplar]] = new Converter[BufferedEntry[DbpfType], BufferedEntry[Exemplar]] {
     def apply(from: BufferedEntry[DbpfType]): BufferedEntry[Exemplar] = {
       try {
         from.copy(content = new BufferedExemplar(from.content.dataView, from.tgi matches Tgi.Cohort))

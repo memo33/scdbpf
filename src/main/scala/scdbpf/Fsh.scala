@@ -23,7 +23,7 @@ trait Fsh extends DbpfType {
 
 object Fsh extends DbpfTypeCompanion[Fsh] {
 
-  implicit val converter = new Converter[DbpfType, Fsh] {
+  implicit val converter: Converter[DbpfType, Fsh] = new Converter[DbpfType, Fsh] {
     def apply(from: DbpfType): Fsh = {
       try {
         new BufferedFsh(from.dataView)

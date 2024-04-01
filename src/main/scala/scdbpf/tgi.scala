@@ -121,7 +121,7 @@ object Tgi {
   private def MaskVal(tid: Int, gid: Int, iid: Option[Int], label: String): TgiMask with LabeledTgi =
     new TgiMaskValImpl(Some(tid), Some(gid), iid, label)
 
-  private implicit val uintOnIntOrdering = UIntOrdering.on[Int](UInt(_))
+  private implicit val uintOnIntOrdering: Ordering[Int] = UIntOrdering.on[Int](UInt(_))
   private val tupOrd = Ordering[(Int, Int, Int)]
   /** the default implicit `Tgi` ordering that sorts by IID, TID, GID */
   implicit val itgOrdering: Ordering[Tgi] = tupOrd.on(x => (x.iid, x.tid, x.gid))

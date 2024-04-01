@@ -134,7 +134,7 @@ object S3d extends DbpfTypeCompanion[S3d] {
   private[scdbpf] val PROP = MagicNumber.fromString("PROP")
   private[scdbpf] val REGP = MagicNumber.fromString("REGP")
 
-  implicit val converter = new Converter[DbpfType, S3d] {
+  implicit val converter: Converter[DbpfType, S3d] = new Converter[DbpfType, S3d] {
     def apply(from: DbpfType): S3d = {
       try {
         new BufferedS3d(from.dataView)

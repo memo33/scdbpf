@@ -13,7 +13,7 @@ object LText extends DbpfTypeCompanion[LText] {
 
   def apply(text: String): LText = new FreeLText(text)
 
-  implicit val converter = new Converter[DbpfType, LText] {
+  implicit val converter: Converter[DbpfType, LText] = new Converter[DbpfType, LText] {
     def apply(from: DbpfType): LText = {
       new BufferedLText(from.dataView)
     }
