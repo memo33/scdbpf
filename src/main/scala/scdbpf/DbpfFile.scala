@@ -79,7 +79,7 @@ object DbpfFile {
     val holeOffsetLocation: UInt = UInt(0),
     val holeSize: UInt = UInt(0)) {
 
-    if (majorVersion != UInt(1) || minorVersion != UInt(0))
+    if (majorVersion != UInt(1) && majorVersion != UInt(0) || minorVersion != UInt(0))  // we accept 0.0 for compatibility and treat it the same as 1.0
       throw new DbpfFileFormatException(f"Unsupported major.minor version ($majorVersion.$minorVersion), currently only 1.0 is supported")
     if (indexType != UInt(7))
       throw new DbpfFileFormatException(f"Unsupported index type ($indexType), currently only 7 is supported")
@@ -93,7 +93,7 @@ object DbpfFile {
     private[DbpfFile] def toArray: Array[Byte] = {
       val buf = allocLEBB(HeaderSize)
       buf.putInt(DbpfUtil.MagicNumber.DBPF)
-      buf.putInt(majorVersion.toInt)
+      buf.putInt((UInt(1) max majorVersion).toInt)  // never write 0.0 from faulty DBPF files, but write 1.0 instead
       buf.putInt(minorVersion.toInt)
       buf.putInt(0)
       buf.putInt(0)
