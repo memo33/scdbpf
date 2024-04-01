@@ -20,7 +20,7 @@ has been rewritten entirely.
 
 Add the following to your `build.sbt` file:
 
-    libraryDependencies += "io.github.memo33" %% "scdbpf" % "0.2.0"
+    libraryDependencies += "io.github.memo33" %% "scdbpf" % "0.2.1"
 
 The latest version is available on [Maven Central](https://mvnrepository.com/artifact/io.github.memo33/scdbpf).
 
