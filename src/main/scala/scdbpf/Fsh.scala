@@ -126,6 +126,9 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
         case Dxt3 =>
           assert(width % 4 == 0 && height % 4 == 0)
           width * height
+        case Dxt5 =>
+          assert(width % 4 == 0 & height % 4 == 0)
+          width * height
         case A0R8G8B8 => 3 * width * height
         case A8R8G8B8 => 4 * width * height
         case A1R5G5B5 => 2 * width * height
@@ -168,6 +171,10 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
           import io.github.memo33.jsquish.Squish._
           val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT3, CompressionMethod.CLUSTER_FIT)
           buf.put(arr)
+        case Dxt5 =>
+          import io.github.memo33.jsquish.Squish._
+          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT5, CompressionMethod.CLUSTER_FIT)
+          buf.put(arr)
       }
 
       private def imageToByteArray(img: Image[RGBA]): Array[Byte] = {
@@ -183,6 +190,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
       }
     }
 
+    val Dxt5 = new FshFmtVal("DXT5 compressed", 0x62)
     val Dxt3 = new FshFmtVal("DXT3 compressed", 0x61)
     val Dxt1 = new FshFmtVal("DXT1 compressed", 0x60)
     val A8R8G8B8 = new FshFmtVal("A8R8G8B8 32bit", 0x7D)
@@ -193,6 +201,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
     //8-bit indexed with palette?
 
     private[Fsh] def withId(id: Int): FshFmtVal = id match {
+      case 0x62 => Dxt5
       case 0x61 => Dxt3
       case 0x60 => Dxt1
       case 0x7D => A8R8G8B8
@@ -307,7 +316,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
           i <- 0 to numMips
           w = width >>> i
           h = height >>> i
-          if format != FshFormat.Dxt1 && format != FshFormat.Dxt3 || w % 4 == 0 && h % 4 == 0
+          if format != FshFormat.Dxt1 && format != FshFormat.Dxt3 && format != FshFormat.Dxt5 || w % 4 == 0 && h % 4 == 0
         } yield {
           val img = format.decode(data, buf, pos, w, h)
           pos += format.dataLength(w, h)
