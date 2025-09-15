@@ -43,7 +43,9 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
   class FshElement(
     val images: Iterable[Image[RGBA]],
     val format: FshFormat,
-    val label: Option[String] = None) {
+    val label: Option[String] = None,
+    val dxtWeightByAlpha: Option[Boolean] = None,
+    val dxtCompressionMetric: Option[io.github.memo33.jsquish.Squish.CompressionMetric] = None) {
 
     private val xCenter = 0
     private val yCenter = 0
@@ -66,7 +68,9 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
       buf.putShort((images.size - 1 << 12).toShort)        // mipmaps
       // put images
       for (img <- images) {
-        format.encode(buf, img)
+        format.encode(buf, img,
+          weightByAlpha = dxtWeightByAlpha.getOrElse(true),
+          compressionMetric = dxtCompressionMetric.getOrElse(io.github.memo33.jsquish.Squish.CompressionMetric.UNIFORM))
       }
       for (s <- label) {
         buf.putInt(0x70)
@@ -145,7 +149,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
         case _/*Dxt*/ => DxtDecoding.decode(this, array, offset, width, height)
       }
 
-      private[Fsh] def encode(buf: ByteBuffer, img: Image[RGBA]): Unit = this match {
+      private[Fsh] def encode(buf: ByteBuffer, img: Image[RGBA], weightByAlpha: Boolean, compressionMetric: io.github.memo33.jsquish.Squish.CompressionMetric): Unit = this match {
         case A8R8G8B8 =>
           for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putInt(conversions.rgbaToARGB(img(x, y)))
@@ -163,17 +167,15 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
         case A4R4G4B4 =>
           for (y <- 0 until img.height; x <- 0 until img.width)
             buf.putShort(conversions.rgbaToShort4444(img(x, y)))
-        case Dxt1 =>
+        case Dxt1 | Dxt3 | Dxt5 =>
           import io.github.memo33.jsquish.Squish._
-          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT1, CompressionMethod.CLUSTER_FIT)
-          buf.put(arr)
-        case Dxt3 =>
-          import io.github.memo33.jsquish.Squish._
-          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT3, CompressionMethod.CLUSTER_FIT)
-          buf.put(arr)
-        case Dxt5 =>
-          import io.github.memo33.jsquish.Squish._
-          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, CompressionType.DXT5, CompressionMethod.CLUSTER_FIT)
+          val compressionType = this match {
+            case Dxt1 => CompressionType.DXT1
+            case Dxt3 => CompressionType.DXT3
+            case Dxt5 => CompressionType.DXT5
+            case _ => throw new AssertionError
+          }
+          val arr = compressImage(imageToByteArray(img), img.width, img.height, null, compressionType, CompressionMethod.CLUSTER_FIT, compressionMetric, weightByAlpha)
           buf.put(arr)
       }
 
