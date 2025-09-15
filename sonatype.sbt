@@ -1,10 +1,10 @@
 // For publishing to Maven Central, remove `-SNAPSHOT` from version, then
 //
-//   > +publishSigned
+//   GPG_TTY=$(tty) sbt +publishSigned
 //
 // to create staging bundle at target/sonatype-staging/(version). Then
 //
-//   > sonatypeBundleRelease
+//   sbt sonatypeBundleRelease
 //
 // to upload bundle to Sonatype.
 //

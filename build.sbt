@@ -50,8 +50,9 @@ autoAPIMappings := true
 
 publishTo := sonatypePublishToBundle.value
 
-ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeCentralHost  // "central.sonatype.com", previously "s01.oss.sonatype.org"
 
+useGpgPinentry := true  // see https://github.com/sbt/sbt-pgp/issues/178 or https://github.com/microsoft/WSL/issues/4029#issuecomment-491547314
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
