@@ -60,8 +60,8 @@ object Experimental {
   object PreviewEffect extends ((Int, String) => DbpfType) {
     private val TemplateLength = 0x04F0
     private lazy val templateData = {
-      import compat.ByteInput, resource._
-      managed(new ByteInput(getClass.getResourceAsStream("/preview_effect_template.eff"))) acquireAndGet { in =>
+      import compat.ByteInput
+      scala.util.Using.resource(new ByteInput(getClass.getResourceAsStream("/preview_effect_template.eff"))) { in =>
         val arr = DbpfUtil.slurpBytes(in)
         assert(arr.length == TemplateLength)
         arr

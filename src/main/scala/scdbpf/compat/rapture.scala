@@ -18,7 +18,7 @@ private[compat] trait MapOverride[@specialized(Byte, Char) Data, C[_]] {
 }
 
 /** An Input provides an incoming stream of data */
-trait Input[@specialized(Byte, Char) Data] extends Seq[Data] with MapOverride[Data, Input] { thisInput =>
+trait Input[@specialized(Byte, Char) Data] extends Seq[Data] with MapOverride[Data, Input] with AutoCloseable { thisInput =>
 
   private var beingHandled = false
 
@@ -171,7 +171,7 @@ object Input {
 }
 
 /** Defines a generic output stream */
-trait Output[@specialized(Byte, Char) Data] {
+trait Output[@specialized(Byte, Char) Data] extends AutoCloseable {
   private var beingHandled = false
 
   /** Writes one item of data to this stream

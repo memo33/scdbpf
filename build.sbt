@@ -56,8 +56,6 @@ useGpgPinentry := true  // see https://github.com/sbt/sbt-pgp/issues/178 or http
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
-libraryDependencies += "com.michaelpollmeier" %% "scala-arm" % "2.1"  // forked from com.jsuereth to support scala-2.13
-
 libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1"
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"

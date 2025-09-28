@@ -1,7 +1,7 @@
 package io.github.memo33
 package scdbpf
 
-import resource._
+import scala.util.Using
 import compat.{Input, ByteArrayInput, ByteOutput}
 import java.io.{RandomAccessFile, IOException, EOFException, FileOutputStream, SequenceInputStream}
 import java.nio.{ByteBuffer, IntBuffer}
@@ -144,7 +144,7 @@ object DbpfFile {
     * @throws IOException in case of other IO errors
     */
   def read(file: JFile)(implicit eh: ExceptionHandler): eh.![DbpfFile, IOException] = {
-    eh wrap managed(new RandomAccessFile(file, "r")).acquireAndGet { raf =>
+    eh wrap Using.resource(new RandomAccessFile(file, "r")) { raf =>
       val buf = allocLEBB(HeaderSize)
       raf.readFully(buf.array(), 0, 4)
       val magic = buf.getInt()
@@ -159,7 +159,7 @@ object DbpfFile {
 
         // read index
         raf.seek(header.indexOffsetLocation.toLong)
-        managed(raf.getChannel()) acquireAndGet { fc =>
+        Using.resource(raf.getChannel()) { fc =>
           val builder = new scala.collection.immutable.VectorBuilder[StreamedEntry]()
           builder.sizeHint(header.indexEntryCount.toInt)
 
@@ -270,12 +270,12 @@ object DbpfFile {
       case _ => new ArrayBuffer[WrappedDbpfInput]()
     }
 
-    managed(new RandomAccessFile(file, "rw")) acquireAndGet { raf =>
+    Using.resource(new RandomAccessFile(file, "rw")) { raf =>
       raf.seek(HeaderSize)
       raf.setLength(HeaderSize.toLong) // trim to minimum size
-      managed(new ByteOutput(new FileOutputStream(raf.getFD()))) acquireAndGet { output =>
+      Using.resource(new ByteOutput(new FileOutputStream(raf.getFD()))) { output =>
         // pump all entries to file, ignore dirs
-        managed {
+        Using.resource {
           new SequenceInput(new scala.collection.AbstractIterator[WrappedDbpfInput] {
             private[this] val iter: Iterator[DbpfEntry] = entries.iterator.withFilter(_.tgi != Tgi.Directory)
             def hasNext: Boolean = iter.hasNext
@@ -285,7 +285,7 @@ object DbpfFile {
               n
             }
           })
-        } acquireFor { input =>
+        } { input =>
           input > output
         }
 
@@ -299,14 +299,14 @@ object DbpfFile {
         val dirList = writeList.view.map(_.indexEntry).filter(_.decompressedSize.isDefined).toIndexedSeq
         val dirIndexEntry: Option[IndexEntry] = if (dirList.isEmpty) None else {
          // write dir to file
-          managed(buildDir(dirList)) acquireAndGet (_ > output)
+          Using.resource(buildDir(dirList))(_ > output)
           Some(new IndexEntry(Tgi.Directory, offset, UInt(dirList.size) * UInt(16), None))
         }
         dirIndexEntry foreach { offset += _.size }
 
         // dbpf index
         val indexList = writeList.map(_.indexEntry) ++= dirIndexEntry
-        managed(buildIndex(indexList)) acquireAndGet (_ > output)
+        Using.resource(buildIndex(indexList))(_ > output)
 
         val dateModifiedOrNow: UInt = dateModified.getOrElse(UInt((System.currentTimeMillis() / 1000).toInt))
         val header = new Header(

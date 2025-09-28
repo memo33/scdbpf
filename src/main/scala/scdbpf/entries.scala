@@ -2,7 +2,6 @@ package io.github.memo33
 package scdbpf
 
 import compat.{Input, ByteArrayInput}
-import resource._
 import DbpfUtil._
 import io.github.memo33.passera.unsigned._
 import java.io.{RandomAccessFile, EOFException}
@@ -30,7 +29,7 @@ trait DbpfEntry {
     * $EXCEPTIONHANDLER
     */
   def toBufferedEntry(implicit eh: ExceptionHandler): eh.![BufferedEntry[DbpfType], DbpfIoException] = eh wrap {
-    val arr: Array[Byte] = managed(this.input()) acquireAndGet (DbpfUtil.slurpBytes(_))
+    val arr: Array[Byte] = scala.util.Using.resource(this.input())(DbpfUtil.slurpBytes(_))
     BufferedEntry(this.tgi, RawType(arr), DbpfPackager.isCompressed(arr))
   }
 
@@ -39,7 +38,7 @@ trait DbpfEntry {
     * $EXCEPTIONHANDLER
     */
   def toRawEntry(implicit eh: ExceptionHandler): eh.![RawEntry, DbpfIoException] = eh wrap {
-    val arr: Array[Byte] = managed(this.input()) acquireAndGet (DbpfUtil.slurpBytes(_))
+    val arr: Array[Byte] = scala.util.Using.resource(this.input())(DbpfUtil.slurpBytes(_))
     new RawEntry(this.tgi, arr)
   }
 }

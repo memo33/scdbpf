@@ -1,7 +1,6 @@
 package io.github.memo33
 package scdbpf
 
-import resource._
 import DbpfUtil._
 
 /** The base trait for the content type of `DbpfEntries`.
