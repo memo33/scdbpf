@@ -5,7 +5,7 @@ import scala.util.Using
 import compat.{Input, ByteArrayInput, ByteOutput}
 import java.io.{RandomAccessFile, IOException, EOFException, FileOutputStream, SequenceInputStream}
 import java.nio.{ByteBuffer, IntBuffer}
-import io.github.memo33.passera.unsigned.UInt
+import io.github.memo33.passera.unsigned.{UInt, richUInt}
 import strategy.throwExceptions
 import scala.collection.immutable.{IndexedSeq, Map}
 import scala.collection.compat._

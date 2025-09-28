@@ -51,7 +51,7 @@ object DbpfProperty {
 
     sealed trait Numerical[A] { this: ValueType[A] =>
       import scala.language.higherKinds
-      def unapply[C[_] <: PropertyList[_]](prop: C[_]): Option[C[A] with Numerical[A]] = {
+      def unapply[B, C[B] <: PropertyList[B]](prop: C[B]): Option[C[A] with Numerical[A]] = {
         if (prop.valueType != this) None else {
           Some(prop.asInstanceOf[C[A] with Numerical[A]])
         }

@@ -243,9 +243,9 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
       interpolate(8, b, p.blue  & 0xFF)              // blue
     }
 
-    val short1555toRGBA = { s: Short => s & 0xffff } andThen toRGBA(1,5,5,5) _
-    val short0565toRGBA = { s: Short => s & 0xffff } andThen toRGBA(0,5,6,5) _
-    val short4444toRGBA = { s: Short => s & 0xffff } andThen toRGBA(4,4,4,4) _
+    val short1555toRGBA = { (s: Short) => s & 0xffff } andThen toRGBA(1,5,5,5) _
+    val short0565toRGBA = { (s: Short) => s & 0xffff } andThen toRGBA(0,5,6,5) _
+    val short4444toRGBA = { (s: Short) => s & 0xffff } andThen toRGBA(4,4,4,4) _
     val argbToRGBA = toRGBA(8,8,8,8) _
 
     val rgbaToShort1555 = fromRGBA(1,5,5,5) _ andThen (_.toShort)

@@ -190,6 +190,7 @@ object DbpfUtil {
         case ( 1, 0) => East
         case ( 0,-1) => South
         case ( 0, 0) => Special
+        case _ => throw new MatchError(s"unexpected vector (x,y)=($x,$y)")
       }
     }
   }

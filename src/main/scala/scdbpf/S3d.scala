@@ -79,7 +79,7 @@ trait S3d extends DbpfType {
     val reindexPrim = reindex(anim.iterator.flatMap(_.primBlock))
     val reindexMats = reindex(anim.iterator.flatMap(_.matsBlock))
 
-    val animReindexed = anim.copy(groups = anim map { ag: AnimGroup => ag.copy(
+    val animReindexed = anim.copy(groups = anim map { (ag: AnimGroup) => ag.copy(
       vertBlock = ag.vertBlock map reindexVert,
       indxBlock = ag.indxBlock map reindexIndx,
       primBlock = ag.primBlock map reindexPrim,

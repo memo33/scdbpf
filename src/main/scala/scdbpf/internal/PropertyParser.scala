@@ -74,7 +74,7 @@ private class PropertyParser extends Parser {
   def NameKey = rule(SuppressNode) { zeroOrMore(!anyOf(",:}\"") ~ ANY) ~ ":" ~ Blanks }
 
   def Parent = rule { ignoreCase("ParentCohort=Key:") ~ "{" ~ zeroOrMore(SInt32Rule , separator = ",") ~ "}" ~~> {
-    s: Seq[Int] => s match {
+    (s: Seq[Int]) => s match {
       case (Seq(g, i, t)) => Some(Tgi(t, g, i))
       case _ => None
     }
