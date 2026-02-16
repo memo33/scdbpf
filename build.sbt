@@ -2,7 +2,7 @@ name := "scdbpf"
 
 organization := "io.github.memo33"
 
-version := "0.2.2"
+version := "0.2.3-SNAPSHOT"
 
 ThisBuild / versionScheme := Some("early-semver")
 
@@ -72,11 +72,11 @@ useGpgPinentry := true  // see https://github.com/sbt/sbt-pgp/issues/178 or http
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
-libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1" cross CrossVersion.for3Use2_13
+libraryDependencies += "org.parboiled" %% "parboiled-scala" % "1.3.1" % Optional cross CrossVersion.for3Use2_13  // Sc4Paths and text exemplars
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"
 
 
 libraryDependencies += "io.github.memo33" %% "scala-unsigned" % "0.2.0" cross CrossVersion.for3Use2_13
 
-libraryDependencies += "io.github.memo33" % "jsquish" % "2.1.0"
+libraryDependencies += "io.github.memo33" % "jsquish" % "2.1.0" % Optional  // Dxt-compressed Fsh files
