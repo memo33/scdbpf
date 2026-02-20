@@ -26,7 +26,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
   implicit val converter: Converter[DbpfType, Fsh] = new Converter[DbpfType, Fsh] {
     def apply(from: DbpfType): Fsh = {
       try {
-        new BufferedFsh(from.dataView)
+        new BufferedFsh(from.unsafeArray)
       } catch {
         case e @ (_: NoSuchElementException
                  |_: java.nio.BufferUnderflowException
@@ -282,7 +282,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
 
   private class BufferedFsh(arr: Array[Byte]) extends RawType(arr) with Fsh {
     val (elements, dirId) = {
-      val buf = wrapLEBB(data)
+      val buf = wrapLEBB(unsafeArray)
       // fsh header
       val sig = buf.getInt()
       if (sig != MagicNumber.SHPI) {
@@ -320,14 +320,14 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
           h = height >>> i
           if format != FshFormat.Dxt1 && format != FshFormat.Dxt3 && format != FshFormat.Dxt5 || w % 4 == 0 && h % 4 == 0
         } yield {
-          val img = format.decode(data, buf, pos, w, h)
+          val img = format.decode(unsafeArray, buf, pos, w, h)
           pos += format.dataLength(w, h)
           img
         }
         // TODO check next byte (palette code or string label)
         val attachment: Option[Array[Byte]] =
           if (blockSize > 0 && offset + blockSize < end)
-            Some(data.slice(offset + blockSize, end))
+            Some(unsafeArray.slice(offset + blockSize, end))
           else None
         val label = for (a <- attachment if a.length >= 4 && a(0) == 0x70) yield {
           val stop = a.indexOf(0, 4)
@@ -350,7 +350,7 @@ object Fsh extends DbpfTypeCompanion[Fsh] {
 
   private class FreeFsh(val elements: Seq[FshElement], val dirId: FshDirectoryId) extends Fsh {
 
-    protected lazy val data = {
+    lazy val unsafeArray = {
       val elemLengths = elements map (_.binarySize)
       val fileLength = 0x10 + 8 * elements.size + elemLengths.sum
       val buf = allocLEBB(fileLength)

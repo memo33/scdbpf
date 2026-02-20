@@ -121,7 +121,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
   implicit val converter: Converter[DbpfType, Sc4Path] = new Converter[DbpfType, Sc4Path] {
     def apply(from: DbpfType): Sc4Path = {
       try {
-        new BufferedSc4Path(from.dataView, strict=false)
+        new BufferedSc4Path(from.unsafeArray, strict=false)
       } catch {
         case e @ (_: NoSuchElementException
                  |_: IllegalArgumentException
@@ -249,14 +249,14 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
 
   private class FreeSc4Path(val terrainVariance: Boolean, val paths: Seq[Path], val stopPaths: Seq[StopPath], val decFormat: Option[java.text.DecimalFormat]) extends Sc4Path {
 
-    protected lazy val data: Array[Byte] = toString.getBytes(DbpfUtil.asciiEncoding)
+    lazy val unsafeArray: Array[Byte] = toString.getBytes(DbpfUtil.asciiEncoding)
   }
 
   private lazy val parser = new Sc4PathParser() // needs to be locked for concurrent access
 
   private class BufferedSc4Path(arr: Array[Byte], strict: Boolean) extends RawType(arr) with Sc4Path {
 
-    override lazy val toString = new String(data, DbpfUtil.asciiEncoding)
+    override lazy val toString = new String(unsafeArray, DbpfUtil.asciiEncoding)
 
     val (terrainVariance, paths, stopPaths) = {
       val text = toString
@@ -272,7 +272,7 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
     val converter = new Converter[DbpfType, Sc4Path] {
       def apply(from: DbpfType): Sc4Path = {
         try {
-          new BufferedSc4Path(from.dataView, strict=true)
+          new BufferedSc4Path(from.unsafeArray, strict=true)
         } catch {
           case e @ (_: NoSuchElementException
                    |_: IllegalArgumentException

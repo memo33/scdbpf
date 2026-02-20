@@ -14,8 +14,7 @@ import DbpfUtil._
   */
 trait DbpfType {
   /** the uncompressed raw byte data of the entry */
-  protected def data: Array[Byte]
-  private[scdbpf] final def dataView: Array[Byte] = data // to make the data visible within this package
+  def unsafeArray: Array[Byte]
 
   /** Deprecated: Prefer `convertTo` instead.
     *
@@ -56,8 +55,8 @@ trait DbpfType {
   * to be immutable, it is required to ensure that this array does not get
   * modified.
   */
-class RawType protected (protected val data: Array[Byte]) extends DbpfType {
-  assert(!DbpfPackager.isCompressed(data))
+class RawType protected (val unsafeArray: Array[Byte]) extends DbpfType {
+  assert(!DbpfPackager.isCompressed(unsafeArray))
 }
 
 object RawType {

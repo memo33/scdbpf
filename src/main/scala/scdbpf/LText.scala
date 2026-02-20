@@ -24,7 +24,7 @@ object LText extends DbpfTypeCompanion[LText] {
 
   implicit val converter: Converter[DbpfType, LText] = new Converter[DbpfType, LText] {
     def apply(from: DbpfType): LText = {
-      new BufferedLText(from.dataView)
+      new BufferedLText(from.unsafeArray)
     }
   }
 
@@ -42,10 +42,10 @@ object LText extends DbpfTypeCompanion[LText] {
 
   private class BufferedLText(arr: Array[Byte]) extends RawType(arr) with LText {
     val (format, text): (Format.Value, String) = {
-      val buf = wrapLEBB(data)
+      val buf = wrapLEBB(unsafeArray)
       var count = -1
       var format = Format.AsciiNoHeader
-      if (data.length >= 4) {
+      if (unsafeArray.length >= 4) {
         count = buf.getShort().toInt & 0xffff
         val cc = buf.getShort()
         cc match {
@@ -55,10 +55,10 @@ object LText extends DbpfTypeCompanion[LText] {
           case _ => buf.position(0); count = -1; format = Format.AsciiNoHeader
         }
       }
-      if ((format == Format.AsciiNoHeader || format == Format.Ascii) && !isAsciiPrintable(data, buf.position())) {
+      if ((format == Format.AsciiNoHeader || format == Format.Ascii) && !isAsciiPrintable(unsafeArray, buf.position())) {
         throw new DbpfDecodeFailedException("bytes contain non-printable ASCII characters")
       }
-      val s = new String(data, buf.position(), data.length - buf.position(), Format.toCharset(format))
+      val s = new String(unsafeArray, buf.position(), unsafeArray.length - buf.position(), Format.toCharset(format))
       if (count != -1 && s.length != count) {
         throw new DbpfDecodeFailedException(f"declared length was $count, expected ${s.length}")
       }
@@ -67,7 +67,7 @@ object LText extends DbpfTypeCompanion[LText] {
   }
 
   private class FreeLText(val text: String, val format: LText.Format.Value) extends LText {
-    protected lazy val data: Array[Byte] = {
+    lazy val unsafeArray: Array[Byte] = {
       val bytes = text.getBytes(Format.toCharset(format))
       if (format == Format.AsciiNoHeader) {
         bytes

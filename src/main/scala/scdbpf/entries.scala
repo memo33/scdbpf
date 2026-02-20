@@ -66,7 +66,7 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
     * data size.
     */
   def input(): Input[Byte] = {
-    val data = content.dataView
+    val data = content.unsafeArray
     val outData = if (compressed) {
       DbpfPackager.compress(data)
     } else {
@@ -106,7 +106,7 @@ final case class BufferedEntry[+A <: DbpfType](val tgi: Tgi, val content: A, val
     eh wrap this
 
   override def toRawEntry(implicit eh: ExceptionHandler): eh.![RawEntry, DbpfIoException] =
-    eh wrap new RawEntry(tgi, if (compressed) DbpfPackager.compress(content.dataView) else content.dataView)
+    eh wrap new RawEntry(tgi, if (compressed) DbpfPackager.compress(content.unsafeArray) else content.unsafeArray)
 }
 
 /** A buffered entry whose raw byte data is held in an array, that is, the exact

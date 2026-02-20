@@ -15,7 +15,7 @@ private class FreeS3d(
   val prop: IndexedSeq[PropGroup],
   val regp: IndexedSeq[RegpGroup]) extends S3d {
 
-  protected lazy val data: Array[Byte] = {
+  lazy val unsafeArray: Array[Byte] = {
     val buf = allocLEBB(binarySize)
     // header
     buf.putInt(MagicNumber.`3DMD`)

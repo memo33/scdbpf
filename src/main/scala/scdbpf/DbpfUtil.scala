@@ -30,13 +30,13 @@ object DbpfUtil {
     val `1###`: Int = fromString("1###")
   }
 
-  private[scdbpf] def allocLEBB(size: Int) = {
+  def allocLEBB(size: Int) = {
     val buf = ByteBuffer.allocate(size)
     buf.order(ByteOrder.LITTLE_ENDIAN)
     buf
   }
 
-  private[scdbpf] def wrapLEBB(array: Array[Byte]): ByteBuffer = {
+  def wrapLEBB(array: Array[Byte]): ByteBuffer = {
     val buf = ByteBuffer.wrap(array)
     buf.order(ByteOrder.LITTLE_ENDIAN)
     buf

@@ -49,7 +49,7 @@ class ExemplarSpec extends AnyWordSpec with Matchers {
       ex.parent shouldBe ex2.parent
       ex.isCohort shouldBe ex2.isCohort
       ex.properties shouldBe ex2.properties
-      ex.dataView.toSeq shouldBe ex2.dataView.toSeq
+      ex.unsafeArray.toSeq shouldBe ex2.unsafeArray.toSeq
     }
   }
 }

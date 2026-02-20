@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 
 
 private class BufferedS3d(arr: Array[Byte]) extends RawType(arr) with S3d {
-  private[this] val buf = wrapLEBB(data)
+  private[this] val buf = wrapLEBB(unsafeArray)
 
   decodeCommonHead(buf, MagicNumber.`3DMD`, "3DMD")
   decodeCommonHead(buf, HEAD, "HEAD")
@@ -30,11 +30,11 @@ private class BufferedS3d(arr: Array[Byte]) extends RawType(arr) with S3d {
     throw new DbpfDecodeFailedException(s"End of S3D buffer was not reached: ${buf.remaining()}")
   }
   if (minorVersion == 5) {
-    assert(data.length == this.binarySize, s"data.length ${data.length}, binary size ${this.binarySize}")
-    //if (data.length != this.binarySize) {
+    assert(unsafeArray.length == this.binarySize, s"unsafeArray.length ${unsafeArray.length}, binary size ${this.binarySize}")
+    //if (unsafeArray.length != this.binarySize) {
     //  val c = this.copy()
-    //  val g1 = data map (b => f"$b%02X") grouped 16 map (x => x mkString " ")
-    //  val g2 = c.dataView map (b => f"$b%02X") grouped 16 map (x => x mkString " ")
+    //  val g1 = unsafeArray map (b => f"$b%02X") grouped 16 map (x => x mkString " ")
+    //  val g2 = c.unsafeArray map (b => f"$b%02X") grouped 16 map (x => x mkString " ")
     //  g1.zipAll(g2, "         ", "        ") map (tup => tup._1 + " | " + tup._2) foreach println
     //  assert(false)
     //}

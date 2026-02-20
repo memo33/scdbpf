@@ -14,7 +14,7 @@ class LTextSpec extends AnyWordSpec with Matchers {
       val ltext2 = e.content.convertTo(LText)
       assert(ltext ne ltext2)
       ltext.text should be (ltext2.text)
-      ltext.dataView.toSeq should be (ltext2.dataView.toSeq)
+      ltext.unsafeArray.toSeq should be (ltext2.unsafeArray.toSeq)
       ltext.format should be (ltext2.format)
     }
     "encode/decode inversely (UTF-16)" in {

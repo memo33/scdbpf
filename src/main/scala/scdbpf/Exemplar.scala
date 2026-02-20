@@ -39,7 +39,7 @@ object Exemplar extends WithContentConverter[Exemplar] {
   implicit def converter: Converter[BufferedEntry[DbpfType], BufferedEntry[Exemplar]] = new Converter[BufferedEntry[DbpfType], BufferedEntry[Exemplar]] {
     def apply(from: BufferedEntry[DbpfType]): BufferedEntry[Exemplar] = {
       try {
-        from.copy(content = new BufferedExemplar(from.content.dataView, from.tgi matches Tgi.Cohort))
+        from.copy(content = new BufferedExemplar(from.content.unsafeArray, from.tgi matches Tgi.Cohort))
       } catch {
         case e @ (_: NoSuchElementException
                  |_: java.nio.BufferUnderflowException
@@ -64,7 +64,7 @@ object Exemplar extends WithContentConverter[Exemplar] {
       val binType = if (isCohort) CQZB else EQZB
       val textType = if (isCohort) CQZT else EQZT
 
-      val buf = wrapLEBB(data)
+      val buf = wrapLEBB(unsafeArray)
       val sig = buf.getInt()
       val version = buf.getInt()
 
@@ -82,7 +82,7 @@ object Exemplar extends WithContentConverter[Exemplar] {
         }
         (cohort, props)
       } else if (sig == textType && version == `1###`) {
-        val text = new String(data, asciiEncoding)
+        val text = new String(unsafeArray, asciiEncoding)
         parser.synchronized {
           val ex = parser.parseExemplar(text)
           (ex.parent, ex.properties)
@@ -97,7 +97,7 @@ object Exemplar extends WithContentConverter[Exemplar] {
   }
 
   private class FreeExemplar(val parent: Tgi, val isCohort: Boolean, val properties: SortedMap[UInt, PropList]) extends Exemplar {
-    protected lazy val data = {
+    lazy val unsafeArray = {
       val binaryLength = properties.valuesIterator.foldLeft(24)(_ + _.binaryLength)
       val buf = allocLEBB(binaryLength)
       buf.putInt(if (isCohort) MagicNumber.CQZB else MagicNumber.EQZB)

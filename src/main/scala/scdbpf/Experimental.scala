@@ -81,7 +81,7 @@ object Experimental {
         val low = refName.toLowerCase
         if (low.startsWith("preview_")) low else "preview_" + low
       }
-      protected lazy val data = {
+      lazy val unsafeArray = {
         val buf = DbpfUtil.allocLEBB(templateData.length + 4 * name.length + 8)
         def transfer(from: Int, to: Int) = buf.put(templateData, from, to - from)
         val nameBytes = name.getBytes(DbpfUtil.asciiEncoding)

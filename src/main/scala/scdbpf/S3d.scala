@@ -137,7 +137,7 @@ object S3d extends DbpfTypeCompanion[S3d] {
   implicit val converter: Converter[DbpfType, S3d] = new Converter[DbpfType, S3d] {
     def apply(from: DbpfType): S3d = {
       try {
-        new BufferedS3d(from.dataView)
+        new BufferedS3d(from.unsafeArray)
       } catch {
         case e @ (_: NoSuchElementException
                  |_: java.nio.BufferUnderflowException
