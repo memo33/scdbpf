@@ -167,8 +167,10 @@ object Tgi {
 
   val PngIcon               = MaskVal(0x856ddbac, 0x6a386d26, None,       "PNG (Icon)");
   val Png                   = MaskVal(0x856ddbac, None,       None,       "PNG");
-  val Lua                   = MaskVal(0xca63e2a3, 0x4a5e8ef6, None,       "Lua");
+  val LuaAdv                = MaskVal(0xca63e2a3, 0x4a5e8ef6, None,       "Lua (Advisors)");
   val LuaGen                = MaskVal(0xca63e2a3, 0x4a5e8f3f, None,       "Lua (Generators)");
+  val Lua                   = MaskVal(0xca63e2a3, None,       None,       "Lua");
+  val Delocalizer           = TgiVal (0x2026960b, 0x6a231eaa, 0x0a6df4df, "Delocalizer");
   val Wav                   = MaskVal(0x2026960b, 0xaa4d1933, None,       "WAV");
   val LText                 = MaskVal(0x2026960b, None,       None,       "LText");
   val IniFont               = TgiVal (0,          0x4a87bfe8, 0x2a87bffc, "INI (Font Table)");
