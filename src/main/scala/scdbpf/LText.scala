@@ -12,7 +12,7 @@ sealed trait LText extends DbpfType {
 object LText extends DbpfTypeCompanion[LText] {
 
   object Format extends Enumeration {
-    val Utf16, Utf8, Ascii, AsciiNoHeader = Value
+    val Utf16, Utf8, Ascii, AsciiNoHeader = Value  // strictly speaking, Ascii is "active code page", AsciiNoHeader is plain text rather than LText (language/localizable text)
     def toCharset(format: Format.Value): java.nio.charset.Charset = format match {
       case Format.Utf16 => java.nio.charset.StandardCharsets.UTF_16LE
       case Format.Utf8 => java.nio.charset.StandardCharsets.UTF_8
@@ -28,9 +28,10 @@ object LText extends DbpfTypeCompanion[LText] {
     }
   }
 
-  private val ControlChar16: Short = 0x1000
-  private val ControlChar8: Short = 0x0800
-  private val ControlChar0: Short = 0x0000
+  val MaxCharacters = 200000
+  private val ControlChar16: Int = 0x10000000
+  private val ControlChar8: Int = 0x08000000
+  private val ControlChar0: Int = 0x00000000
 
   private def isAsciiPrintable(arr: Array[Byte], offset: Int): Boolean = {
     var i = offset;
@@ -46,14 +47,17 @@ object LText extends DbpfTypeCompanion[LText] {
       var count = -1
       var format = Format.AsciiNoHeader
       if (unsafeArray.length >= 4) {
-        count = buf.getShort().toInt & 0xffff
-        val cc = buf.getShort()
-        cc match {
+        val header = buf.getInt()
+        count = header & 0xffffff
+        (header & 0xff000000) match {
           case ControlChar16 => format = Format.Utf16
           case ControlChar8 => format = Format.Utf8
           case ControlChar0 => format = Format.Ascii
           case _ => buf.position(0); count = -1; format = Format.AsciiNoHeader
         }
+      }
+      if (count > MaxCharacters) {
+        throw new DbpfDecodeFailedException(f"LText length exceeds maximum number of characters ($count > $MaxCharacters)")
       }
       if ((format == Format.AsciiNoHeader || format == Format.Ascii) && !isAsciiPrintable(unsafeArray, buf.position())) {
         throw new DbpfDecodeFailedException("bytes contain non-printable ASCII characters")
@@ -68,17 +72,20 @@ object LText extends DbpfTypeCompanion[LText] {
 
   private class FreeLText(val text: String, val format: LText.Format.Value) extends LText {
     lazy val unsafeArray: Array[Byte] = {
+      if (text.length > MaxCharacters) {
+        throw new DbpfDecodeFailedException(f"LText length exceeds maximum number of characters (${text.length} > $MaxCharacters)")
+      }
       val bytes = text.getBytes(Format.toCharset(format))
       if (format == Format.AsciiNoHeader) {
         bytes
       } else {
         val buf = allocLEBB(4 + bytes.length)
-        buf.putShort(text.length.toShort)  // TODO support up to 200k characters
-        buf.putShort(format match {
+        val header = text.length & 0xffffff | (format match {
           case Format.Utf16 => ControlChar16
           case Format.Utf8 => ControlChar8
           case _ => ControlChar0
         })
+        buf.putInt(header)
         buf.put(bytes)
         assert(buf.remaining() == 0)
         buf.array()

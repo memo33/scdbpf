@@ -50,5 +50,16 @@ class LTextSpec extends AnyWordSpec with Matchers {
       l2.format.shouldBe(LText.Format.AsciiNoHeader)
       l2.text.shouldBe("~")
     }
+    "honor maximum number of characters" in {
+      intercept[DbpfDecodeFailedException](RawType(Array[Byte](0xff.toByte, 0xff.toByte, 0xff.toByte, 0x10)).convertTo(LText)).getMessage.shouldBe(
+        "LText length exceeds maximum number of characters (16777215 > 200000)"
+      )
+      intercept[DbpfDecodeFailedException](RawType(Array[Byte](0x41, 0x0d, 0x03, 0x10)).convertTo(LText)).getMessage.shouldBe(
+        "LText length exceeds maximum number of characters (200001 > 200000)"
+      )
+      intercept[DbpfDecodeFailedException](RawType(Array[Byte](0x40, 0x0d, 0x03, 0x10)).convertTo(LText)).getMessage.shouldBe(
+        "declared length was 200000, expected 0"
+      )
+    }
   }
 }
