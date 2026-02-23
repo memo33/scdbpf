@@ -172,7 +172,7 @@ private class Sc4PathParser extends Parser {
             case None => parsingResultToSc4Path(parsedSc4Path)
           }
         } else {
-          err.foreach(println)  // the validation errors are an issue for the game, but are recoverable in scdbpf
+          err.foreach(System.err.println)  // the validation errors are an issue for the game, but are recoverable in scdbpf
           parsingResultToSc4Path(parsedSc4Path)
         }
       }
