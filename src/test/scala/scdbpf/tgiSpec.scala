@@ -57,5 +57,14 @@ class TgiSpec extends AnyWordSpec with Matchers {
         }
       }
     }
+
+    "allow correct and efficient label lookup" in {
+      Tgi.LabeledTgis.values.foreach {
+        case tgi: Tgi =>
+          Tgi(tgi.tid, tgi.gid, tgi.iid).label should be (tgi.label)
+        case tgi: TgiMask =>
+          Tgi(tgi.tid.getOrElse(42), tgi.gid.getOrElse(42), tgi.iid.getOrElse(42)).label should be (tgi.label)
+      }
+    }
   }
 }

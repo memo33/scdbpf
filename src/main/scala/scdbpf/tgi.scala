@@ -52,8 +52,13 @@ sealed trait Tgi extends LabeledTgi {
   }
 
   def label: String = {
-    val labeledTgiOpt = Tgi.LabeledTgis.values.find(this.matches(_))
-    labeledTgiOpt.get.label
+    Tgi.tgiLabelLookup(tid) match {
+      case label: String => label
+      case gidMap: Map[Int, String | Map[Int, String]] => gidMap(gid) match {
+        case label: String => label
+        case iidMap: Map[Int, String] => iidMap(iid)
+      }
+    }
   }
 
   override def toString: String = {
@@ -180,6 +185,44 @@ object Tgi {
   val EffDir                = MaskVal(0xea5118b0, None,       None,       "EffDir");
 
   val Null                  = MaskVal(None,       None,       None,       "Unknown")
+
+  lazy val tgiLabelLookup: Map[Int, String | Map[Int, String | Map[Int, String]]] =
+    LabeledTgis.values
+      .collect {
+        case tgi: Tgi => tgi.tid -> tgi
+        case tgi: TgiMask if tgi.tid.isDefined => tgi.tid.get -> tgi
+      }
+      .groupMap(_._1)(_._2)
+      .view.mapValues { case gis =>
+        val gidDefaultLabel: Option[String] = gis.collectFirst {
+          case tgi: TgiMask if tgi.gid.isEmpty => tgi.label
+        }
+        val gidMap: Map[Int, String | Map[Int, String]] = gis
+          .collect {
+            case tgi: Tgi => tgi.gid -> tgi
+            case tgi: TgiMask if tgi.gid.isDefined => tgi.gid.get -> tgi
+          }
+          .groupMap(_._1)(_._2)
+          .view.mapValues { case is =>
+            val iidDefaultLabel: Option[String] = is.collectFirst {
+              case tgi: TgiMask if tgi.iid.isEmpty => tgi.label
+            }
+            val iidMap: Map[Int, String] =
+              is.collect {
+                case tgi: Tgi => tgi.iid -> tgi.label
+                case tgi: TgiMask if tgi.iid.isDefined => tgi.iid.get -> tgi.label
+              }.toMap
+            assert(iidMap.nonEmpty || iidDefaultLabel.isDefined, "unexpected: no Tgi or TgiMask with iid=None for gid=" + is.head.gid)
+            val l = iidDefaultLabel.orElse(gidDefaultLabel).getOrElse(Null.label)
+            if (iidMap.nonEmpty) iidMap.withDefaultValue(l) else l
+          }
+          .toMap
+        assert(gidMap.nonEmpty || gidDefaultLabel.isDefined, "unexpected: no Tgi or TgiMask with gid=None for tid=" + gis.head.tid)
+        val l = gidDefaultLabel.getOrElse(Null.label)
+        if (gidMap.nonEmpty) gidMap.withDefaultValue(l) else l
+      }
+      .toMap
+      .withDefaultValue(Null.label)
 }
 
 /** Represents masks of TGIs that are used for the `match` method of [[Tgi]].
