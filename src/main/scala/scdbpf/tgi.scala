@@ -45,10 +45,14 @@ sealed trait Tgi extends LabeledTgi {
   /** Tests if all the IDs match the non-masked IDs of `tgi`.
     */
   def matches(tgi: TgiLike): Boolean = tgi match {
-    case tgi: Tgi => this.ids == tgi.ids
-    case mask: TgiMask => this.ids zip mask.ids forall {
-      case (a, bOpt) => bOpt forall (_ == a)
-    }
+    case tgi: Tgi =>
+      this.iid == tgi.iid &&
+      this.tid == tgi.tid &&
+      this.gid == tgi.gid
+    case mask: TgiMask =>
+      mask.tid.forall(_ == this.tid) &&
+      mask.gid.forall(_ == this.gid) &&
+      mask.iid.forall(_ == this.iid)
   }
 
   def label: String = {
@@ -81,10 +85,11 @@ object Tgi {
       */
     def copy(tid: IdType = tid, gid: IdType = gid, iid: IdType = iid): SelfType
 
-    private[scdbpf] def ids = Iterable(tid, gid, iid)
-
     final override def equals(obj: Any): Boolean = obj match {
-      case that: TgiLike => this.ids == that.ids
+      case that: TgiLike =>
+        this.iid == that.iid &&
+        this.tid == that.tid &&
+        this.gid == that.gid
       case _ => false
     }
     final override def hashCode(): Int = {
