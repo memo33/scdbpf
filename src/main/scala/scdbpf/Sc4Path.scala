@@ -169,8 +169,8 @@ object Sc4Path extends DbpfTypeCompanion[Sc4Path] {
     def shiftHeight(t: Float): Self
 
     private[Sc4Path] def classAsString = if (classNumber == 0) "" else s"${('a' + classNumber - 1).toChar}_"
-    private[Sc4Path] def commentLines = { // adds -- delimiters if missing
-      comment.toList flatMap (s => new collection.immutable.StringOps(s).lines) map (_.trim) map
+    private[Sc4Path] def commentLines: List[String] = { // adds -- delimiters if missing
+      comment.toList flatMap (_.linesIterator) map (_.trim) map
         (c => if (c.startsWith("--")) c else "-- " + c)
     }
     private[Sc4Path] def coordString(c: Coord, decFormat: Option[java.text.DecimalFormat]): String = {

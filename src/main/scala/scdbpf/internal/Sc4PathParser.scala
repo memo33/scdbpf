@@ -113,7 +113,7 @@ private class Sc4PathParser extends Parser {
   // effectively simply drops the last line of the trimmed string
   // which commonly is something like "-- Sim_1_2" and will be recreated computationally
   private[scdbpf] def stripSectionHeader(s: String): Option[String] = {
-    val lines = new StringOps(s.trim).lines.toSeq
+    val lines = s.trim.linesIterator.toSeq
     if (lines.isEmpty)
       None
     else

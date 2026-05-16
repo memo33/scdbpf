@@ -10,7 +10,7 @@ description := "A Scala library for the DBPF file format"
 
 licenses += ("MIT", url("https://opensource.org/licenses/MIT"))
 
-crossScalaVersions := List("2.11.12", "2.12.18", "2.13.12", "3.7.4")  // use `sbt +publishLocal` to publish all versions
+crossScalaVersions := List("3.7.4")  // use `sbt +publishLocal` to publish all versions
 
 scalaVersion := crossScalaVersions.value.last
 
@@ -21,16 +21,6 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8")
 
 scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toSeq.flatMap {
-  case ((2, v)) if v <= 11 =>
-    Seq(
-      //"-Yinline-warnings",
-      "-optimize",
-      "-target:jvm-1.8")
-  case ((2, v)) if v >= 12 =>
-    Seq(
-      // "-opt-warnings:at-inline-failed-summary",
-      // "-opt:l:inline", "-opt-inline-from:<sources>",
-      "-release:8")
   case ((3, _)) =>
     Seq(
       // "-opt-warnings:at-inline-failed-summary",
@@ -46,10 +36,10 @@ scalacOptions ++= CrossVersion.partialVersion(scalaVersion.value).toSeq.flatMap 
       "-Wconf:msg=is no longer supported for vararg splices:s",
       "-Wconf:msg=`_` is deprecated for wildcard arguments of types:s",
       "-Wconf:msg=method stringPrefix of type => String should be removed or renamed:s",
-      "-release:8")
+      "-release:11")
 }
 
-javacOptions ++= Seq("--release", "8")
+javacOptions ++= Seq("--release", "11")
 
 console / initialCommands := """
 import io.github.memo33.passera.unsigned._
